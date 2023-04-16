@@ -1,0 +1,27 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const Card = require('./card.js');
+const { randInt } = require('../util/random.js');
+
+const CARDS = [];
+const templateFolder = path.join(__dirname, 'templates');
+const templateFiles = fs.readdirSync(templateFolder).filter(file => file.endsWith('.js'));
+for (const file of templateFiles) {
+  const filePath = path.join(templateFolder, file);
+  const card = require(filePath);
+  if (card instanceof Card) {
+    CARDS.push(card);
+  } else {
+    console.log(`[WARNING] The card at ${filePath} does not inherit from the "Card" class.`);
+  }
+}
+
+module.exports = {
+  rollCard: () => {
+    const id = randInt(CARDS.length);
+    return [id, CARDS[id]];
+  },
+  getCard: id => CARDS[id],
+}
+
+// console.log(module.exports.rollCard());
