@@ -9,11 +9,22 @@ const templateFiles = fs.readdirSync(templateFolder).filter(file => file.endsWit
 for (const file of templateFiles) {
   const filePath = path.join(templateFolder, file);
   const card = require(filePath);
-  if (card instanceof Card) {
-    CARDS.push(card);
-  } else {
+  if (!(card instanceof Card)) {
     console.log(`[WARNING] The card at ${filePath} does not inherit from the "Card" class.`);
+    continue;
   }
+  // console.error(card.abilities);
+  if (!Object.values(card.abilities).every((ability) => {
+    return (
+      'description' in ability && 
+      'level'       in ability && 
+      'execute'     in ability
+    );
+  })) {
+    console.log(`[WARNING] The card at ${filePath} is missing ability properties.`);
+    continue;
+  }
+  CARDS.push(card);
 }
 
 module.exports = {
