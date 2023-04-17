@@ -8,7 +8,10 @@ module.exports = {
   MS_MINUTE: MS_MINUTE,
   MS_HOUR: MS_HOUR,
   MS_DAY: MS_DAY,
+  
   ROLL_COOLDOWN: 12 * MS_HOUR,
+  COLLECTION_SIZE: 200,
+  
   USER_TEMPLATE: {
     collection: [],
     stats: {

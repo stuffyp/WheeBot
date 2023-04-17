@@ -1,9 +1,9 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 const Database = require("@replit/database");
 const db = new Database();
-const { USER_TEMPLATE } = require("../../util/constants.js");
+const { MS_SECOND, USER_TEMPLATE } = require("../../util/constants.js");
 
-const TIMEOUT = 30_000
+const TIMEOUT = 30 * MS_SECOND;
 
 module.exports = {
 	data: new SlashCommandBuilder()
