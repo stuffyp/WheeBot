@@ -1,11 +1,15 @@
 const { Rarities, Types } = require('./enums.js');
 
+const VERSION_NUMBER = "1.0";
+
 const MS_SECOND = 1000;
 const MS_MINUTE = 60 * MS_SECOND;
 const MS_HOUR = 60 * MS_MINUTE;
 const MS_DAY = 24 * MS_HOUR;
 
 module.exports = {
+  VERSION_NUMBER: VERSION_NUMBER,
+  
   MS_SECOND: MS_SECOND,
   MS_MINUTE: MS_MINUTE,
   MS_HOUR: MS_HOUR,
@@ -19,6 +23,7 @@ module.exports = {
     stats: {
       lastRoll: 0,
     },
+    version: VERSION_NUMBER,
   },
 
   RARITY_COLOR: {

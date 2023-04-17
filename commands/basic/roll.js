@@ -3,7 +3,13 @@ const Database = require("@replit/database");
 const db = new Database();
 const { rollCard } = require("../../cards/read-cards.js");
 const { display } = require("../../cards/util.js");
-const { MS_MINUTE, MS_HOUR, ROLL_COOLDOWN, COLLECTION_SIZE } = require("../../util/constants.js");
+const { 
+  VERSION_NUMBER, 
+  MS_MINUTE, 
+  MS_HOUR, 
+  ROLL_COOLDOWN, 
+  COLLECTION_SIZE 
+} = require("../../util/constants.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,6 +24,11 @@ module.exports = {
     }
 
     const user = users[interaction.user.id];
+    if (user.version !== VERSION_NUMBER) {
+      await interaction.reply('Please use the update command to update to the latest version of the game.');
+      return;
+    }
+    
     const timeUntil = user.stats.lastRoll + ROLL_COOLDOWN - Date.now();
     if (timeUntil > 0) {
       const hoursUntil = Math.floor(timeUntil / MS_HOUR);
