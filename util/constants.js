@@ -27,4 +27,5 @@ module.exports = {
     [`${Rarities.Epic}`]: 0x6930C3,
     [`${Rarities.Legendary}`]: 0xFFBA08,
   },
+  ROLL_CHANCES: [0.4, 0.3, 0.2, 0.1],
 }

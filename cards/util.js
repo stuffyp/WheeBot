@@ -3,10 +3,11 @@ const { RARITY_COLOR } = require('../util/constants.js');
 const Card = require('./card.js');
 
 module.exports = {
-  display: (card) => {
+  display: (card, level=null) => {
     const abilities = Object.entries(card.abilities).map(([name, info]) => {
       return { name: name, value: info.description };
     });
+    const title = level ? `${card.name} (Level ${level})` : `${card.name}`;
     return new EmbedBuilder()
       .setColor(RARITY_COLOR[card.rarity])
       .setTitle(`${card.name}`)

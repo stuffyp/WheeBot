@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../imports.js');
+const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
 
 const NAME = 'Steak';
 const RARITY = Rarities.Legendary;
