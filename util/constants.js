@@ -1,3 +1,5 @@
+const { Rarities, Types } = require('./enums.js');
+
 const MS_SECOND = 1000;
 const MS_MINUTE = 60 * MS_SECOND;
 const MS_HOUR = 60 * MS_MINUTE;
@@ -17,5 +19,12 @@ module.exports = {
     stats: {
       lastRoll: 0,
     },
+  },
+
+  RARITY_COLOR: {
+    [`${Rarities.Common}`]: 0x80ED99,
+    [`${Rarities.Rare}`]: 0x00B4D8,
+    [`${Rarities.Epic}`]: 0x6930C3,
+    [`${Rarities.Legendary}`]: 0xFFBA08,
   },
 }

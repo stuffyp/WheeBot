@@ -1,4 +1,11 @@
 module.exports = {
+  Rarities: {
+    Common: 'Common',
+    Rare: 'Rare',
+    Epic: 'Epic',
+    Legendary: 'Legendary',
+  },
+  
   StatusEffects: {
     DefenseUp: 'Defense Up',
     AttackUp: 'Attack Up',

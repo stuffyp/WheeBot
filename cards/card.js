@@ -1,6 +1,7 @@
 module.exports = class Card {
-  constructor(name, health, attack, defense, speed, magic, types, abilities){
+  constructor(name, rarity, health, attack, defense, speed, magic, types, abilities){
     this.name = name;
+    this.rarity = rarity;
     this.health = health;
     this.attack = attack;
     this.defense = defense;

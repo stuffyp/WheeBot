@@ -1,1 +1,3 @@
-console.log(process.env.TEST_SERVER)
+const { Rarities } = require('./util/enums.js');
+
+console.log(Rarities);
