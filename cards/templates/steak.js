@@ -9,8 +9,14 @@ const SPEED = 30;
 const MAGIC = 40;
 const TYPES = [Types.Protein];
 
-module.exports = new Card(NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, {
-    "Well Done": (self, target, gameState) => {
+const HEADER = [NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES];
+
+module.exports = new Card(...HEADER, {
+  "Well Done": {
+    description: "foo",
+    level: 5,
+    execute: (self, target, gameState) => {
       //pass
     },
-  });
+  },
+});

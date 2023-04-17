@@ -4,13 +4,17 @@ const Card = require('./card.js');
 
 module.exports = {
   display: (card) => {
+    const abilities = Object.entries(card.abilities).map(([name, info]) => {
+      return { name: name, value: info.description };
+    });
     return new EmbedBuilder()
       .setColor(RARITY_COLOR[card.rarity])
       .setTitle(`${card.name}`)
       .addFields(
-    		{ name: `Health`, value: `${card.health}` },
-        { name: `Attack`, value: `${card.attack}` },
-        { name: `Abilities`, value: `${Object.keys(card.abilities).join(', ')}` },
+    		{ name: `Health`, value: `${card.health}`, inline: true },
+        { name: `Attack`, value: `${card.attack}`, inline: true },
+        { name: `Defense`, value: `${card.defense}`, inline: true },
     	)
+      .addFields(abilities)
   }
 }

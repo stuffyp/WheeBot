@@ -9,8 +9,21 @@ const SPEED = 30;
 const MAGIC = 40;
 const TYPES = [Types.Dairy, Types.Sweet];
 
-module.exports = new Card(NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, {
-    "Freeze": (self, target, gameState) => {
+const HEADER = [NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES];
+
+module.exports = new Card(...HEADER, {
+  "Brain Freeze": {
+    description: "foo",
+    level: 5,
+    execute: (self, target, gameState) => {
       //pass
     },
-  });
+  },
+  "Foo": {
+    description: "foo",
+    level: 10,
+    execute: (self, target, gameState) => {
+      //pass
+    },
+  },
+});

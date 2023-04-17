@@ -9,9 +9,15 @@ const SPEED = 30;
 const MAGIC = 40;
 const TYPES = [Types.Carb];
 
-module.exports = new Card(NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, {
-    "Harden": (self, target, gameState) => {
+const HEADER = [NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES];
+
+module.exports = new Card(...HEADER, {
+  "Harden": {
+    description: "foo",
+    level: 5,
+    execute: (self, target, gameState) => {
       if (StatusEffects.DefenseUp in self.statusEffects) return;
       self.statusEffects.push(StatusEffects.DefenseUp);
     },
-  });
+  },
+});
