@@ -15,7 +15,7 @@ module.exports = {
   MS_HOUR: MS_HOUR,
   MS_DAY: MS_DAY,
   
-  ROLL_COOLDOWN: 12 * MS_HOUR,
+  ROLL_COOLDOWN: 0,//12 * MS_HOUR,
   COLLECTION_SIZE: 200,
   
   USER_TEMPLATE: {
@@ -25,6 +25,12 @@ module.exports = {
     },
     version: VERSION_NUMBER,
   },
+
+  CARD_DB_TEMPLATE: (id) => ({
+    id: id,
+    level: 1,
+    exp: 0,
+  }),
 
   RARITY_COLOR: {
     [`${Rarities.Common}`]: 0x80ED99,

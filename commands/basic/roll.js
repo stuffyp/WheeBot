@@ -8,7 +8,8 @@ const {
   MS_MINUTE, 
   MS_HOUR, 
   ROLL_COOLDOWN, 
-  COLLECTION_SIZE 
+  COLLECTION_SIZE,
+  CARD_DB_TEMPLATE,
 } = require("../../util/constants.js");
 
 module.exports = {
@@ -16,7 +17,6 @@ module.exports = {
 		.setName('roll')
 		.setDescription('Roll for new cards'),
 	async execute(interaction) {
-    // TODO: set some limitations on how much you can roll
     const users = await db.get('users');
     if (!(interaction.user.id in users)) {
       await interaction.reply('Please register before rolling.');
@@ -43,11 +43,7 @@ module.exports = {
     }
 
     const [id, card] = rollCard();
-    user.collection.push({
-      id: id,
-      level: 1,
-      exp: 0,
-    });
+    user.collection.push(CARD_DB_TEMPLATE(id));
     user.stats.lastRoll = Date.now();
     await db.set('users', users);
     await interaction.reply({ embeds: [display(card)], });

@@ -15,6 +15,6 @@ module.exports = {
     }
     users[interaction.user.id] = USER_TEMPLATE;
     await db.set('users', users);
-    await interaction.reply({ content: `Welcome, ${interaction.user.username}!`, ephemeral: true });
+    await interaction.reply({ content: `Welcome, ${interaction.user.tag}!`, ephemeral: true });
 	},
 };

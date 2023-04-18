@@ -16,7 +16,8 @@ db.get('users').then((users) => {
 
 const client = new Client({ intents: [
   GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildMessageReactions,
 ] });
 
 client.commands = new Collection();
