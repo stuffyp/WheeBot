@@ -19,7 +19,7 @@ module.exports = {
 	async execute(interaction) {
     const users = await db.get('users');
     if (!(interaction.user.id in users)) {
-      await interaction.reply('Please register before rolling.');
+      await interaction.reply('Please register an account first.');
       return;
     }
 
