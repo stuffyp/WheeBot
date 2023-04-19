@@ -1,4 +1,11 @@
 module.exports = {
+  SortBy: {
+    ID: 'ID',
+    Level: 'Level',
+    ID_r: 'ID_r',
+    Level_r: 'Level_r',
+  },
+  
   Rarities: {
     Common: 'Common',
     Rare: 'Rare',

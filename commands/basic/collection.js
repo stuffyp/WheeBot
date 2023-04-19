@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
+const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay } = require("../../cards/util.js");
-const { hasUser, getUser } = require("../../manage-user.js");
+const { hasUser, getUser, sortUser } = require("../../manage-user.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const SLICE_SIZE = 10; // number of cards at a time
@@ -17,6 +18,7 @@ const executeView = async (interaction) => {
     return;
   }
 
+  await sortUser(user, SortBy.ID_r);
   const userData = await getUser(user);
   if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
@@ -80,6 +82,7 @@ const executeManage = async (interaction) => {
     return;
   }
 
+  await sortUser(user, SortBy.ID_r);
   const userData = await getUser(user);
   if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
