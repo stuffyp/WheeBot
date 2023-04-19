@@ -1,7 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
-const Database = require("@replit/database");
-const db = new Database();
 const { MS_SECOND, USER_TEMPLATE } = require("../../util/constants.js");
+const { hasUser, getUser, setUser } = require("../../manage-user.js");
 
 const TIMEOUT = 30 * MS_SECOND;
 
@@ -10,8 +9,9 @@ module.exports = {
 		.setName('reset')
 		.setDescription('Reset account'),
 	async execute(interaction) {
-    const users = await db.get('users');
-    if (interaction.user.id in users) {
+    const user = interaction.user.id;
+    const userExists = await hasUser(user);
+    if (userExists) {
       const confirm = new ButtonBuilder()
   			.setCustomId('confirm')
   			.setLabel('Confirm Reset')
@@ -34,8 +34,7 @@ module.exports = {
       	const confirmation = await response.awaitMessageComponent({ time: TIMEOUT });
       
       	if (confirmation.customId === 'confirm') {
-      		users[interaction.user.id] = USER_TEMPLATE;
-          await db.set('users', users);
+      		await setUser(user, USER_TEMPLATE);
       		await confirmation.update({ content: `Account successfully reset.`, components: [] });
       	} else if (confirmation.customId === 'cancel') {
       		await confirmation.update({ content: 'Action cancelled.', components: [] });

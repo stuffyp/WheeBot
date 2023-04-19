@@ -1,21 +1,27 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Database = require("@replit/database");
-const db = new Database();
 const { VERSION_NUMBER } = require("../../util/constants.js");
+const { hasUser, getUser, updateUser } = require("../../manage-user.js");
 
 /*
-v1.0 template: USER_TEMPLATE: {
+v1.0 template:
+  USER_TEMPLATE: {
     collection: [],
     stats: {
       lastRoll: 0,
     },
     version: VERSION_NUMBER,
   },
+
+  CARD_DB_TEMPLATE: (id) => ({
+    id: id,
+    level: 1,
+    exp: 0,
+  }),
 */
 
 const update = {
-  '1.0': (user) => {
-    return user;
+  '1.0': (userData) => {
+    return userData;
   },
 }
 
@@ -24,8 +30,9 @@ module.exports = {
 		.setName('update')
 		.setDescription('Update account'),
 	async execute(interaction) {
-    const users = await db.get('users');
-    if (!(interaction.user.id in users)) {
+    const user = interaction.user.id;
+    const userExists = await hasUser(user);
+    if (!userExists) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
         ephemeral: true,
@@ -34,16 +41,15 @@ module.exports = {
     }
     await interaction.deferReply();
 
-    const user = users[interaction.user.id]
-    if (!(user.version in update)){
+    const userData = await getUser(user);
+    if (!(userData.version in update)){
       await interaction.editReply({
         content: 'An unexpected error occurred.',
         ephemeral: true,
       });
       return;
     }
-    users[interaction.user.id] = update[user.version](user);
-    await db.set('users', users);
+    await updateUser(user, update[userData.version]);
     await interaction.editReply({ content: `Successfully updated to version ${VERSION_NUMBER}!`, ephemeral: true });
 	},
 };

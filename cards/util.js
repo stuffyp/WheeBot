@@ -3,7 +3,6 @@ const { RARITY_COLOR } = require('../util/constants.js');
 const Card = require('./card.js');
 const { getCard } = require("./read-cards.js");
 
-const COLUMN_PADDING = 30;
 const display = (card, level=null) => {
   const abilities = Object.entries(card.abilities).map(([name, info]) => {
     return { name: name, value: info.description };

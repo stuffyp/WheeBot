@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Database = require("@replit/database");
-const db = new Database();
 const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
 const { displaySlice, fullDisplay } = require("../../cards/util.js");
+const { hasUser, getUser } = require("../../manage-user.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const SLICE_SIZE = 10; // number of cards at a time
@@ -11,22 +10,27 @@ const NAVIGATION_EMOJIS = ['⏮️', '⬅️', '➡️', '⏭️'];
 const FULL_NAVIGATION_EMOJIS = ['⏮️', '⏪', '⬅️', '➡️', '⏩', '⏭️'];
 
 const executeView = async (interaction) => {
-  const users = await db.get('users');
-  if (!(interaction.user.id in users)) {
+  const user = interaction.user.id;
+  const userExists = await hasUser(user);
+  if (!userExists) {
     await interaction.reply('Please register an account first.');
     return;
   }
 
-  const user = users[interaction.user.id];
-  if (user.version !== VERSION_NUMBER) {
+  const userData = await getUser(user);
+  if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
     return;
   }
+  if (userData.collection.length === 0) {
+    await interaction.reply('Your collection is empty.');
+    return;
+  }
 
-  const maxSliceIndex = user.collection.length - user.collection.length % SLICE_SIZE;
+  const maxSliceIndex = userData.collection.length - userData.collection.length % SLICE_SIZE;
   let sliceIndex = 0;
   const message = await interaction.reply({
-    content: displaySlice(user.collection, sliceIndex, SLICE_SIZE),
+    content: displaySlice(userData.collection, sliceIndex, SLICE_SIZE),
     fetchReply: true,
   });
   message.react('⏮️')
@@ -63,28 +67,33 @@ const executeView = async (interaction) => {
         console.error('An unexpected reaction was recorded: ' + reaction);
         return;
     }
-    interaction.editReply(displaySlice(user.collection, sliceIndex, SLICE_SIZE));
+    interaction.editReply(displaySlice(userData.collection, sliceIndex, SLICE_SIZE));
   });
 }
 
 
 const executeManage = async (interaction) => {
-  const users = await db.get('users');
-  if (!(interaction.user.id in users)) {
+  const user = interaction.user.id;
+  const userExists = await hasUser(user);
+  if (!userExists) {
     await interaction.reply('Please register an account first.');
     return;
   }
 
-  const user = users[interaction.user.id];
-  if (user.version !== VERSION_NUMBER) {
+  const userData = await getUser(user);
+  if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
+    return;
+  }
+  if (userData.collection.length === 0) {
+    await interaction.reply('Your collection is empty.');
     return;
   }
 
   let cardIndex = 0;
-  const maxCardIndex = user.collection.length - 1;
+  const maxCardIndex = userData.collection.length - 1;
   const message = await interaction.reply({
-    embeds: [fullDisplay(user.collection[cardIndex], cardIndex, user.collection.length)],
+    embeds: [fullDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length)],
     fetchReply: true,
   });
   message.react('⏮️')
@@ -130,10 +139,11 @@ const executeManage = async (interaction) => {
         return;
     }
     interaction.editReply({
-      embeds: [fullDisplay(user.collection[cardIndex], cardIndex, user.collection.length)],
+      embeds: [fullDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length)],
     });
   });
 }
+
 
 module.exports = {
 	data: new SlashCommandBuilder()

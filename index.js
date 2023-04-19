@@ -1,16 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const Database = require("@replit/database");
-const db = new Database();
-
-// DB MANAGEMENT
-
-db.get('users').then((users) => {
-  if (!users) {
-    db.set('users', {})
-  }
-})
+const { init } = require('./manage-user.js');
 
 // CLIENT CODE
 
@@ -67,4 +58,6 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-client.login(process.env.TOKEN);
+init().then(() => {
+  client.login(process.env.TOKEN);
+})
