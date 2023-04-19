@@ -1,6 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 const { MS_SECOND, USER_TEMPLATE } = require("../../util/constants.js");
-const { hasUser, getUser, setUser } = require("../../manage-user.js");
+const { getUser, setUser } = require("../../manage-user.js");
 
 const TIMEOUT = 30 * MS_SECOND;
 
@@ -10,8 +10,8 @@ module.exports = {
 		.setDescription('Reset account'),
 	async execute(interaction) {
     const user = interaction.user.id;
-    const userExists = await hasUser(user);
-    if (userExists) {
+    const userData = await getUser(user);
+    if (userData) {
       const confirm = new ButtonBuilder()
   			.setCustomId('confirm')
   			.setLabel('Confirm Reset')

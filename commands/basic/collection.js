@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
 const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay } = require("../../cards/util.js");
-const { hasUser, getUser, sortUser } = require("../../manage-user.js");
+const { getUser, sortUser } = require("../../manage-user.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const SLICE_SIZE = 10; // number of cards at a time
@@ -12,14 +12,13 @@ const FULL_NAVIGATION_EMOJIS = ['⏮️', '⏪', '⬅️', '➡️', '⏩', '⏭
 
 const executeView = async (interaction) => {
   const user = interaction.user.id;
-  const userExists = await hasUser(user);
-  if (!userExists) {
+  await sortUser(user, interaction.options.getString('sortby'));
+  const userData = await getUser(user);
+  if (userData === null) {
     await interaction.reply('Please register an account first.');
     return;
   }
-
-  await sortUser(user, SortBy.ID_r);
-  const userData = await getUser(user);
+  
   if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
     return;
@@ -76,14 +75,13 @@ const executeView = async (interaction) => {
 
 const executeManage = async (interaction) => {
   const user = interaction.user.id;
-  const userExists = await hasUser(user);
-  if (!userExists) {
+  await sortUser(user, interaction.options.getString('sortby'));
+  const userData = await getUser(user);
+  if (userData === null) {
     await interaction.reply('Please register an account first.');
     return;
   }
 
-  await sortUser(user, SortBy.ID_r);
-  const userData = await getUser(user);
   if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
     return;
@@ -155,11 +153,31 @@ module.exports = {
     .addSubcommand(subcommand =>
   		subcommand
   			.setName('view')
-  			.setDescription('View your collection'))
+  			.setDescription('View your collection')
+        .addStringOption(option =>
+      		option.setName('sortby')
+      			.setDescription('Method to sort by')
+      			.setRequired(true)
+      			.addChoices(
+      				{ name: 'Rarity', value: SortBy.ID },
+      				{ name: 'Rarity (reverse)', value: SortBy.ID_r },
+      				{ name: 'Level', value: SortBy.Level },
+              { name: 'Level (reverse)', value: SortBy.Level_r },
+      			)))
     .addSubcommand(subcommand =>
   		subcommand
   			.setName('detailed')
-  			.setDescription('Manage your collection')),
+  			.setDescription('Manage your collection')
+        .addStringOption(option =>
+      		option.setName('sortby')
+      			.setDescription('Method to sort by')
+      			.setRequired(true)
+      			.addChoices(
+      				{ name: 'Rarity', value: SortBy.ID },
+      				{ name: 'Rarity (reverse)', value: SortBy.ID_r },
+      				{ name: 'Level', value: SortBy.Level },
+              { name: 'Level (reverse)', value: SortBy.Level_r },
+      			))),
 	async execute(interaction) {
     if (interaction.options.getSubcommand() === 'view') {
       executeView(interaction);

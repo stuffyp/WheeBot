@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { VERSION_NUMBER } = require("../../util/constants.js");
-const { hasUser, getUser, updateUser } = require("../../manage-user.js");
+const { getUser, updateUser } = require("../../manage-user.js");
 
 /*
 v1.0 template:
@@ -31,8 +31,8 @@ module.exports = {
 		.setDescription('Update account'),
 	async execute(interaction) {
     const user = interaction.user.id;
-    const userExists = await hasUser(user);
-    if (!userExists) {
+    const userData = await getUser(user);
+    if (userData === null) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
         ephemeral: true,
@@ -41,7 +41,6 @@ module.exports = {
     }
     await interaction.deferReply();
 
-    const userData = await getUser(user);
     if (!(userData.version in update)){
       await interaction.editReply({
         content: 'An unexpected error occurred.',

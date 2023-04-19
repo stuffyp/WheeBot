@@ -16,20 +16,14 @@ module.exports = {
     });
   }, // initializes all mutexes
   
-  hasUser: async (userId) => {
-    const val = await db.get(idToKey(userId));
-    return val !== null;
-  },
-  
   makeUser: (userId) => {
     locks[userId] = new Mutex();
   },
   
   getUser: async (userId) => {
     const val = await db.get(idToKey(userId));
-    if (val) return val;
-    console.error(`User ${userId} does not exist.`);
-  },
+    return val;
+  }, // returns null if user doesn't exist
   
   setUser: async (userId, value) => {
     await locks[userId].runExclusive(async () => {
@@ -48,6 +42,7 @@ module.exports = {
   sortUser: async (userId, sortBy) => {
     await locks[userId].runExclusive(async () => {
       const userData = await db.get(idToKey(userId));
+      if (userData === null) return;
       switch (sortBy) {
         case SortBy.ID:
           userData.collection = userData.collection.sort((a, b) => {

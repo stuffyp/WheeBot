@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { hasUser, getUser, updateUser } = require("../../manage-user.js");
+const { getUser, updateUser } = require("../../manage-user.js");
 const { rollCard } = require("../../cards/read-cards.js");
 const { display } = require("../../cards/util.js");
 const { 
@@ -17,13 +17,11 @@ module.exports = {
 		.setDescription('Roll for new cards'),
 	async execute(interaction) {
     const user = interaction.user.id;
-    const userExists = await hasUser(user);
-    if (!userExists) {
+    const userData = await getUser(user);
+    if (userData === null) {
       await interaction.reply('Please register an account first.');
       return;
     }
-
-    const userData = await getUser(user);
     if (userData.version !== VERSION_NUMBER) {
       await interaction.reply('Please use the update command to update to the latest version of the game.');
       return;

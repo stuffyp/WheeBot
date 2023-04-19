@@ -1,7 +1,15 @@
 const { EmbedBuilder } = require('discord.js');
 const { RARITY_COLOR } = require('../util/constants.js');
+const { Rarities } = require('../util/enums.js');
 const Card = require('./card.js');
 const { getCard } = require("./read-cards.js");
+
+const RARITY_TO_EMOJI = {
+  [`${Rarities.Common}`]: '🟩',
+  [`${Rarities.Rare}`]: '🟦',
+  [`${Rarities.Epic}`]: '🟪',
+  [`${Rarities.Legendary}`]: '🟨',
+};
 
 const display = (card, level=null) => {
   const abilities = Object.entries(card.abilities).map(([name, info]) => {
@@ -31,7 +39,7 @@ module.exports = {
     const rawSlice = collection.slice(index, index + sliceSize);
     const outputLines = rawSlice.map(({id, level, exp}) => {
       const card = getCard(id);
-      return `**${card.name}** (Level ${level})`;
+      return `${RARITY_TO_EMOJI[card.rarity]} **${card.name}** (Level ${level})`;
     });
     const page = Math.ceil((index + 1) / sliceSize);
     const totalPages = Math.ceil(collection.length / sliceSize);
