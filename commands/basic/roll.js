@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { getUser, updateUser } = require("../../manage-user.js");
 const { rollCard } = require("../../cards/read-cards.js");
-const { display } = require("../../cards/util.js");
+const { display } = require("../../cards/ui.js");
 const { 
   VERSION_NUMBER, 
   MS_MINUTE, 
@@ -46,7 +46,8 @@ module.exports = {
         await interaction.reply(`Oops! An unexpected error occurred: Race Condition (PUSH).`);
         return null; // race condition occurred
       }
-      userData.collection.push(CARD_DB_TEMPLATE(id));
+      userData.idSeed++;
+      userData.collection.push(CARD_DB_TEMPLATE(id, userData.idSeed));
       userData.stats.lastRoll = Date.now();
       return userData;
     });

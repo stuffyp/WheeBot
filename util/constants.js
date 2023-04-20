@@ -17,19 +17,24 @@ module.exports = {
   
   ROLL_COOLDOWN: 0,//12 * MS_HOUR,
   COLLECTION_SIZE: 200,
+  PARTY_SIZE: 8,
   
   USER_TEMPLATE: {
     collection: [],
+    party: [],
     stats: {
       lastRoll: 0,
+      coins: 0,
     },
+    idSeed: 12345,
     version: VERSION_NUMBER,
   },
 
-  CARD_DB_TEMPLATE: (id) => ({
+  CARD_DB_TEMPLATE: (id, fullID) => ({
     id: id,
     level: 1,
     exp: 0,
+    fullID: fullID,
   }),
 
   RARITY_COLOR: {

@@ -36,14 +36,13 @@ module.exports = {
     });
   },
   displaySlice: (collection, index, sliceSize) => {
-    const rawSlice = collection.slice(index, index + sliceSize);
+    const rawSlice = collection.slice(index * sliceSize, index * sliceSize + sliceSize);
     const outputLines = rawSlice.map(({id, level, exp}) => {
       const card = getCard(id);
       return `${RARITY_TO_EMOJI[card.rarity]} **${card.name}** (Level ${level})`;
     });
-    const page = Math.ceil((index + 1) / sliceSize);
     const totalPages = Math.ceil(collection.length / sliceSize);
-    outputLines.push(`\n*Page ${page}/${totalPages}*`);
+    outputLines.push(`\n*Page ${index + 1}/${totalPages}*`);
     return outputLines.join('\n');
   },
 }

@@ -6,16 +6,20 @@ const { getUser, updateUser } = require("../../manage-user.js");
 v1.0 template:
   USER_TEMPLATE: {
     collection: [],
+    party: [],
     stats: {
       lastRoll: 0,
+      coins: 0,
     },
+    idSeed: 12345,
     version: VERSION_NUMBER,
   },
 
-  CARD_DB_TEMPLATE: (id) => ({
+  CARD_DB_TEMPLATE: (id, fullID) => ({
     id: id,
     level: 1,
     exp: 0,
+    fullID: fullID,
   }),
 */
 

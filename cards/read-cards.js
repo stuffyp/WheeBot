@@ -11,6 +11,9 @@ const CARDS = {
   [`${Rarities.Epic}`]: [],
   [`${Rarities.Legendary}`]: [],
 };
+const NAME_TO_ID = {
+  
+};
 const TIERS = [Rarities.Common, Rarities.Rare, Rarities.Epic, Rarities.Legendary];
 const ID_GAP = 1000;
 
@@ -47,6 +50,9 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
       continue;
     }
     CARDS[rarity].push(card);
+    
+    const baseID = TIERS.indexOf(rarity) * ID_GAP;
+    NAME_TO_ID[card.name.toLowerCase()] = baseID + CARDS[rarity].length - 1;
   }
 }
 
@@ -64,6 +70,7 @@ module.exports = {
     const cardNum = id % ID_GAP;
     return CARDS[TIERS[tierIndex]][cardNum];
   },
+  getID: (name) => NAME_TO_ID[name.toLowerCase()],
 }
 
-// console.log(module.exports.rollCard());
+// console.error(NAME_TO_ID);

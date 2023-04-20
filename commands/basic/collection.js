@@ -1,18 +1,16 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
+const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
-const { displaySlice, fullDisplay } = require("../../cards/util.js");
+const { displaySlice, fullDisplay } = require("../../cards/ui.js");
 const { getUser, sortUser } = require("../../manage-user.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const SLICE_SIZE = 10; // number of cards at a time
 
-const NAVIGATION_EMOJIS = ['⏮️', '⬅️', '➡️', '⏭️'];
-const FULL_NAVIGATION_EMOJIS = ['⏮️', '⏪', '⬅️', '➡️', '⏩', '⏭️'];
-
 const executeView = async (interaction) => {
   const user = interaction.user.id;
-  await sortUser(user, interaction.options.getString('sortby'));
+  await sortUser(user, interaction.options.getString('sort_by'));
   const userData = await getUser(user);
   if (userData === null) {
     await interaction.reply('Please register an account first.');
@@ -28,7 +26,7 @@ const executeView = async (interaction) => {
     return;
   }
 
-  const maxSliceIndex = userData.collection.length - userData.collection.length % SLICE_SIZE;
+  const maxSliceIndex = Math.ceil(userData.collection.length / SLICE_SIZE) - 1;
   let sliceIndex = 0;
   const message = await interaction.reply({
     content: displaySlice(userData.collection, sliceIndex, SLICE_SIZE),
@@ -40,34 +38,12 @@ const executeView = async (interaction) => {
     .then(() => message.react('⏭️'))
     .catch(error => console.error('One of the emojis failed to react:', error));
   const filter = (reaction, user) => {
-    return user.id === interaction.user.id && NAVIGATION_EMOJIS.includes(reaction.emoji.name);
+    return user.id === interaction.user.id && NAV_EMOJIS.includes(reaction.emoji.name);
   };
   const collector = message.createReactionCollector({ filter, time: TIME_LIMIT });
 
   collector.on('collect', (reaction) => {
-    switch (reaction.emoji.name) {
-      case '⏮️':
-        sliceIndex = 0;
-        break;
-      case '⬅️':
-        sliceIndex -= SLICE_SIZE;
-        if (sliceIndex < 0) {
-          sliceIndex = maxSliceIndex;
-        }
-        break;
-      case '➡️':
-        sliceIndex += SLICE_SIZE;
-        if (sliceIndex > maxSliceIndex) {
-          sliceIndex = 0;
-        }
-        break;
-      case '⏭️':
-        sliceIndex = maxSliceIndex;
-        break;
-      default:
-        console.error('An unexpected reaction was recorded: ' + reaction);
-        return;
-    }
+    sliceIndex = handleNav(reaction, sliceIndex, maxSliceIndex);
     interaction.editReply(displaySlice(userData.collection, sliceIndex, SLICE_SIZE));
   });
 }
@@ -75,7 +51,7 @@ const executeView = async (interaction) => {
 
 const executeManage = async (interaction) => {
   const user = interaction.user.id;
-  await sortUser(user, interaction.options.getString('sortby'));
+  await sortUser(user, interaction.options.getString('sort_by'));
   const userData = await getUser(user);
   if (userData === null) {
     await interaction.reply('Please register an account first.');
@@ -105,40 +81,12 @@ const executeManage = async (interaction) => {
     .then(() => message.react('⏭️'))
     .catch(error => console.error('One of the emojis failed to react:', error));
   const filter = (reaction, user) => {
-    return user.id === interaction.user.id && FULL_NAVIGATION_EMOJIS.includes(reaction.emoji.name);
+    return user.id === interaction.user.id && FULL_NAV_EMOJIS.includes(reaction.emoji.name);
   };
   const collector = message.createReactionCollector({ filter, time: TIME_LIMIT });
 
   collector.on('collect', (reaction) => {
-    switch (reaction.emoji.name) {
-      case '⏮️':
-        cardIndex = 0;
-        break;
-      case '⏪':
-        cardIndex = Math.max(cardIndex - 10, 0);
-        break;
-      case '⬅️':
-        cardIndex--;
-        if (cardIndex < 0) {
-          cardIndex = maxCardIndex;
-        }
-        break;
-      case '➡️':
-        cardIndex++;
-        if (cardIndex > maxCardIndex) {
-          cardIndex = 0;
-        }
-        break;
-      case '⏩':
-        cardIndex = Math.min(cardIndex + 10, maxCardIndex);
-        break;
-      case '⏭️':
-        cardIndex = maxCardIndex;
-        break;
-      default:
-        console.error('An unexpected reaction was recorded: ' + reaction);
-        return;
-    }
+    cardIndex = handleNav(reaction, cardIndex, maxCardIndex);
     interaction.editReply({
       embeds: [fullDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length)],
     });
@@ -155,7 +103,7 @@ module.exports = {
   			.setName('view')
   			.setDescription('View your collection')
         .addStringOption(option =>
-      		option.setName('sortby')
+      		option.setName('sort_by')
       			.setDescription('Method to sort by')
       			.setRequired(true)
       			.addChoices(
@@ -169,7 +117,7 @@ module.exports = {
   			.setName('detailed')
   			.setDescription('Manage your collection')
         .addStringOption(option =>
-      		option.setName('sortby')
+      		option.setName('sort_by')
       			.setDescription('Method to sort by')
       			.setRequired(true)
       			.addChoices(
