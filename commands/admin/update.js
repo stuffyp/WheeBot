@@ -43,7 +43,7 @@ module.exports = {
       });
       return;
     }
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
 
     if (!(userData.version in update)){
       await interaction.editReply({
