@@ -35,22 +35,17 @@ module.exports = {
       return;
     }
 
-    if (userData.collection.length >= COLLECTION_SIZE) {
-      await interaction.reply(`Your collection is already full.`);
-      return;
-    }
-
     const [id, card] = rollCard();
     await updateUser(user, async (userData) => {
       if (userData.collection.length >= COLLECTION_SIZE) {
-        await interaction.reply(`Oops! An unexpected error occurred: Race Condition (PUSH).`);
-        return null; // race condition occurred
+        await interaction.reply(`Your collection is already full.`);
+        return null; // no update
       }
+      await interaction.reply({ embeds: [display(card)], });
       userData.idSeed++;
       userData.collection.push(CARD_DB_TEMPLATE(id, userData.idSeed));
       userData.stats.lastRoll = Date.now();
       return userData;
     });
-    await interaction.reply({ embeds: [display(card)], });
 	},
 };

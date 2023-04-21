@@ -1,8 +1,7 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
-const { MS_SECOND, USER_TEMPLATE } = require("../../util/constants.js");
+const { SlashCommandBuilder } = require('discord.js');
+const { USER_TEMPLATE } = require("../../util/constants.js");
+const { askConfirmation } = require("../../util/ui-logic.js");
 const { getUser, setUser } = require("../../manage-user.js");
-
-const TIMEOUT = 30 * MS_SECOND;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,39 +17,37 @@ module.exports = {
       });
       return;
     }
-    
-    const confirm = new ButtonBuilder()
-      .setCustomId('confirm')
-      .setLabel('Confirm Reset')
-      .setStyle(ButtonStyle.Danger);
 
-    const cancel = new ButtonBuilder()
-      .setCustomId('cancel')
-      .setLabel('Cancel')
-      .setStyle(ButtonStyle.Secondary);
+    const confirmation = await askConfirmation(interaction, deleteReply=false);
+    /*
+    when deleteReply is set to false, askConfirmation will create a reply to the interaction
+    which is why editReply is called below
+    */
 
-    const row = new ActionRowBuilder()
-      .addComponents(cancel, confirm);
-
-    const response = await interaction.reply({
-      content: `Are you sure you want to reset your account?`,
-      components: [row],
-    });
-
-    try {
-      const confirmation = await response.awaitMessageComponent({ time: TIMEOUT });
-    
-      if (confirmation.customId === 'confirm') {
-        await setUser(user, USER_TEMPLATE);
-        await confirmation.update({ content: `Account successfully reset.`, components: [] });
-      } else if (confirmation.customId === 'cancel') {
-        await confirmation.update({ content: 'Action cancelled.', components: [] });
-      }
-    } catch (e) {
+    if (confirmation === null) {
       await interaction.editReply({
         content: 'Response timed out.',
         components: [],
+        ephemeral: true,
+      });
+      return;
+    }
+    
+    if (confirmation) {
+      await setUser(user, USER_TEMPLATE);
+      await interaction.editReply({ 
+        content: `Account successfully reset.`,
+        components: [],
+        ephemeral: true,
+      });
+    } else {
+      await interaction.editReply({ 
+        content: `Action cancelled.`,
+        components: [],
+        ephemeral: true,
       });
     }
+    
+    
 	},
 };

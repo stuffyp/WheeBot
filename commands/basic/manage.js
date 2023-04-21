@@ -1,9 +1,10 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 const { getUser, updateUser } = require("../../manage-user.js");
 const { fullDisplay } = require("../../cards/ui.js");
-const { getID } = require("../../cards/read-cards.js");
+const { getCard, getID } = require("../../cards/read-cards.js");
 const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
-const { FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
+const { FULL_NAV_EMOJIS, handleNav, askConfirmation } = require("../../util/ui-logic.js");
+const { retireCoins } = require("../../util/math-func.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 
@@ -33,17 +34,6 @@ module.exports = {
       await interaction.reply('Card not found in your collection (try checking your spelling).');
       return;
     }
-
-    const confirmButton = new ButtonBuilder()
-      .setCustomId('confirm')
-      .setLabel('Retire')
-      .setStyle(ButtonStyle.Danger);
-    const cancelButton = new ButtonBuilder()
-      .setCustomId('cancel')
-      .setLabel('Cancel')
-      .setStyle(ButtonStyle.Secondary);
-    const confirmRow = new ActionRowBuilder()
-      .addComponents(cancelButton, confirmButton);
 
     const retireButton = new ButtonBuilder()
       .setCustomId('retire')
@@ -85,9 +75,35 @@ module.exports = {
       time: TIME_LIMIT,
     });
     buttonCollector.on('collect', async i => {
+      const card = subcollection[cardIndex];
+      
     	switch (i.customId) {
         case 'retire':
-          await i.reply(`TODO`);
+          const confirmation = await askConfirmation(i);
+          if (confirmation) {
+            reactionCollector.stop();
+            buttonCollector.stop();
+            await updateUser(user, async (userData) => {
+              const coinGain = retireCoins(getCard(card.id).rarity, card.level);
+              const updatedCollection = userData.collection.filter((c) => (c.fullID !== card.fullID));
+              if (updatedCollection.length === userData.collection.length) {
+                await interaction.editReply({
+                  content: `Oops! It appears that your collection is out of sync. Command aborted.`,
+                  embeds: [],
+                  components: [],
+                });
+                return null;
+              }
+              userData.collection = updatedCollection;
+              userData.stats.coins += coinGain;
+              await interaction.editReply({
+                content: `You gained ${coinGain} coins!`,
+                embeds: [],
+                components: [],
+              });
+              return userData;
+            });
+          }
           break;
       }
     });
