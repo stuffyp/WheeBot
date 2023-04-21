@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { USER_TEMPLATE } = require("../../util/constants.js");
 const { askConfirmation } = require("../../util/ui-logic.js");
-const { getUser, setUser } = require("../../manage-user.js");
+const { getUser, updateUser } = require("../../manage-user.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -34,7 +34,12 @@ module.exports = {
     }
     
     if (confirmation) {
-      await setUser(user, USER_TEMPLATE);
+      await updateUser(user, async (userData) => {
+        oldIdSeed = userData.idSeed;
+        userData = USER_TEMPLATE;
+        userData.idSeed = oldIdSeed;
+        return userData;
+      });
       await interaction.editReply({ 
         content: `Account successfully reset.`,
         components: [],

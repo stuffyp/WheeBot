@@ -117,6 +117,7 @@ module.exports = {
                 });
                 return null;
               }
+              userData.party = userData.party.filter((c) => (c !== card.fullID));
               userData.collection = updatedCollection;
               userData.stats.coins += coinGain;
               await interaction.editReply({
@@ -133,7 +134,11 @@ module.exports = {
           reactionCollector.stop();
           buttonCollector.stop();
           await updateUser(user, async (userData) => {
-            if (userData.party.includes(card.fullID) || userData.party.length >= PARTY_SIZE) {
+            if (
+              userData.collection.every((c) => c.fullID !== card.fullID) || 
+              userData.party.includes(card.fullID) || 
+              userData.party.length >= PARTY_SIZE
+            ) {
               await interaction.editReply({
                 content: `Oops! It appears that your collection is out of sync. Command aborted.`,
                 embeds: [],
