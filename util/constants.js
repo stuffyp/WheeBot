@@ -7,6 +7,8 @@ const MS_MINUTE = 60 * MS_SECOND;
 const MS_HOUR = 60 * MS_MINUTE;
 const MS_DAY = 24 * MS_HOUR;
 
+const STARTING_ELO = 1200;
+
 module.exports = {
   VERSION_NUMBER: VERSION_NUMBER,
   
@@ -25,6 +27,7 @@ module.exports = {
     stats: {
       lastRoll: 0,
       coins: 0,
+      elo: STARTING_ELO,
     },
     idSeed: 12345,
     version: VERSION_NUMBER,
