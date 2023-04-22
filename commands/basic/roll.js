@@ -28,23 +28,30 @@ module.exports = {
     }
     
     const timeUntil = userData.stats.lastRoll + ROLL_COOLDOWN - Date.now();
-    if (timeUntil > 0) {
-      const hoursUntil = Math.floor(timeUntil / MS_HOUR);
-      const minutesUntil = Math.floor((timeUntil % MS_HOUR) / MS_MINUTE);
-      await interaction.reply(`You are out of rolls. Next roll in ${hoursUntil} hours, ${minutesUntil} minutes.`);
-      return;
-    }
+    const hoursUntil = Math.floor(timeUntil / MS_HOUR);
+    const minutesUntil = Math.floor((timeUntil % MS_HOUR) / MS_MINUTE);
+    const useFreeRoll = (timeUntil > 0);
 
     const [id, card] = rollCard();
     await updateUser(user, async (userData) => {
+      let text = null;
+      if (useFreeRoll) {
+        if (userData.stats.freeRolls === 0) {
+          await interaction.reply(`You are out of rolls. Next roll in ${hoursUntil} hours, ${minutesUntil} minutes.`);
+          return null; 
+        }
+        userData.stats.freeRolls--;
+        text = `Using free roll... you have ${userData.stats.freeRolls} free rolls left.`
+      } else {
+        userData.stats.lastRoll = Date.now();
+      }
       if (userData.collection.length >= COLLECTION_SIZE) {
         await interaction.reply(`Your collection is already full.`);
         return null; // no update
       }
-      await interaction.reply({ embeds: [display(card)], });
+      await interaction.reply({ content: text, embeds: [display(card)], });
       userData.idSeed++;
       userData.collection.push(CARD_DB_TEMPLATE(id, userData.idSeed));
-      userData.stats.lastRoll = Date.now();
       return userData;
     });
 	},

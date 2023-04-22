@@ -25,6 +25,7 @@ v1.0 template:
 
 const update = {
   '1.0': (userData) => {
+    userData.stats.freeRolls = 5;
     return userData;
   },
 }

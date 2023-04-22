@@ -17,7 +17,7 @@ module.exports = {
   MS_HOUR: MS_HOUR,
   MS_DAY: MS_DAY,
   
-  ROLL_COOLDOWN: 0,//12 * MS_HOUR,
+  ROLL_COOLDOWN: 12 * MS_HOUR,
   COLLECTION_SIZE: 200,
   PARTY_SIZE: 8,
   
@@ -26,6 +26,7 @@ module.exports = {
     party: [],
     stats: {
       lastRoll: 0,
+      freeRolls: 5,
       coins: 0,
       elo: STARTING_ELO,
     },
