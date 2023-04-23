@@ -17,7 +17,7 @@ module.exports = {
   MS_HOUR: MS_HOUR,
   MS_DAY: MS_DAY,
   
-  ROLL_COOLDOWN: 12 * MS_HOUR,
+  ROLL_COOLDOWN: 0,//12 * MS_HOUR,
   COLLECTION_SIZE: 200,
   PARTY_SIZE: 8,
   
@@ -46,6 +46,17 @@ module.exports = {
     [`${Rarities.Rare}`]: 0x00B4D8,
     [`${Rarities.Epic}`]: 0x6930C3,
     [`${Rarities.Legendary}`]: 0xFFBA08,
+  },
+  TYPE_EMOJI: {
+    [`${Types.Fire}`]: '🔴',
+    [`${Types.Water}`]: '🔵',
+    [`${Types.Plant}`]: '🟢',
+    [`${Types.Earth}`]: '🟤',
+    [`${Types.Wind}`]: '⚪',
+    [`${Types.Shock}`]: '🟡',
+    [`${Types.Beast}`]: '🟠',
+    [`${Types.Mystic}`]: '🟣',
+    [`${Types.None}`]: '🔘',
   },
   ROLL_CHANCES: [0.4, 0.3, 0.2, 0.1],
 }

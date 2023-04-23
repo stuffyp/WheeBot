@@ -1,22 +1,27 @@
 const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
 
 const NAME = 'Mango';
+const DESCRIPTION = 'We like fruits.';
 const RARITY = Rarities.Rare;
 const HEALTH = 100;
 const ATTACK = 50;
 const DEFENSE = 50;
 const SPEED = 30;
 const MAGIC = 40;
-const TYPES = [Types.Fruit, Types.Sweet];
+const TYPES = [Types.Plant];
 
-const HEADER = [NAME, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES];
-
-module.exports = new Card(...HEADER, {
-  "Foo": {
-    description: "foo",
-    level: 5,
-    execute: (self, target, gameState) => {
-      //pass
-    },
+const foo = {
+  name: 'Foo', 
+  description: 'bar',
+  level: 5,
+  type: Types.Plant,
+  execute: (self, target, gameState) => {
+    // pass
   },
-});
+};
+
+const ABILITIES = [foo];
+
+const HEADER = [NAME, DESCRIPTION, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
+
+module.exports = new Card(...HEADER);
