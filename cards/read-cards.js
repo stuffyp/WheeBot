@@ -39,10 +39,12 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
       continue;
     }
     // console.error(card.abilities);
-    if (!Object.values(card.abilities).every((ability) => {
+    if (!card.abilities.every((ability) => {
       return (
+        'name'        in ability &&
         'description' in ability && 
         'level'       in ability && 
+        'type'        in ability &&
         'execute'     in ability
       );
     })) {

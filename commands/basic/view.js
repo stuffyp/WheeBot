@@ -1,5 +1,12 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { VERSION_NUMBER, MS_MINUTE } = require("../../util/constants.js");
+const { 
+  VERSION_NUMBER, 
+  MS_MINUTE, 
+  MS_HOUR, 
+  ROLL_COOLDOWN, 
+  PARTY_SIZE,
+  COLLECTION_SIZE,
+} = require("../../util/constants.js");
 const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay } = require("../../cards/ui.js");
@@ -137,10 +144,47 @@ const executeParty = async (interaction) => {
 }
 
 
+const executeStats = async (interaction) => {
+  const user = interaction.user.id;
+  const userData = await getUser(user);
+  if (userData === null) {
+    await interaction.reply('Please register an account first.');
+    return;
+  }
+
+  const timeUntil = userData.stats.lastRoll + ROLL_COOLDOWN - Date.now();
+  const hoursUntil = Math.floor(timeUntil / MS_HOUR);
+  const minutesUntil = Math.floor((timeUntil % MS_HOUR) / MS_MINUTE);
+
+  freeRollText = `🎲 Free Rolls: ${userData.stats.freeRolls}`;
+  nextRollText = `🎲 Next Roll: ${(timeUntil > 0) ? `${hoursUntil} hours, ${minutesUntil} minutes` : 'Available'}`
+  coinsText = `🪙 Coins: ${userData.stats.coins}`
+  eloText = `📈 Rating: ${userData.stats.elo}`
+  partySizeText = `👥 Party Size: ${userData.party.length}/${PARTY_SIZE}`
+  collectionSizeText = `👥 Collection Size: ${userData.collection.length}/${COLLECTION_SIZE}`
+
+  await interaction.reply({
+    content: [
+      freeRollText,
+      nextRollText,
+      coinsText,
+      eloText,
+      partySizeText,
+      collectionSizeText,
+    ].join('\n'),
+    ephemeral: true,
+  });
+}
+
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('view')
     .setDescription('View your cards')
+    .addSubcommand(subcommand =>
+  		subcommand
+  			.setName('stats')
+  			.setDescription('View your stats'))
     .addSubcommand(subcommand =>
   		subcommand
   			.setName('party')
@@ -183,6 +227,9 @@ module.exports = {
         break;
       case 'party':
         executeParty(interaction);
+        break;
+      case 'stats':
+        executeStats(interaction);
         break;
       default:
         console.error(`An unknown subcommand was registered: ${interaction.options.getSubcommand()}`);

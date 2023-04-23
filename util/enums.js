@@ -21,13 +21,14 @@ module.exports = {
   },
   
   Types: {
-    Carb: 'Carb',
-    Protein: 'Protein',
-    Dairy: 'Dairy',
-    Vegetable: 'Vegetable',
-    Fruit: 'Fruit',
-    Spicy: 'Spicy',
-    Sour: 'Sour',
-    Sweet: 'Sweet',
+    Fire: 'Fire',
+    Water: 'Water',
+    Plant: 'Plant',
+    Earth: 'Earth',
+    Wind: 'Wind',
+    Shock: 'Shock',
+    Beast: 'Beast',
+    Mystic: 'Mystic',
+    None: 'None',
   },
 }

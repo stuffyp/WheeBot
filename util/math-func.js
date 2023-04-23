@@ -9,6 +9,6 @@ const RARITY_COIN_MULT = {
 
 module.exports = {
   retireCoins: (rarity, level) => {
-    return Math.floor(Math.pow(level + 10, 2) * RARITY_COIN_MULT[rarity] / 100) * 100;
+    return Math.floor(Math.pow(level + 20, 2) * RARITY_COIN_MULT[rarity] / 400) * 100;
   }
 }
