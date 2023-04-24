@@ -40,7 +40,6 @@ const executeBuy = async (interaction) => {
       return null;
     }
     userData.stats.coins -= cost;
-    console.error(userData.items)
     if (!(itemID in userData.items)) userData.items[itemID] = 0;
     userData.items[itemID] += quantity;
     const replyText = (quantity === 1) ? `Successfully bought ${item.name}.` : `Successfully bought ${quantity} copies of ${item.name}.`;
