@@ -15,6 +15,7 @@ const brainFreeze = {
   description: 'Description',
   level: 5,
   type: Types.Water,
+  priority: 0,
   execute: (self, target, gameState) => {
     // pass
   },
@@ -25,6 +26,7 @@ const foo = {
   description: 'foo',
   level: 5,
   type: Types.Shock,
+  priority: 0,
   execute: (self, target, gameState) => {
     // pass
   },

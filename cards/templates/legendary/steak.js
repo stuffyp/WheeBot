@@ -15,6 +15,7 @@ const wellDone = {
   description: 'Description',
   level: 5,
   type: Types.Fire,
+  priority: 0,
   execute: (self, target, gameState) => {
     // pass
   },

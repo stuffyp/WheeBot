@@ -45,6 +45,7 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
         'description' in ability && 
         'level'       in ability && 
         'type'        in ability &&
+        'priority'    in ability &&
         'execute'     in ability
       );
     })) {

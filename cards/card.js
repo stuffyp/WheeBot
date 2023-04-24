@@ -1,4 +1,14 @@
 module.exports = class Card {
+  name;
+  description;
+  rarity;
+  health;
+  attack;
+  defense;
+  speed;
+  magic;
+  types;
+  abilities;
   constructor(name, description, rarity, health, attack, defense, speed, magic, types, abilities){
     this.name = name;
     this.description = description;

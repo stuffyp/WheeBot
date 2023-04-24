@@ -14,10 +14,8 @@ module.exports = {
   },
   
   StatusEffects: {
-    DefenseUp: 'Defense Up',
-    AttackUp: 'Attack Up',
-    DefenseDown: 'Defense Down',
-    AttackDown: 'Attack Down',
+    Poison: 'Poison',
+    Freeze: 'Freeze',
   },
   
   Types: {
@@ -29,6 +27,25 @@ module.exports = {
     Shock: 'Shock',
     Beast: 'Beast',
     Mystic: 'Mystic',
+    None: 'None',
+  },
+
+  Events: {
+    TurnStart: 'TurnStart',
+    DidAttack: 'DidAttack',
+    GotAttacked: 'GotAttacked',
+    DidHeal: 'DidHeal',
+    GotHealed: 'GotHealed',
+    StatusInflict: 'StatusInflict',
+    StatusWearOff: 'StatusWearOff',
+    TurnEnd: 'TurnEnd',
+  },
+
+  Stats: {
+    Attack: 'Attack',
+    Defense: 'Defense',
+    Speed: 'Speed',
+    Magic: 'Magic',
     None: 'None',
   },
 }

@@ -15,6 +15,7 @@ const foo = {
   description: 'bar',
   level: 5,
   type: Types.Plant,
+  priority: 0,
   execute: (self, target, gameState) => {
     // pass
   },

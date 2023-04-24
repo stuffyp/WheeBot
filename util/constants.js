@@ -1,4 +1,6 @@
 const { Rarities, Types } = require('./enums.js');
+const { Modifier } = require('../game-classes/modifier.js');
+const { Listener } = require('../game-classes/listener.js');
 
 const VERSION_NUMBER = "1.0";
 
@@ -24,6 +26,7 @@ module.exports = {
   USER_TEMPLATE: {
     collection: [],
     party: [],
+    items: {},
     stats: {
       lastRoll: 0,
       freeRolls: 5,
@@ -59,4 +62,7 @@ module.exports = {
     [`${Types.None}`]: '🔘',
   },
   ROLL_CHANCES: [0.4, 0.3, 0.2, 0.1],
+
+  SHOP_REFRESH: 12 * MS_HOUR,
+  SHOP_SIZE: 3,
 }

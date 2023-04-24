@@ -1,10 +1,16 @@
 const Database = require("@replit/database");
 const db = new Database();
 const { Mutex } = require('async-mutex');
+
 const { SortBy } = require('./util/enums.js');
+
+const { SHOP_SIZE, SHOP_REFRESH } = require('./util/constants.js');
+const { rollItems } = require('./items/read-items.js');
+
 
 const idToKey = userId => '_u_' + userId;
 const locks = {};
+const globalLock = new Mutex();
 
 
 //encapsulates atomic database operations via a mutex
@@ -14,6 +20,10 @@ module.exports = {
     userKeys.forEach(key => {
       locks[key.slice(3)] = new Mutex();
     });
+    // await db.set('shop', {
+    //   lastUpdated: 0,
+    //   items: [],
+    // })
   }, // initializes all mutexes
   
   makeUser: (userId) => {
@@ -70,4 +80,18 @@ module.exports = {
       await db.set(idToKey(userId), userData);
     });
   },
+
+
+  getShop: async () => {
+    const shop = await db.get('shop');
+    if (Date.now() > shop.lastUpdated + SHOP_REFRESH) {
+      await globalLock.runExclusive(async () => {
+        if (Date.now() <= shop.lastUpdated + SHOP_REFRESH) return; // someone else already refreshed
+        shop.lastUpdated = Date.now() - Date.now() % SHOP_REFRESH;
+        shop.items = rollItems(SHOP_SIZE);
+        await db.set('shop', shop);
+      });
+    }
+    return shop;
+  }
 }
