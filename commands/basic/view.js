@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { 
-  VERSION_NUMBER, 
-  MS_MINUTE, 
-  MS_HOUR, 
-  ROLL_COOLDOWN, 
+const {
+  VERSION_NUMBER,
+  MS_MINUTE,
+  MS_HOUR,
+  ROLL_COOLDOWN,
   PARTY_SIZE,
   COLLECTION_SIZE,
 } = require("../../util/constants.js");
@@ -17,13 +17,13 @@ const SLICE_SIZE = 10; // number of cards at a time
 
 const executeView = async (interaction) => {
   const user = interaction.user.id;
-  await sortUser(user, interaction.options.getString('sort_by'));
+  await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
   const userData = await getUser(user);
   if (userData === null) {
     await interaction.reply('Please register an account first.');
     return;
   }
-  
+
   if (userData.version !== VERSION_NUMBER) {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
     return;
@@ -58,7 +58,7 @@ const executeView = async (interaction) => {
 
 const executeDetailed = async (interaction) => {
   const user = interaction.user.id;
-  await sortUser(user, interaction.options.getString('sort_by'));
+  await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
   const userData = await getUser(user);
   if (userData === null) {
     await interaction.reply('Please register an account first.');
@@ -178,46 +178,44 @@ const executeStats = async (interaction) => {
 
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('view')
+  data: new SlashCommandBuilder()
+    .setName('view')
     .setDescription('View your cards')
     .addSubcommand(subcommand =>
-  		subcommand
-  			.setName('stats')
-  			.setDescription('View your stats'))
+      subcommand
+        .setName('stats')
+        .setDescription('View your stats'))
     .addSubcommand(subcommand =>
-  		subcommand
-  			.setName('party')
-  			.setDescription('View your party'))
+      subcommand
+        .setName('party')
+        .setDescription('View your party'))
     .addSubcommand(subcommand =>
-  		subcommand
-  			.setName('collection')
-  			.setDescription('View your collection')
+      subcommand
+        .setName('collection')
+        .setDescription('View your collection')
         .addStringOption(option =>
-      		option.setName('sort_by')
-      			.setDescription('Method to sort by')
-      			.setRequired(true)
-      			.addChoices(
-      				{ name: 'Rarity', value: SortBy.ID },
-      				{ name: 'Rarity (reverse)', value: SortBy.ID_r },
-      				{ name: 'Level', value: SortBy.Level },
+          option.setName('sort_by')
+            .setDescription('Method to sort by')
+            .addChoices(
+              { name: 'Rarity', value: SortBy.ID },
+              { name: 'Rarity (reverse)', value: SortBy.ID_r },
+              { name: 'Level', value: SortBy.Level },
               { name: 'Level (reverse)', value: SortBy.Level_r },
-      			)))
+            )))
     .addSubcommand(subcommand =>
-  		subcommand
-  			.setName('detailed')
-  			.setDescription('View your collection in detail')
+      subcommand
+        .setName('detailed')
+        .setDescription('View your collection in detail')
         .addStringOption(option =>
-      		option.setName('sort_by')
-      			.setDescription('Method to sort by')
-      			.setRequired(true)
-      			.addChoices(
-      				{ name: 'Rarity', value: SortBy.ID },
-      				{ name: 'Rarity (reverse)', value: SortBy.ID_r },
-      				{ name: 'Level', value: SortBy.Level },
+          option.setName('sort_by')
+            .setDescription('Method to sort by')
+            .addChoices(
+              { name: 'Rarity', value: SortBy.ID },
+              { name: 'Rarity (reverse)', value: SortBy.ID_r },
+              { name: 'Level', value: SortBy.Level },
               { name: 'Level (reverse)', value: SortBy.Level_r },
-      			))),
-	async execute(interaction) {
+            ))),
+  async execute(interaction) {
     switch (interaction.options.getSubcommand()) {
       case 'collection':
         executeView(interaction);
@@ -234,5 +232,5 @@ module.exports = {
       default:
         console.error(`An unknown subcommand was registered: ${interaction.options.getSubcommand()}`);
     }
-	},
+  },
 };
