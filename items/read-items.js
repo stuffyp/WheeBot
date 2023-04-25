@@ -2,6 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { sampleRange } = require('../util/random.js');
 
+const formatItemID = (name) => name.trim().toLowerCase();
+
 const ITEMS = {};
 
 const consumables = path.join(__dirname, 'consumable');
@@ -21,7 +23,7 @@ for (const folder of folders) {
       console.log(`[WARNING] The item at ${filePath} is missing properties.`);
       continue;
     }
-    ITEMS[item.name.toLowerCase()] = item;
+    ITEMS[formatItemID(item.name)] = item;
   }
 }
 
@@ -32,7 +34,7 @@ module.exports = {
     sample.sort();
     return sample;
   },
-  getItem: (id) => ITEMS[id.toLowerCase()],
+  getItem: (id) => ITEMS[formatItemID(id)],
 }
 
 // console.error(NAME_TO_ID);

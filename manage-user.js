@@ -58,25 +58,25 @@ module.exports = {
         case SortBy.ID:
           userData.collection = userData.collection.sort((a, b) => {
             const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-            return (aRarity === bRarity) ? a.level - b.level : aRarity - bRarity;
+            return aRarity - bRarity || a.id.localeCompare(b.id) || a.level - b.level;
           });
           break;
         case SortBy.ID_r:
           userData.collection = userData.collection.sort((a, b) => {
             const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-            return (aRarity === bRarity) ? b.level - a.level : bRarity - aRarity;
+            return bRarity - aRarity || b.id.localeCompare(a.id) || b.level - a.level;
           });
           break;
         case SortBy.Level:
           userData.collection = userData.collection.sort((a, b) => {
             const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-            return (a.level === b.level) ? aRarity - bRarity : a.level - b.level;
+            return a.level - b.level || aRarity - bRarity || a.id.localeCompare(b.id);
           });
           break;
         case SortBy.Level_r:
           userData.collection = userData.collection.sort((a, b) => {
             const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-            return (a.level === b.level) ? bRarity - aRarity : b.level - a.level;
+            return b.level - a.level || bRarity - aRarity || b.id.localeCompare(a.id);
           });
           break;
         default:

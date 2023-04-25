@@ -4,7 +4,7 @@ const {
   MS_MINUTE,
 } = require("../../util/constants.js");
 const { displayShop } = require("../../items/ui.js");
-const { getID, getItem } = require("../../items/read-items.js");
+const { formatItemID, getItem } = require("../../items/read-items.js");
 const { getUser, getShop, updateUser } = require("../../manage-user.js");
 
 
@@ -23,7 +23,7 @@ const executeBuy = async (interaction) => {
     return;
   }
 
-  const itemID = interaction.options.getString('item').trim().toLowerCase();
+  const itemID = formatItemID(interaction.options.getString('item'));
   const item = getItem(itemID);
   const quantity = interaction.options.getInteger('quantity');
 

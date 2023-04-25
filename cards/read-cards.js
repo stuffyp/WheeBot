@@ -5,6 +5,8 @@ const { rollTiers, randInt } = require('../util/random.js');
 const { Rarities } = require('../util/enums.js');
 const { ROLL_CHANCES } = require('../util/constants.js');
 
+const formatCardID = (name) => name.trim().toLowerCase();
+
 const CARDS = {
   [`${Rarities.Common}`]: [],
   [`${Rarities.Rare}`]: [],
@@ -55,25 +57,25 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
       console.log(`[WARNING] The card at ${filePath} is missing ability properties.`);
       continue;
     }
-    CARDS[rarity].push(card.name.toLowerCase());
-    ALL_CARDS[card.name.toLowerCase()] = card;
+    CARDS[rarity].push(formatCardID(card.name));
+    ALL_CARDS[formatCardID(card.name)] = card;
   }
 }
-
 
 module.exports = {
   rollCard: () => {
     const tierIndex = rollTiers(ROLL_CHANCES);
     const tier = CARDS[TIERS[tierIndex]];
     const cardNum = randInt(tier.length);
-    const cardName = tier[cardNum];
-    return [cardName, ALL_CARDS[cardName]];
+    const cardID = tier[cardNum];
+    return [cardID, ALL_CARDS[cardID]];
   },
   getCard: (name) => {
-    return ALL_CARDS[name.toLowerCase()];
+    return ALL_CARDS[formatCardID(name)];
   },
+  formatCardID: formatCardID,
   getRarity: (name) => {
-    return RARITY_TO_INT[ALL_CARDS[name.toLowerCase()].rarity];
+    return RARITY_TO_INT[ALL_CARDS[formatCardID(name)].rarity];
   }
 }
 

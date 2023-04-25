@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 const { getUser, updateUser } = require("../../manage-user.js");
 const { fullDisplay } = require("../../cards/ui.js");
-const { getCard } = require("../../cards/read-cards.js");
+const { formatCardID, getCard } = require("../../cards/read-cards.js");
 const { VERSION_NUMBER, MS_MINUTE, PARTY_SIZE } = require("../../util/constants.js");
 const { FULL_NAV_EMOJIS, handleNav, askConfirmation } = require("../../util/ui-logic.js");
 const { retireCoins } = require("../../util/math-func.js");
@@ -28,7 +28,7 @@ module.exports = {
       return;
     }
 
-    const cardID = interaction.options.getString('card_name').trim().toLowerCase();
+    const cardID = formatCardID(interaction.options.getString('card_name'));
     const subcollection = userData.collection.filter((card) => card.id === cardID);
     const party = userData.party;
     if (subcollection.length === 0) {
