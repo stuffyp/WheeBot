@@ -15,6 +15,7 @@ const { retireCoins } = require("../../util/math-func.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const MODAL_TIME_LIMIT = MS_MINUTE;
+const NUM_AUTOCOMPLETE = 7;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -36,7 +37,10 @@ module.exports = {
     
     const focusedValue = formatCardID(interaction.options.getFocused());
     const cardIds = [...new Set(userData.collection.map((card) => card.id))];
-    const matches = cardIds.filter((id) => id.startsWith(focusedValue)).slice(0,10).sort((id1, id2) => id1.localeCompare(id2))
+    const matches = cardIds
+      .filter((id) => id.startsWith(focusedValue))
+      .slice(0,NUM_AUTOCOMPLETE)
+      .sort((id1, id2) => id1.localeCompare(id2))
     await interaction.respond(
       matches.map((id) => ({ name: getCard(id).name, value: id })),
     );
