@@ -15,7 +15,31 @@ module.exports = {
     .addStringOption(option =>
       option.setName('card_name')
         .setDescription('Name of the card you want to access')
-        .setRequired(true)),
+        .setRequired(true)
+        .setAutocomplete(true)),
+  
+  async autocomplete(interaction) {
+    const user = interaction.user.id;
+    const userData = await getUser(user);
+    if (userData === null || userData.version !== VERSION_NUMBER) {
+      await interaction.respond([]);
+      return;
+    }
+    
+    const focusedValue = formatCardID(interaction.options.getFocused());
+    const db_matches = userData.collection.filter((card) => card.id.startsWith(focusedValue)).slice(0,10).sort((card1, card2) => {
+      const diff = card1.id.localeCompare(card2.id);
+      if (diff !== 0) {
+        return diff;
+      } else {
+        return card1.level - card2.level;
+      }
+    });
+    await interaction.respond(
+      db_matches.map((card) => ({ name: getCard(card.id).name + (card.level === null ? `` : ` (Level ${card.level})`), value: card.id })),
+    );
+  },
+  
 	async execute(interaction) {
     const user = interaction.user.id;
     const userData = await getUser(user);
