@@ -9,6 +9,7 @@ const RARITY_TO_EMOJI = {
   [`${Rarities.Rare}`]: '🟦',
   [`${Rarities.Epic}`]: '🟪',
   [`${Rarities.Legendary}`]: '🟨',
+  [`${Rarities.Mystic}`]: '🟥',
 };
 
 const display = (card, level=null) => {

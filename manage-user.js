@@ -20,27 +20,27 @@ module.exports = {
     userKeys.forEach(key => {
       locks[key.slice(3)] = new Mutex();
     });
-    // await db.set('shop', {
-    //   lastUpdated: 0,
-    //   items: [],
-    // })
+    await db.set('shop', {
+      lastUpdated: 0,
+      items: [],
+    })
   }, // initializes all mutexes
-  
+
   makeUser: (userId) => {
     locks[userId] = new Mutex();
   },
-  
+
   getUser: async (userId) => {
     const val = await db.get(idToKey(userId));
     return val;
   }, // returns null if user doesn't exist
-  
+
   setUser: async (userId, value) => {
     await locks[userId].runExclusive(async () => {
       await db.set(idToKey(userId), value);
     });
   }, // should not be used after a call to getUser; use updateUser instead
-  
+
   updateUser: async (userId, func) => {
     await locks[userId].runExclusive(async () => {
       const user = await db.get(idToKey(userId));
@@ -48,7 +48,7 @@ module.exports = {
       if (update) await db.set(idToKey(userId), update);
     });
   },
-  
+
   sortUser: async (userId, sortBy) => {
     await locks[userId].runExclusive(async () => {
       const userData = await db.get(idToKey(userId));
