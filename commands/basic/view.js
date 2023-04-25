@@ -190,7 +190,9 @@ const executeInventory = async (interaction) => {
     await interaction.reply('Please use the update command to update to the latest version of the game.');
     return;
   }
-  const processedItems = Object.entries(userData.items).filter(([id, quantity]) => quantity > 0);
+  const processedItems = Object.entries(userData.items).map(([id, quantity]) => (
+    [id, quantity - userData.collection.filter((c) => c.item === id).length]
+  )).filter(([id, quantity]) => quantity > 0);
   if (processedItems.length === 0) {
     await interaction.reply('Your inventory is empty.');
     return;

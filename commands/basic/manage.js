@@ -1,12 +1,20 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
+const { 
+  ActionRowBuilder, 
+  ButtonBuilder, ButtonStyle, 
+  SlashCommandBuilder, 
+  ModalBuilder, 
+  TextInputBuilder, TextInputStyle,
+} = require('discord.js');
 const { getUser, updateUser } = require("../../manage-user.js");
 const { fullDisplay } = require("../../cards/ui.js");
 const { formatCardID, getCard } = require("../../cards/read-cards.js");
+const { formatItemID, getItem } = require("../../items/read-items.js");
 const { VERSION_NUMBER, MS_MINUTE, PARTY_SIZE } = require("../../util/constants.js");
 const { FULL_NAV_EMOJIS, handleNav, askConfirmation } = require("../../util/ui-logic.js");
 const { retireCoins } = require("../../util/math-func.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
+const MODAL_TIME_LIMIT = MS_MINUTE;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -48,20 +56,39 @@ module.exports = {
       .setCustomId('removeParty')
       .setLabel('Remove from Party')
       .setStyle(ButtonStyle.Primary);
+    const equipButton = new ButtonBuilder()
+      .setCustomId('equip')
+      .setLabel('Equip Item')
+      .setStyle(ButtonStyle.Primary);
+    const unequipButton = new ButtonBuilder()
+      .setCustomId('unequip')
+      .setLabel('Unequip Item')
+      .setStyle(ButtonStyle.Primary);
+
+    const equipModal = new ModalBuilder()
+      .setCustomId('modal')
+      .setTitle('Equip Item');
+    const textInput = new TextInputBuilder()
+      .setCustomId('itemName')
+      .setLabel("Item Name:")
+      .setStyle(TextInputStyle.Short);
+    const actionRow = new ActionRowBuilder().addComponents(textInput);
+    equipModal.addComponents(actionRow);
     
-    const notInPartyRow = new ActionRowBuilder()
-      .addComponents(addPartyButton)
-      .addComponents(retireButton);
-    const inPartyRow = new ActionRowBuilder()
-      .addComponents(removePartyButton)
-      .addComponents(retireButton);
-    const fullPartyRow = new ActionRowBuilder()
-      .addComponents(retireButton);
     const getButtons = (cardIndex) => {
-      if (party.includes(subcollection[cardIndex].fullID)) {
-        return inPartyRow;
+      const row = new ActionRowBuilder();
+      const card = subcollection[cardIndex];
+      if (card.item) {
+        row.addComponents(unequipButton);
+      } else {
+        row.addComponents(equipButton);
       }
-      return (party.length >= PARTY_SIZE) ? fullPartyRow : notInPartyRow;
+      if (party.includes(card.fullID)) {
+        row.addComponents(removePartyButton);
+      } else if (party.length < PARTY_SIZE) {
+        row.addComponents(addPartyButton)
+      }
+      return row.addComponents(retireButton);
     }
     
     let cardIndex = 0;
@@ -92,7 +119,7 @@ module.exports = {
     });
 
     // Create a message component interaction collector
-    const messageFilter = (i) => ['retire', 'addParty', 'removeParty'].includes(i.customId) && i.user.id === interaction.user.id;
+    const messageFilter = (i) => ['retire', 'addParty', 'removeParty', 'equip', 'unequip'].includes(i.customId) && i.user.id === interaction.user.id;
     const buttonCollector = message.createMessageComponentCollector({
       filter: messageFilter,
       time: TIME_LIMIT,
@@ -175,6 +202,72 @@ module.exports = {
               embeds: [],
               components: [],
             });
+            return userData;
+          });
+          break;
+
+        case 'equip':
+          reactionCollector.stop();
+          buttonCollector.stop();
+          await i.showModal(equipModal);
+          const submitted = await i.awaitModalSubmit({
+            filter: (i) => i.customId === 'modal',
+            time: MODAL_TIME_LIMIT,
+          }).catch(error => {
+            console.error(error);
+          });
+          submitted.deferUpdate();
+          const itemName = submitted.fields.getTextInputValue('itemName');
+          const itemID = formatItemID(itemName);
+
+          await updateUser(user, async (userData) => {
+            const originalCard = userData.collection.find((c) => c.fullID === card.fullID);
+            const available = userData.collection.filter((c) => c.item === itemID).length < userData.items[itemID];
+            if (!originalCard || originalCard.item) {
+              await interaction.editReply({
+                content: `Oops! It appears that your collection is out of sync. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
+            if (!available) {
+              await interaction.editReply({
+                content: `The item you are looking for does not exist in your inventory (check your spelling).`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
+            await interaction.editReply({
+              content: `${getItem(itemID).name} has been equipped.`, //TODO
+              embeds: [],
+              components: [],
+            });
+            originalCard.item = itemID;
+            return userData;
+          });
+          break;
+
+        case 'unequip': // UNTESTED
+          reactionCollector.stop();
+          buttonCollector.stop();
+          await updateUser(user, async (userData) => {
+            const originalCard = userData.collection.find((c) => c.fullID === card.fullID);
+            if (!(originalCard && originalCard.item)) {
+              await interaction.editReply({
+                content: `Oops! It appears that your collection is out of sync. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
+            await interaction.editReply({
+              content: `${getItem(originalCard.item).name} has been unequipped.`,
+              embeds: [],
+              components: [],
+            });
+            originalCard.item = null;
             return userData;
           });
           break;

@@ -34,6 +34,7 @@ module.exports = {
     sample.sort();
     return sample;
   },
+  formatItemID: formatItemID,
   getItem: (id) => ITEMS[formatItemID(id)],
 }
 
