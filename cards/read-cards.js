@@ -11,11 +11,14 @@ const CARDS = {
   [`${Rarities.Epic}`]: [],
   [`${Rarities.Legendary}`]: [],
 };
-const NAME_TO_ID = {
-  
-};
+const ALL_CARDS = {};
 const TIERS = [Rarities.Common, Rarities.Rare, Rarities.Epic, Rarities.Legendary];
-const ID_GAP = 1000;
+const RARITY_TO_INT = {
+  [`${Rarities.Common}`]: 0,
+  [`${Rarities.Rare}`]: 1,
+  [`${Rarities.Epic}`]: 2,
+  [`${Rarities.Legendary}`]: 3,
+}
 
 const templateFolder = path.join(__dirname, 'templates');
 const commonFolder = path.join(templateFolder, 'common');
@@ -52,10 +55,8 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
       console.log(`[WARNING] The card at ${filePath} is missing ability properties.`);
       continue;
     }
-    CARDS[rarity].push(card);
-    
-    const baseID = TIERS.indexOf(rarity) * ID_GAP;
-    NAME_TO_ID[card.name.toLowerCase()] = baseID + CARDS[rarity].length - 1;
+    CARDS[rarity].push(card.name.toLowerCase());
+    ALL_CARDS[card.name.toLowerCase()] = card;
   }
 }
 
@@ -65,15 +66,15 @@ module.exports = {
     const tierIndex = rollTiers(ROLL_CHANCES);
     const tier = CARDS[TIERS[tierIndex]];
     const cardNum = randInt(tier.length);
-    const id = tierIndex * ID_GAP + cardNum;
-    return [id, tier[cardNum]];
+    const cardName = tier[cardNum];
+    return [cardName, ALL_CARDS[cardName]];
   },
-  getCard: (id) => {
-    const tierIndex = Math.floor(id / ID_GAP);
-    const cardNum = id % ID_GAP;
-    return CARDS[TIERS[tierIndex]][cardNum];
+  getCard: (name) => {
+    return ALL_CARDS[name.toLowerCase()];
   },
-  getID: (name) => NAME_TO_ID[name.toLowerCase()],
+  getRarity: (name) => {
+    return RARITY_TO_INT[ALL_CARDS[name.toLowerCase()].rarity];
+  }
 }
 
 // console.error(NAME_TO_ID);
