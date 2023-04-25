@@ -11,7 +11,7 @@ module.exports = {
     Rare: 'Rare',
     Epic: 'Epic',
     Legendary: 'Legendary',
-    Mystic: 'Mystic',
+    Mythic: 'Mythic',
   },
   
   StatusEffects: {

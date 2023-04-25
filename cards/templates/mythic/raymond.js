@@ -2,7 +2,7 @@ const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
 
 const NAME = 'Raymond';
 const DESCRIPTION = 'Uncatchable.';
-const RARITY = Rarities.Mystic;
+const RARITY = Rarities.Mythic;
 const HEALTH = 1000;
 const ATTACK = 1000;
 const DEFENSE = 1000;

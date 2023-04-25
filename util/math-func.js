@@ -6,6 +6,7 @@ const RARITY_COIN_MULT = {
   [`${Rarities.Rare}`]: 2,
   [`${Rarities.Epic}`]: 4,
   [`${Rarities.Legendary}`]: 8,
+  [`${Rarities.Mythic}`]: 64,
 };
 
 module.exports = {

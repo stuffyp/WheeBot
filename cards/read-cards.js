@@ -10,12 +10,12 @@ const CARDS = {
   [`${Rarities.Rare}`]: [],
   [`${Rarities.Epic}`]: [],
   [`${Rarities.Legendary}`]: [],
-  [`${Rarities.Mystic}`]: [],
+  [`${Rarities.Mythic}`]: [],
 };
 const NAME_TO_ID = {
   
 };
-const TIERS = [Rarities.Common, Rarities.Rare, Rarities.Epic, Rarities.Legendary, Rarities.Mystic];
+const TIERS = [Rarities.Common, Rarities.Rare, Rarities.Epic, Rarities.Legendary, Rarities.Mythic];
 const ID_GAP = 1000;
 
 const templateFolder = path.join(__dirname, 'templates');
@@ -23,13 +23,13 @@ const commonFolder = path.join(templateFolder, 'common');
 const rareFolder = path.join(templateFolder, 'rare');
 const epicFolder = path.join(templateFolder, 'epic');
 const legendaryFolder = path.join(templateFolder, 'legendary');
-const mysticFolder = path.join(templateFolder, 'mystic');
+const mythicFolder = path.join(templateFolder, 'mythic');
 const rarityToFolder = {
   [`${Rarities.Common}`]: commonFolder,
   [`${Rarities.Rare}`]: rareFolder,
   [`${Rarities.Epic}`]: epicFolder,
   [`${Rarities.Legendary}`]: legendaryFolder,
-  [`${Rarities.Mystic}`]: mysticFolder,
+  [`${Rarities.Mythic}`]: mythicFolder,
 };
 
 for (const [rarity, folder] of Object.entries(rarityToFolder)) {

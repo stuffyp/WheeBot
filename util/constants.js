@@ -49,7 +49,7 @@ module.exports = {
     [`${Rarities.Rare}`]: 0x00B4D8,
     [`${Rarities.Epic}`]: 0x6930C3,
     [`${Rarities.Legendary}`]: 0xFFBA08,
-    [`${Rarities.Mystic}`]: 0xFF5733,
+    [`${Rarities.Mythic}`]: 0xFF5733,
   },
   TYPE_EMOJI: {
     [`${Types.Fire}`]: '🔴',
