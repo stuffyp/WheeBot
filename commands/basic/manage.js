@@ -27,16 +27,10 @@ module.exports = {
     }
     
     const focusedValue = formatCardID(interaction.options.getFocused());
-    const db_matches = userData.collection.filter((card) => card.id.startsWith(focusedValue)).slice(0,10).sort((card1, card2) => {
-      const diff = card1.id.localeCompare(card2.id);
-      if (diff !== 0) {
-        return diff;
-      } else {
-        return card1.level - card2.level;
-      }
-    });
+    const cardIds = [...new Set(userData.collection.map((card) => card.id))];
+    const matches = cardIds.filter((id) => id.startsWith(focusedValue)).slice(0,10).sort((id1, id2) => id1.localeCompare(id2))
     await interaction.respond(
-      db_matches.map((card) => ({ name: getCard(card.id).name + (card.level === null ? `` : ` (Level ${card.level})`), value: card.id })),
+      matches.map((id) => ({ name: getCard(id).name, value: id })),
     );
   },
   
