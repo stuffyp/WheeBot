@@ -1,4 +1,5 @@
 const { Rarities } = require('./enums.js');
+const { randRange } = require('./random.js');
 
 const RARITY_COIN_MULT = {
   [`${Rarities.Common}`]: 1,
@@ -9,6 +10,6 @@ const RARITY_COIN_MULT = {
 
 module.exports = {
   retireCoins: (rarity, level) => {
-    return Math.floor(Math.pow(level + 20, 2) * RARITY_COIN_MULT[rarity] / 400) * 100;
+    return Math.floor(Math.pow(level + 20, 2) * RARITY_COIN_MULT[rarity] * randRange(75, 125) / 400);
   }
 }
