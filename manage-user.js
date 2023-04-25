@@ -21,10 +21,10 @@ module.exports = {
     userKeys.forEach(key => {
       locks[key.slice(3)] = new Mutex();
     });
-    // await db.set('shop', {
-    //   lastUpdated: 0,
-    //   items: [],
-    // })
+    await db.set('shop', {
+      lastUpdated: 0,
+      items: [],
+    })
   }, // initializes all mutexes
   
   makeUser: (userId) => {

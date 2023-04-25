@@ -17,11 +17,11 @@ module.exports = {
     }
     return -1;
   },
-  sampleRange: (max, numSamples) => {
-    const bucket = [...Array(max).keys()];
+  sampleRange: (bucket, numSamples) => {
+    const bucketCopy = bucket.slice();
     const result = [];
     for (let i = 0; i < numSamples; i++) {
-      result.push(bucket.splice(randInt(bucket.length), 1)[0]);
+      result.push(bucketCopy.splice(randInt(bucketCopy.length), 1)[0]);
     }
     return result;
   }

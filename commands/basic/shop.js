@@ -23,7 +23,7 @@ const executeBuy = async (interaction) => {
     return;
   }
 
-  const itemID = getID(interaction.options.getString('item').trim());
+  const itemID = interaction.options.getString('item').trim().toLowerCase();
   const item = getItem(itemID);
   const quantity = interaction.options.getInteger('quantity');
 
