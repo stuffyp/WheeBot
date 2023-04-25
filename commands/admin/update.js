@@ -24,7 +24,7 @@ v1.0 template:
 */
 
 const update = {
-  '1.0': (userData) => {
+  '1.0': async (userData) => {
     // userData.items = {};
     return userData;
   },

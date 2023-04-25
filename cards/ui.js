@@ -32,11 +32,11 @@ const display = (card, level=null) => {
 
 module.exports = {
   display: display,
-  fullDisplay: ({id, level, exp}, index, collectionSize) => {
+  fullDisplay: ({id, level, exp, item}, index, collectionSize) => {
     const card = getCard(id);
-    return display(card, level).setFooter({
-      text: `Page ${index+1}/${collectionSize}`,
-    });
+    return display(card, level)
+      .addFields({ name: 'Item', value: item ?? 'No Item' })
+      .setFooter({ text: `Page ${index+1}/${collectionSize}` });
   },
   displaySlice: (collection, index, sliceSize) => {
     const rawSlice = collection.slice(index * sliceSize, index * sliceSize + sliceSize);

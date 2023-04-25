@@ -42,6 +42,7 @@ module.exports = {
     level: 1,
     exp: 0,
     fullID: fullID,
+    item: null,
   }),
 
   RARITY_COLOR: {
