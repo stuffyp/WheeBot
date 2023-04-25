@@ -40,7 +40,7 @@ module.exports = {
     const matches = cardIds
       .filter((id) => id.startsWith(focusedValue))
       .slice(0,NUM_AUTOCOMPLETE)
-      .sort((id1, id2) => id1.localeCompare(id2))
+      .sort()
     await interaction.respond(
       matches.map((id) => ({ name: getCard(id).name, value: id })),
     );
