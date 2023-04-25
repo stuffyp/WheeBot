@@ -2,8 +2,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { sampleRange } = require('../util/random.js');
 
-const ITEMS = [];
-const NAME_TO_ID = {};
+const formatItemID = (name) => name.trim().toLowerCase();
+
+const ITEMS = {};
 
 const consumables = path.join(__dirname, 'consumable');
 const equippables = path.join(__dirname, 'equippable');
@@ -22,20 +23,18 @@ for (const folder of folders) {
       console.log(`[WARNING] The item at ${filePath} is missing properties.`);
       continue;
     }
-    ITEMS.push(item);
-    NAME_TO_ID[item.name.toLowerCase()] = ITEMS.length - 1;
+    ITEMS[formatItemID(item.name)] = item;
   }
 }
 
 
 module.exports = {
   rollItems: (numItems) => {
-    const sample = sampleRange(ITEMS.length, numItems);
+    const sample = sampleRange(Object.keys(ITEMS), numItems);
     sample.sort();
     return sample;
   },
-  getItem: (id) => ITEMS[id],
-  getID: (name) => NAME_TO_ID[name.toLowerCase()],
+  getItem: (id) => ITEMS[formatItemID(id)],
 }
 
 // console.error(NAME_TO_ID);

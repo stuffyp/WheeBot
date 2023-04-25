@@ -54,4 +54,14 @@ module.exports = class Unit {
       .reduce((curStat, mod) => mod.modify(curStat, params), this.getBaseStat(stat))
     );
   }
+
+  emitEvent(event, params) {
+    const listeners = this.item ? [...this.listeners, this.item.listener] : this.listeners;
+    const output = [];
+    listeners.forEach(listener => { 
+      const out = listener.doEffect(event, params);
+      if (out) output.push(out);
+    });
+    return output;
+  }
 }

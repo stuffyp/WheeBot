@@ -35,15 +35,13 @@ module.exports = {
         return null;
       }
 
-      const cardId = getID(interaction.options.getString('card_name').trim().toLowerCase());
+      const cardId = interaction.options.getString('card_name');
+      const card = getCard(cardId);
 
-      if (!cardId) {
+      if (!card) {
         await interaction.reply('Card does not exist (try checking your spelling).')
         return null;
       }
-
-      const card = getCard(cardId);
-      
 
       let text = `You have been given a ${card.name}!`;
 

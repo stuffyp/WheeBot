@@ -10,10 +10,12 @@ const {
 const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay } = require("../../cards/ui.js");
+const { displayItemSlice } = require("../../items/ui.js");
 const { getUser, sortUser } = require("../../manage-user.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const SLICE_SIZE = 10; // number of cards at a time
+const INVENTORY_SLICE_SIZE = 10;
 
 const executeView = async (interaction) => {
   const user = interaction.user.id;
@@ -176,6 +178,46 @@ const executeStats = async (interaction) => {
   });
 }
 
+const executeInventory = async (interaction) => {
+  const user = interaction.user.id;
+  const userData = await getUser(user);
+  if (userData === null) {
+    await interaction.reply('Please register an account first.');
+    return;
+  }
+
+  if (userData.version !== VERSION_NUMBER) {
+    await interaction.reply('Please use the update command to update to the latest version of the game.');
+    return;
+  }
+  const processedItems = Object.entries(userData.items).filter(([id, quantity]) => quantity > 0);
+  if (processedItems.length === 0) {
+    await interaction.reply('Your inventory is empty.');
+    return;
+  }
+
+  const maxSliceIndex = Math.ceil(processedItems.length / INVENTORY_SLICE_SIZE) - 1;
+  let sliceIndex = 0;
+  const message = await interaction.reply({
+    embeds: [displayItemSlice(processedItems, sliceIndex, SLICE_SIZE)],
+    fetchReply: true,
+  });
+  message.react('⏮️')
+    .then(() => message.react('⬅️'))
+    .then(() => message.react('➡️'))
+    .then(() => message.react('⏭️'))
+    .catch(error => console.error('One of the emojis failed to react:', error));
+  const filter = (reaction, user) => {
+    return user.id === interaction.user.id && NAV_EMOJIS.includes(reaction.emoji.name);
+  };
+  const collector = message.createReactionCollector({ filter, time: TIME_LIMIT });
+
+  collector.on('collect', (reaction) => {
+    sliceIndex = handleNav(reaction, sliceIndex, maxSliceIndex);
+    interaction.editReply({ embeds: [displayItemSlice(processedItems, sliceIndex, SLICE_SIZE)]});
+  });
+}
+
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -189,6 +231,10 @@ module.exports = {
       subcommand
         .setName('party')
         .setDescription('View your party'))
+    .addSubcommand(subcommand =>
+      subcommand
+        .setName('inventory')
+        .setDescription('View your inventory'))
     .addSubcommand(subcommand =>
       subcommand
         .setName('collection')
@@ -228,6 +274,9 @@ module.exports = {
         break;
       case 'stats':
         executeStats(interaction);
+        break;
+      case 'inventory':
+        executeInventory(interaction);
         break;
       default:
         console.error(`An unknown subcommand was registered: ${interaction.options.getSubcommand()}`);

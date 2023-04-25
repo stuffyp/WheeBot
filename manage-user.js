@@ -6,6 +6,7 @@ const { SortBy } = require('./util/enums.js');
 
 const { SHOP_SIZE, SHOP_REFRESH } = require('./util/constants.js');
 const { rollItems } = require('./items/read-items.js');
+const { getRarity } = require('./cards/read-cards.js');
 
 
 const idToKey = userId => '_u_' + userId;
@@ -56,22 +57,26 @@ module.exports = {
       switch (sortBy) {
         case SortBy.ID:
           userData.collection = userData.collection.sort((a, b) => {
-            return (a.id === b.id) ? a.level - b.level : a.id - b.id;
+            const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+            return aRarity - bRarity || a.id.localeCompare(b.id) || a.level - b.level;
           });
           break;
         case SortBy.ID_r:
           userData.collection = userData.collection.sort((a, b) => {
-            return (a.id === b.id) ? b.level - a.level : b.id - a.id;
+            const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+            return bRarity - aRarity || b.id.localeCompare(a.id) || b.level - a.level;
           });
           break;
         case SortBy.Level:
           userData.collection = userData.collection.sort((a, b) => {
-            return (a.level === b.level) ? a.id - b.id : a.level - b.level;
+            const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+            return a.level - b.level || aRarity - bRarity || a.id.localeCompare(b.id);
           });
           break;
         case SortBy.Level_r:
           userData.collection = userData.collection.sort((a, b) => {
-            return (a.level === b.level) ? b.id - a.id : b.level - a.level;
+            const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+            return b.level - a.level || bRarity - aRarity || b.id.localeCompare(a.id);
           });
           break;
         default:
