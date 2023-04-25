@@ -1,4 +1,4 @@
-const { Stats } = require('../util/enums.js');
+const { Stats, Events } = require('../util/enums.js');
 
 module.exports = class Unit {
   name;
@@ -14,6 +14,7 @@ module.exports = class Unit {
   listeners;
   status; // status effect - unique
   item; // item - unique
+  log; // string output of what this unit does in a turn
   constructor(card, item=null) {
     this.name = card.name;
     this.health = card.health;
@@ -28,6 +29,7 @@ module.exports = class Unit {
     this.listeners = [];
     this.status = null;
     this.item = item;
+    this.log = [];
   }
 
   getBaseStat(stat) {
@@ -57,11 +59,16 @@ module.exports = class Unit {
 
   emitEvent(event, params) {
     const listeners = this.item ? [...this.listeners, this.item.listener] : this.listeners;
-    const output = [];
     listeners.forEach(listener => { 
       const out = listener.doEffect(event, params);
-      if (out) output.push(out);
+      if (out) this.log.push(out);
     });
     return output;
+  }
+
+  startTurn() {
+    this.log = [];
+    this.emitEvent(Events.StartTurn, {});
+    
   }
 }

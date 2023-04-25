@@ -5,8 +5,13 @@ module.exports = class Modifier {
   
   stat;
   modify;
-  constructor(stat, modify) {
+  
+  duration;
+  turnCount;
+  constructor(stat, modify, duration) {
     this.stat = stat;
     this.modify = modify;
+    this.duration = duration;
+    this.turnCount = 0;
   }
 }

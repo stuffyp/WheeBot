@@ -4,8 +4,13 @@ module.exports = class Listener {
   triggers;
   doEffect; // returns any relevant text output
   name;
-  constructor(triggers, doEffect, name=null) {
+  
+  duration;
+  turnCount;
+  constructor(triggers, doEffect, duration, name=null) {
     this.triggers = triggers;
+    this.duration = duration;
+    this.turnCount = 0;
     this.name = name;
     this.doEffect = (event, params) => {
       if (triggers.includes(event)) return doEffect(params);

@@ -249,7 +249,7 @@ module.exports = {
           });
           break;
 
-        case 'unequip': // UNTESTED
+        case 'unequip':
           reactionCollector.stop();
           buttonCollector.stop();
           await updateUser(user, async (userData) => {
