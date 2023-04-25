@@ -9,7 +9,7 @@ const {
 } = require("../../util/constants.js");
 const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
-const { displaySlice, fullDisplay } = require("../../cards/ui.js");
+const { displaySlice, fullDisplay, imageDisplay } = require("../../cards/ui.js");
 const { displayItemSlice } = require("../../items/ui.js");
 const { getUser, sortUser } = require("../../manage-user.js");
 
@@ -78,8 +78,10 @@ const executeDetailed = async (interaction) => {
 
   let cardIndex = 0;
   const maxCardIndex = userData.collection.length - 1;
+  const [embed, file] = imageDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length);
   const message = await interaction.reply({
-    embeds: [fullDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length)],
+    embeds: [embed],
+    files: [file],
     fetchReply: true,
   });
   message.react('⏮️')
@@ -96,8 +98,10 @@ const executeDetailed = async (interaction) => {
 
   collector.on('collect', (reaction) => {
     cardIndex = handleNav(reaction, cardIndex, maxCardIndex);
+    const [embed, file] = imageDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length);
     interaction.editReply({
-      embeds: [fullDisplay(userData.collection[cardIndex], cardIndex, userData.collection.length)],
+      embeds: [embed],
+      files: [file],
     });
   });
 }

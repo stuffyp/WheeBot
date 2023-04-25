@@ -2,6 +2,7 @@ const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
 
 const NAME = 'Milkshake';
 const DESCRIPTION = 'Tastes good.';
+const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Epic;
 const HEALTH = 100;
 const ATTACK = 50;
@@ -34,6 +35,6 @@ const foo = {
 
 const ABILITIES = [brainFreeze, foo];
 
-const HEADER = [NAME, DESCRIPTION, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
+const HEADER = [NAME, DESCRIPTION, IMAGE_SRC, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
 
 module.exports = new Card(...HEADER);

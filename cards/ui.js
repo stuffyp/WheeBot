@@ -4,12 +4,18 @@ const { Rarities } = require('../util/enums.js');
 const Card = require('./card.js');
 const { getCard } = require("./read-cards.js");
 
+const path = require('node:path');
+
 const RARITY_TO_EMOJI = {
   [`${Rarities.Common}`]: '🟩',
   [`${Rarities.Rare}`]: '🟦',
   [`${Rarities.Epic}`]: '🟪',
   [`${Rarities.Legendary}`]: '🟨',
 };
+
+const imageFolder = path.join(path.dirname(__dirname), 'images');
+// console.error(imageFolder);
+const getImagePath = (imageSrc) => path.join(imageFolder, imageSrc);
 
 const display = (card, level=null) => {
   const abilities = card.abilities.map((ability) => {
@@ -30,6 +36,7 @@ const display = (card, level=null) => {
     .addFields(abilities)
 }
 
+
 module.exports = {
   display: display,
   fullDisplay: ({id, level, exp, item}, index, collectionSize) => {
@@ -37,6 +44,16 @@ module.exports = {
     return display(card, level)
       .addFields({ name: 'Item', value: item ?? 'No Item' })
       .setFooter({ text: `Page ${index+1}/${collectionSize}` });
+  },
+  imageDisplay: ({id, level, exp, item}, index, collectionSize) => {
+    const card = getCard(id);
+    return [
+      display(card, level)
+        .addFields({ name: 'Item', value: item ?? 'No Item' })
+        .setImage(`attachment://${card.imageSrc}`)
+        .setFooter({ text: `Page ${index+1}/${collectionSize}` }),
+      getImagePath(card.imageSrc),
+    ];
   },
   displaySlice: (collection, index, sliceSize) => {
     const rawSlice = collection.slice(index * sliceSize, index * sliceSize + sliceSize);
