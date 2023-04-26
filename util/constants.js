@@ -32,6 +32,7 @@ module.exports = {
       freeRolls: 5,
       coins: 0,
       elo: STARTING_ELO,
+      guessElo: 1000,
     },
     idSeed: 12345,
     version: VERSION_NUMBER,
