@@ -126,7 +126,7 @@ module.exports = class Unit {
       this.item.listeners.forEach(listener => { listener.timer.tick() });
       this.item.modifiers.forEach(modifier => { modifier.timer.tick() });
     }
-    this.emitEvent(Events.StartTurn, params);
+    this.emitEvent(Events.TurnStart, params);
   }
 
   #cleanUpTimers(arr, params) {
@@ -146,7 +146,7 @@ module.exports = class Unit {
   }
 
   endTurn(params) {
-    this.emitEvent(Events.EndTurn, params);
+    this.emitEvent(Events.TurnEnd, params);
     this.cleanUpTimers(this.listeners, params);
     this.cleanUpTimers(this.modifiers, params);
     if (this.item) {
