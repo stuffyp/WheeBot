@@ -17,7 +17,7 @@ const hydrate = {
   level: 5,
   type: Types.Water,
   priority: 0,
-  execute: (self, target, gameState) => {
+  execute: (params) => {
     // pass
   },
 };

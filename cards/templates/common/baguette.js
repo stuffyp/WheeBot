@@ -17,7 +17,7 @@ const harden = {
   level: 5,
   type: Types.None,
   priority: 0,
-  execute: (self, target, gameState) => {
+  execute: (params) => {
     // pass
   },
 };

@@ -2,13 +2,19 @@ const Listener = require('./listener.js');
 const Modifier = require('./modifier.js');
 
 module.exports = class ItemBuilder {
-  listener;
-  modifier;
+  listeners;
+  modifiers;
+  consume;
+  name;
   constructor() {
-    this.listener = Listener.emptyListener;
-    this.modifier = Modifier.emptyModifier;
+    this.listeners = [];
+    this.modifiers = [];
+    this.name = '0xDEADBEEF'; // should be modified
+    this.consume = (params) => { return; };
   }
 
-  setListener(listener) { this.listener = listener; }
-  setModifier(modifier) { this.modifier = modifier; }
+  addListener(params) { this.listeners.push(new Listener(params)); return this; }
+  addModifier(params) { this.modifiers.push(new Modifier(params)); return this; }
+  setConsume(consume) { this.consume = consume; return this; }
+  setName(name) { this.name = name; return this; }
 }

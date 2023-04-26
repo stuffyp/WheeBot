@@ -1,17 +1,16 @@
 const { Stats } = require('../util/enums.js');
+const Timer = require('./timer.js');
 
 module.exports = class Modifier {
-  static emptyModifier = new Modifier(Stats.None, () => { return; });
+  static emptyModifier = new Modifier(Stats.None, () => { return });
   
   stat;
   modify;
   
-  duration;
-  turnCount;
-  constructor(stat, modify, duration) {
-    this.stat = stat;
-    this.modify = modify;
-    this.duration = duration;
-    this.turnCount = 0;
+  timer;
+  constructor(params) {
+    this.stat = params.stat;
+    this.modify = params.modify;
+    this.timer = new Timer(params.duration, params.onFinish);
   }
 }

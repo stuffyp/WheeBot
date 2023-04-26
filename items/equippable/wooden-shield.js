@@ -1,11 +1,18 @@
 const { Stats, ItemBuilder } = require('../imports.js');
 
+const NAME = "Wooden Shield";
+
 module.exports = {
-  name: "Wooden Shield",
+  name: NAME,
   description: "Increases defense by 20%",
   cost: 500,
-  item: new ItemBuilder().setModifier(
-    Stats.Defense,
-    (def, params) => def * 1.2,
-  ),
+  item: new ItemBuilder()
+    .setName(NAME)
+    .addModifier({
+      stat: Stats.Defense,
+      duration: Infinity,
+      modify: (def, params) => def * 1.2,
+    }),
 }
+
+console.error(module.exports.item);

@@ -28,7 +28,7 @@ const foo = {
   level: 5,
   type: Types.Shock,
   priority: 0,
-  execute: (self, target, gameState) => {
+  execute: (params) => {
     // pass
   },
 };
