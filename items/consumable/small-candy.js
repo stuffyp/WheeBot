@@ -17,5 +17,3 @@ module.exports = {
   cost: 100,
   item: new ItemBuilder().setName(NAME).setConsume(consume),
 }
-
-console.error(module.exports.item);

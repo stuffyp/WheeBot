@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { MS_SECOND } = require('./constants.js');
+const { MS_SECOND, VERSION_NUMBER } = require('./constants.js');
 
 const TIMEOUT = 30 * MS_SECOND;
 
@@ -66,5 +66,23 @@ module.exports = {
       if (deleteReply) await interaction.deleteReply();
       return returnValue;
     }
-  }
+  },
+
+  validateUser: async (userData, interaction) => {
+    if (userData === null) {
+      await interaction.reply({
+        content: 'Please register an account first.',
+        ephemeral: true,
+      });
+      return false;
+    }
+    if (userData.version !== VERSION_NUMBER) {
+      await interaction.reply({
+        conent: 'Please use the update command to update to the latest version of the game.',
+        ephemeral: true,
+      });
+      return false;
+    }
+    return true;
+  },
 }

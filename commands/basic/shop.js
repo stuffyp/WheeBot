@@ -6,6 +6,7 @@ const {
 const { displayShop } = require("../../items/ui.js");
 const { formatItemID, getItem } = require("../../items/read-items.js");
 const { getUser, getShop, updateUser } = require("../../manage-user.js");
+const { validateUser } = require("../../util/ui-logic.js");
 
 
 const executeView = async (interaction) => {
@@ -18,10 +19,8 @@ const executeView = async (interaction) => {
 const executeBuy = async (interaction) => {
   const user = interaction.user.id;
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
+  const success = await validateUser(userData, interaction);
+  if (!success) return;
 
   const itemID = formatItemID(interaction.options.getString('item'));
   const item = getItem(itemID);

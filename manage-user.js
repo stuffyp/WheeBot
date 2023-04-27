@@ -8,6 +8,8 @@ const { SHOP_SIZE, SHOP_REFRESH } = require('./util/constants.js');
 const { rollItems } = require('./items/read-items.js');
 const { getRarity } = require('./cards/read-cards.js');
 
+const { generateBattle } = require('./combat/combat-handler.js');
+
 
 const idToKey = userId => '_u_' + userId;
 const locks = {};
@@ -98,5 +100,26 @@ module.exports = {
       });
     }
     return shop;
-  }
+  },
+
+
+  syncCombat: async (user1, user2) => {
+    const u1 = user1 < user2 ? user1 : user2;
+    const u2 = user1 < user2 ? user2 : user1; // deterministic ordering of mutex requests to avoid deadlock
+    let success = false;
+    await locks[u1].runExclusive(async () => {
+      await locks[u2].runExclusive(async () => {
+        const userData1 = await db.get(idToKey(u1));
+        const userData2 = await db.get(idToKey(u2));
+        if (userData1.combatID || userData2.combatID) return;
+        const combatID = generateBattle();
+        userData1.combatID = combatID;
+        userData2.combatID = combatID;
+        await db.set(idToKey(u1), userData1);
+        await db.set(idToKey(u2), userData2);
+        success = true;
+      });
+    });
+    return success;
+  },
 }

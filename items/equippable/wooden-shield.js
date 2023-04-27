@@ -14,5 +14,3 @@ module.exports = {
       modify: (def, params) => def * 1.2,
     }),
 }
-
-console.error(module.exports.item);

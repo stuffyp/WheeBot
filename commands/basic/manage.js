@@ -10,7 +10,7 @@ const { fullDisplay } = require("../../cards/ui.js");
 const { formatCardID, getCard } = require("../../cards/read-cards.js");
 const { formatItemID, getItem } = require("../../items/read-items.js");
 const { VERSION_NUMBER, MS_MINUTE, PARTY_SIZE } = require("../../util/constants.js");
-const { FULL_NAV_EMOJIS, handleNav, askConfirmation } = require("../../util/ui-logic.js");
+const { FULL_NAV_EMOJIS, handleNav, askConfirmation, validateUser } = require("../../util/ui-logic.js");
 const { retireCoins } = require("../../util/math-func.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
@@ -49,14 +49,8 @@ module.exports = {
 	async execute(interaction) {
     const user = interaction.user.id;
     const userData = await getUser(user);
-    if (userData === null) {
-      await interaction.reply('Please register an account first.');
-      return;
-    }
-    if (userData.version !== VERSION_NUMBER) {
-      await interaction.reply('Please use the update command to update to the latest version of the game.');
-      return;
-    }
+    const success = await validateUser(userData, interaction);
+    if (!success) return;
 
     const cardID = formatCardID(interaction.options.getString('card_name'));
     const subcollection = userData.collection.filter((card) => card.id === cardID);

@@ -7,7 +7,7 @@ const {
   PARTY_SIZE,
   COLLECTION_SIZE,
 } = require("../../util/constants.js");
-const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav } = require("../../util/ui-logic.js");
+const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav, validateUser } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay, imageDisplay } = require("../../cards/ui.js");
 const { displayItemSlice } = require("../../items/ui.js");
@@ -21,15 +21,7 @@ const executeView = async (interaction) => {
   const user = interaction.user.id;
   await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
-
-  if (userData.version !== VERSION_NUMBER) {
-    await interaction.reply('Please use the update command to update to the latest version of the game.');
-    return;
-  }
+  await validateUser(userData, interaction);
   if (userData.collection.length === 0) {
     await interaction.reply('Your collection is empty.');
     return;
@@ -62,15 +54,8 @@ const executeDetailed = async (interaction) => {
   const user = interaction.user.id;
   await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
-
-  if (userData.version !== VERSION_NUMBER) {
-    await interaction.reply('Please use the update command to update to the latest version of the game.');
-    return;
-  }
+  const success = await validateUser(userData, interaction);
+  if (!success) return;
   if (userData.collection.length === 0) {
     await interaction.reply('Your collection is empty.');
     return;
@@ -110,15 +95,8 @@ const executeDetailed = async (interaction) => {
 const executeParty = async (interaction) => {
   const user = interaction.user.id;
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
-
-  if (userData.version !== VERSION_NUMBER) {
-    await interaction.reply('Please use the update command to update to the latest version of the game.');
-    return;
-  }
+  const success = await validateUser(userData, interaction);
+  if (!success) return;
   if (userData.party.length === 0) {
     await interaction.reply('Your party is empty.');
     return;
@@ -153,10 +131,8 @@ const executeParty = async (interaction) => {
 const executeStats = async (interaction) => {
   const user = interaction.user.id;
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
+  const success = await validateUser(userData, interaction);
+  if (!success) return;
 
   const timeUntil = userData.stats.lastRoll + ROLL_COOLDOWN - Date.now();
   const hoursUntil = Math.floor(timeUntil / MS_HOUR);
@@ -185,15 +161,8 @@ const executeStats = async (interaction) => {
 const executeInventory = async (interaction) => {
   const user = interaction.user.id;
   const userData = await getUser(user);
-  if (userData === null) {
-    await interaction.reply('Please register an account first.');
-    return;
-  }
-
-  if (userData.version !== VERSION_NUMBER) {
-    await interaction.reply('Please use the update command to update to the latest version of the game.');
-    return;
-  }
+  const success = await validateUser(userData, interaction);
+  if (!success) return;
   const processedItems = Object.entries(userData.items).map(([id, quantity]) => (
     [id, quantity - userData.collection.filter((c) => c.item === id).length]
   )).filter(([id, quantity]) => quantity > 0);

@@ -10,6 +10,7 @@ const {
   COLLECTION_SIZE,
   CARD_DB_TEMPLATE,
 } = require("../../util/constants.js");
+const { validateUser } = require("../../util/ui-logic.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,14 +19,8 @@ module.exports = {
 	async execute(interaction) {
     const user = interaction.user.id;
     const userData = await getUser(user);
-    if (userData === null) {
-      await interaction.reply('Please register an account first.');
-      return;
-    }
-    if (userData.version !== VERSION_NUMBER) {
-      await interaction.reply('Please use the update command to update to the latest version of the game.');
-      return;
-    }
+    const success = await validateUser(userData, interaction);
+    if (!success) return;
     
     const timeUntil = userData.stats.lastRoll + ROLL_COOLDOWN - Date.now();
     const hoursUntil = Math.floor(timeUntil / MS_HOUR);
