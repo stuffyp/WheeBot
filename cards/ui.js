@@ -3,6 +3,7 @@ const { RARITY_COLOR, TYPE_EMOJI } = require('../util/constants.js');
 const { Rarities } = require('../util/enums.js');
 const Card = require('./card.js');
 const { getCard } = require("./read-cards.js");
+const { getItem } = require("../items/read-items.js");
 
 const path = require('node:path');
 
@@ -42,14 +43,14 @@ module.exports = {
   fullDisplay: ({id, level, exp, item}, index, collectionSize) => {
     const card = getCard(id);
     return display(card, level)
-      .addFields({ name: 'Item', value: item ?? 'No Item' })
+      .addFields({ name: 'Item', value: item ? getItem(item).name : 'No Item' })
       .setFooter({ text: `Page ${index+1}/${collectionSize}` });
   },
   imageDisplay: ({id, level, exp, item}, index, collectionSize) => {
     const card = getCard(id);
     return [
       display(card, level)
-        .addFields({ name: 'Item', value: item ?? 'No Item' })
+        .addFields({ name: 'Item', value: item ? getItem(item).name : 'No Item' })
         .setImage(`attachment://${card.imageSrc}`)
         .setFooter({ text: `Page ${index+1}/${collectionSize}` }),
       getImagePath(card.imageSrc),

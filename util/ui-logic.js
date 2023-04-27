@@ -85,4 +85,8 @@ module.exports = {
     }
     return true;
   },
+
+  parseParty: (userData) => {
+    return userData.party.map((fullID) => userData.collection.find((c) => c.fullID == fullID));
+  }
 }

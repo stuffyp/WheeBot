@@ -26,14 +26,14 @@ const executeStart = async (interaction) => {
   const success = await validateUser(userData, interaction);
   if (!success) return;
   if (userData.party.length === 0) {
-    await i.reply({
+    await interaction.reply({
       content: 'Your party is too small (use /manage to add cards to your party).',
       ephemeral: true,
     });
     return;
   }
   if (userData.combatID) {
-    await i.reply({
+    await interaction.reply({
       content: 'You are already in a battle.',
       ephemeral: true,
     });
@@ -82,7 +82,7 @@ const executeStart = async (interaction) => {
       content: `${i.user.username} accepted ${interaction.user.username}'s challenge!`,
       components: [],
     });
-    startBattle(user, otherUser);
+    startBattle(user, otherUser, interaction.user.username, i.user.username, interaction.channel);
   });
   
 }

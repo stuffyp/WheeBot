@@ -8,7 +8,7 @@ const { SHOP_SIZE, SHOP_REFRESH } = require('./util/constants.js');
 const { rollItems } = require('./items/read-items.js');
 const { getRarity } = require('./cards/read-cards.js');
 
-const { generateBattle } = require('./combat/combat-handler.js');
+const { generateBattle } = require('./combat/battle-storage.js');
 
 
 const idToKey = userId => '_u_' + userId;

@@ -21,7 +21,7 @@ module.exports = {
   
   ROLL_COOLDOWN: 0,//12 * MS_HOUR,
   COLLECTION_SIZE: 200,
-  PARTY_SIZE: 8,
+  PARTY_SIZE: 7,
   
   USER_TEMPLATE: {
     collection: [],

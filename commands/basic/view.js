@@ -7,7 +7,7 @@ const {
   PARTY_SIZE,
   COLLECTION_SIZE,
 } = require("../../util/constants.js");
-const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav, validateUser } = require("../../util/ui-logic.js");
+const { NAV_EMOJIS, FULL_NAV_EMOJIS, handleNav, validateUser, parseParty } = require("../../util/ui-logic.js");
 const { SortBy } = require("../../util/enums.js");
 const { displaySlice, fullDisplay, imageDisplay } = require("../../cards/ui.js");
 const { displayItemSlice } = require("../../items/ui.js");
@@ -102,7 +102,7 @@ const executeParty = async (interaction) => {
     return;
   }
 
-  const party = userData.party.map((fullID) => userData.collection.find((c) => c.fullID == fullID));
+  const party = parseParty(userData);
   let cardIndex = 0;
   const maxCardIndex = party.length - 1;
   const message = await interaction.reply({
