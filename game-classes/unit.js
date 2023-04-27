@@ -67,8 +67,8 @@ module.exports = class Unit {
     this.log = (text) => { console.error(`${this.name} logging into the void!`) };
   }
 
-  setItem(item) { this.item = item }
-  setLog(log) { this.log = log }
+  setItem(item) { this.item = item; return this; }
+  setLog(log) { this.log = log; return this; }
 
   knockedOut() { return this.health <= 0; }
   knockOut() { 

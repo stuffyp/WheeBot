@@ -5,6 +5,7 @@ const { parseParty } = require('../util/ui-logic.js');
 const { PARTY_SIZE } = require('../util/constants.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
+const GameMaster = require('../game-classes/game-master.js');
 
 const endBattle = async (userId) => {
   activeBattles = getBattles();
@@ -19,8 +20,13 @@ const endBattle = async (userId) => {
 const startBattle = async (user1, user2, name1, name2, channel) => {
   const userData1 = await getUser(user1);
   const userData2 = await getUser(user2);
-  const party1 = parseParty(userData1);
-  const party2 = parseParty(userData2);
+  const gm = new GameMaster()
+    .loadUser(user1, name1)
+    .loadUser(user2, name2)
+  parseParty(userData1).reduce((cur, card) => cur.loadUnit(card, user1), gm);
+  parseParty(userData2).reduce((cur, card) => cur.loadUnit(card, user2), gm);
+
+  //TODO: delete
   const partyFields = []
   const numRows = Math.min(PARTY_SIZE, Math.max(party1.length, party2.length));
   for (let i = 0; i < numRows; i++ ) {
