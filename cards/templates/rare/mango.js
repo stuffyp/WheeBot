@@ -14,7 +14,7 @@ const TYPES = [Types.Plant];
 const foo = {
   name: 'Foo', 
   description: 'bar',
-  level: 5,
+  level: 1,
   type: Types.Plant,
   priority: 0,
   execute: (params) => {

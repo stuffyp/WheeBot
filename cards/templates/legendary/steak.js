@@ -14,7 +14,7 @@ const TYPES = [Types.Fire, Types.Beast];
 const wellDone = {
   name: 'Well Done', 
   description: 'Description',
-  level: 5,
+  level: 1,
   type: Types.Fire,
   priority: 0,
   execute: (params) => {

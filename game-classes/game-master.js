@@ -5,11 +5,15 @@ const Unit = require('./unit.js');
 module.exports = class GameMaster {
   users;
   units;
+  activeUnits;
   log;
-  constructor() {
+  channel;
+  constructor(channel) {
     this.users = [];
     this.units = {};
+    this.activeUnits = {};
     this.log = [];
+    this.channel = channel;
   }
 
   loadUser(id, name) {
@@ -18,6 +22,7 @@ module.exports = class GameMaster {
       name: name,
     });
     this.units[id] = [];
+    this.activeUnits[id] = [];
     return this;
   }
 
@@ -26,7 +31,7 @@ module.exports = class GameMaster {
   }
 
   getLog() {
-    const out = this.log.join('\n');
+    const out = this.log;
     this.log = [];
     return out;
   }
@@ -40,8 +45,15 @@ module.exports = class GameMaster {
       exp: exp,
       unit: new Unit(getCard(id))
         .setItem(item ? getItem(item).item : null)
-        .setLog((text) => this.log.push(text)),
+        .setLog((text) => this.log.push(text))
+        .setLevel(level),
     });
     return this;
+  }
+
+  setActiveUnit(userId, fullID) {
+    const unit = this.units[userId].find(u => u.fullID === fullID);
+    this.activeUnits[userId].push(unit);
+    this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
   }
 }

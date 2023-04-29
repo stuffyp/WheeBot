@@ -14,7 +14,7 @@ const TYPES = [Types.Water];
 const hydrate = {
   name: 'Hydrate', 
   description: 'Description',
-  level: 5,
+  level: 1,
   type: Types.Water,
   priority: 0,
   execute: (params) => {

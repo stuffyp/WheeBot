@@ -21,6 +21,7 @@ log: callback function to log a string describing what the unit does (e.g. "uses
 MUST BE CALLED AFTER INITIALIZATION:
 setItem(item): sets item to item
 setLog(item): sets log to the new callback function
+setLevel(level): sets level to level
 
 knockedOut(): returns whether health <= 0
 knockOut(): logs that the unit has been knocked out and performs clean up
@@ -69,6 +70,10 @@ module.exports = class Unit {
 
   setItem(item) { this.item = item; return this; }
   setLog(log) { this.log = log; return this; }
+  setLevel(level) {
+    this.abilities = this.abilities.filter((ability) => ability.level <= level);
+    return this;
+  }
 
   knockedOut() { return this.health <= 0; }
   knockOut() { 

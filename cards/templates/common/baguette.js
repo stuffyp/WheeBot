@@ -14,7 +14,7 @@ const TYPES = [Types.Earth];
 const harden = {
   name: 'Harden', 
   description: 'Description',
-  level: 5,
+  level: 1,
   type: Types.None,
   priority: 0,
   execute: (params) => {

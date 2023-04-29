@@ -3,6 +3,7 @@ const { MS_MINUTE } = require("../../util/constants.js");
 const { getUser, updateUser, syncCombat } = require("../../manage-user.js");
 const { validateUser } = require("../../util/ui-logic.js");
 const { startBattle } = require("../../combat/combat-handler.js");
+const { getCombatID, refreshBattles } = require("../../combat/battle-storage.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 
@@ -32,7 +33,8 @@ const executeStart = async (interaction) => {
     });
     return;
   }
-  if (userData.combatID) {
+  refreshBattles();
+  if (getCombatID(user)) {
     await interaction.reply({
       content: 'You are already in a battle.',
       ephemeral: true,

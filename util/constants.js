@@ -34,7 +34,6 @@ module.exports = {
       elo: STARTING_ELO,
     },
     idSeed: 12345,
-    combatID: null, // id of active combat
     version: VERSION_NUMBER,
   },
 

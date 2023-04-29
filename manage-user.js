@@ -8,7 +8,7 @@ const { SHOP_SIZE, SHOP_REFRESH } = require('./util/constants.js');
 const { rollItems } = require('./items/read-items.js');
 const { getRarity } = require('./cards/read-cards.js');
 
-const { generateBattle } = require('./combat/battle-storage.js');
+const { generateBattle, getCombatID, setCombatID } = require('./combat/battle-storage.js');
 
 
 const idToKey = userId => '_u_' + userId;
@@ -109,14 +109,10 @@ module.exports = {
     let success = false;
     await locks[u1].runExclusive(async () => {
       await locks[u2].runExclusive(async () => {
-        const userData1 = await db.get(idToKey(u1));
-        const userData2 = await db.get(idToKey(u2));
-        if (userData1.combatID || userData2.combatID) return;
+        if (getCombatID(u1) || getCombatID(u2)) return;
         const combatID = generateBattle();
-        userData1.combatID = combatID;
-        userData2.combatID = combatID;
-        await db.set(idToKey(u1), userData1);
-        await db.set(idToKey(u2), userData2);
+        setCombatID(u1, combatID);
+        setCombatID(u2, combatID);
         success = true;
       });
     });

@@ -14,7 +14,7 @@ const TYPES = [Types.Water, Types.Plant];
 const brainFreeze = {
   name: 'Brain Freeze', 
   description: 'Description',
-  level: 5,
+  level: 1,
   type: Types.Water,
   priority: 0,
   execute: (self, target, gameState) => {
