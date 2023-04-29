@@ -2,7 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = re
 const { MS_MINUTE } = require("../../util/constants.js");
 const { getUser, updateUser, syncCombat } = require("../../manage-user.js");
 const { validateUser } = require("../../util/ui-logic.js");
-const { startBattle } = require("../../combat/combat-handler.js");
+const { startBattle } = require("../../combat/combat-setup.js");
 const { getCombatID, refreshBattles } = require("../../combat/battle-storage.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;

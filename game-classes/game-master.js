@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
 const Unit = require('./unit.js');
@@ -55,5 +56,22 @@ module.exports = class GameMaster {
     const unit = this.units[userId].find(u => u.fullID === fullID);
     this.activeUnits[userId].push(unit);
     this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
+  }
+
+  display() {
+    const fields = this.users.map(({id, name}) => {
+      return [
+        { name: name, value: '\u200B' },
+        ...this.activeUnits[id].map((u) => {
+          return ({
+            name: u.unit.name,
+            value: `❤️: ${u.unit.health}/${u.unit.maxHealth}`,
+            inline: true,
+          });
+        }),
+      ];
+    }).flat();
+    return new EmbedBuilder()
+      .addFields(fields);
   }
 }

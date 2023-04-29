@@ -8,7 +8,10 @@ const teamSelect = async (interaction) => {
   const user = interaction.user.id;
   const battle = getBattle(getCombatID(user));
   if (battle.readyUsers.includes(user)) {
-    await interaction.reply('Oops! It looks like this command is out of sync. Aborting.');
+    await interaction.reply({
+      content: 'Oops! It seems you have already chosen a team.',
+      ephemeral: true,
+    });
     return false;
   }
   const gm = battle.GM;

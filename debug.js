@@ -1,6 +1,6 @@
 const { Rarities } = require('./util/enums.js');
 const Database = require("@replit/database");
 const db = new Database();
-const { startBattle } = require('./combat/combat-handler.js');
+const { startBattle } = require('./combat/combat-setup.js');
 
-//pass
+startBattle('<idhere>', '<otheridhere>', 'a', 'b', 'c');
