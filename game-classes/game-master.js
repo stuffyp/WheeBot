@@ -59,19 +59,17 @@ module.exports = class GameMaster {
   }
 
   display() {
-    const fields = this.users.map(({id, name}) => {
-      return [
-        { name: name, value: '\u200B' },
-        ...this.activeUnits[id].map((u) => {
+    const embeds = this.users.map(({id, name}) => {
+      return new EmbedBuilder()
+        .setTitle(name)
+        .addFields(this.activeUnits[id].map((u) => {
           return ({
             name: u.unit.name,
             value: `❤️: ${u.unit.health}/${u.unit.maxHealth}`,
             inline: true,
           });
-        }),
-      ];
-    }).flat();
-    return new EmbedBuilder()
-      .addFields(fields);
+        }))
+    });
+    return embeds;
   }
 }

@@ -18,9 +18,9 @@ const generateBattle = () => {
   activeBattles[combatID] = {
     lastUpdated: Date.now(),
     combatID: combatID,
-    inProgress: false,
     users: [],
     readyUsers: [],
+    listeners: [],
     GM: null,
   }; // placeholder
   return combatID;
@@ -34,8 +34,7 @@ const endBattle = (combatID) => {
   });
 }
 
-const trueStartBattle = (combatID) => { 
-  activeBattles[combatID].inProgress = true;
+const updateBattle = (combatID) => { 
   activeBattles[combatID].lastUpdated = Date.now();
 };
 
@@ -54,13 +53,41 @@ const setCombatID = (userId, combatID) => {
   activeBattles[combatID].users.push(userId);
 }
 
+const readyUser = (userId) => {
+  const combatID = userToCombatID[userId];
+  if (combatID === null) return;
+  const battle = activeBattles[combatID];
+  if (battle && !battle.readyUsers.includes(userId)) battle.readyUsers.push(userId);
+  if (battle.readyUsers.length >= 2) {
+    battle.listeners.forEach((resolve) => {
+      resolve();
+    });
+    battle.listeners = [];
+    battle.readyUsers = [];
+  }
+}
+
+const waitReady = (combatId) => {
+  return new Promise((resolve, reject) => {
+    activeBattles[combatId].listeners.push(() => { resolve() });
+    setTimeout(() => { reject() }, TIMEOUT);
+  });
+}
+
+const dump = () => {
+  return activeBattles;
+}
+
 module.exports = {
   generateBattle,
   endBattle,
   getCombatID,
   setCombatID,
   getBattle,
-  trueStartBattle,
+  updateBattle,
   setGM,
   refreshBattles,
+  readyUser,
+  waitReady,
+  dump,
 }

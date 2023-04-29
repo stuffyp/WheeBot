@@ -1,19 +1,12 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
-const { getCombatID, getBattle } = require('./battle-storage.js');
+const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
 
-const TIMEOUT = 3 * MS_MINUTE;
+const TIMEOUT = 5 * MS_MINUTE;
 
 const teamSelect = async (interaction) => {
   const user = interaction.user.id;
   const battle = getBattle(getCombatID(user));
-  if (battle.readyUsers.includes(user)) {
-    await interaction.reply({
-      content: 'Oops! It seems you have already chosen a team.',
-      ephemeral: true,
-    });
-    return false;
-  }
   const gm = battle.GM;
   const party = gm.units[user];
 
@@ -37,30 +30,28 @@ const teamSelect = async (interaction) => {
     ephemeral: true,
   });
 
-  const filter = i => i.user.id === interaction.user.id;
+  const filter = i => i.customId === 'select' && i.user.id === interaction.user.id;
+  let confirmation = null;
   try {
-  	const confirmation = await message.awaitMessageComponent({ filter: filter, time: TIMEOUT });
-    if (battle.readyUsers.includes(user)) {
-      confirmation.deferUpdate();
-      interaction.editReply({ 
-        content: 'Oops! It looks like this command is out of sync. Aborting.', 
-        components: [], 
-        ephemeral: true 
-      });
-      return false;
-    }
-    const values = confirmation.values.map((s) => parseInt(s));
-    values.forEach((fullID) => {
-      gm.setActiveUnit(user, fullID);
-    });
-    battle.readyUsers.push(user);
-    interaction.deleteReply();
-    return true;
+    confirmation = await message.awaitMessageComponent({ filter: filter, time: TIMEOUT });
   } catch (e) {
     console.error(e);
-  	await interaction.editReply({ content: 'Command timed out.', components: [], ephemeral: true });
+    await interaction.editReply({ content: 'Command timed out.', components: [], ephemeral: true });
+    return false;
   }
-  return false;
+
+  const values = confirmation.values.map((s) => parseInt(s));
+  values.forEach((fullID) => {
+    gm.setActiveUnit(user, fullID);
+  });
+  readyUser(user);
+  confirmation.deferUpdate();
+  interaction.editReply({
+    content: 'Starting team chosen!',
+    components: [],
+    ephemeral: true,
+  });
+  return true;
 }
 
 module.exports = {

@@ -7,17 +7,18 @@ const {
 } = require('discord.js');
 const { getUser } = require('../manage-user.js');
 const { 
-  endBattle, 
   getCombatID, 
   setCombatID, 
   setGM, 
   getBattle,
-  trueStartBattle,
+  updateBattle,
+  waitReady,
 } = require('./battle-storage.js');
 const { parseParty } = require('../util/ui-logic.js');
 const { MS_MINUTE } = require('../util/constants.js');
 const GameMaster = require('../game-classes/game-master.js');
 const { teamSelect } = require('./ui.js');
+const { gameLoop } = require('./game-loop.js');
 
 const chooseTeamButton = new ButtonBuilder()
   .setCustomId('team')
@@ -49,28 +50,39 @@ const startBattle = async (user1, user2, name1, name2, channel) => {
   const message = await channel.send({ embeds: [embed], components: [chooseTeamRow] });
 
   const messageFilter = (i) => [user1, user2].includes(i.user.id);
+  const acknowledgedUsers = [];
   const buttonCollector = message.createMessageComponentCollector({
     filter: messageFilter,
     time: TIME_LIMIT,
   });
   
   buttonCollector.on('collect', async i => {
+    if (acknowledgedUsers.includes(i.user.id)) {
+      i.deferUpdate();
+      return;
+    }
+    acknowledgedUsers.push(i.user.id); // avoids multiple button press
+    
     await teamSelect(i);
     if (battle.readyUsers.length > 1) {
-      message.edit({ embeds: [embed], components: [] });
-      trueStartBattle(combatID);
+      buttonCollector.stop();
+      updateBattle(combatID);
+      gameLoop(combatID, channel);
     };
   });
   
   buttonCollector.on('end', () => {
-    if (getBattle(combatID).inProgress) return;
-    message.edit({
-      content: 'Waited too long; aborting combat.',
-      embeds: [],
-      components: [],
-    });
-    endBattle(combatID);
+    message.edit({ embeds: [embed], components: [] });
   });
+
+  try {
+    await waitReady(combatID);
+  } catch (e) {
+    return;
+  }
+  buttonCollector.stop();
+  updateBattle(combatID);
+  gameLoop(combatID, channel);
 }
 
 module.exports = {
