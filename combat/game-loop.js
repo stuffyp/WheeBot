@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { endBattle, getBattle, updateBattle, waitReady } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
 const { updateGlicko } = require('../util/glicko.js');
@@ -63,7 +63,7 @@ const gameLoop = async (combatID, channel) => {
       await waitReady(combatID);
     } catch (e) { 
       // TIMEOUT
-      const winner = (acknowledgedUsers.length > 0) ? acknowledgedUsers[0] : null;
+      const winner = (battle.readyUsers.length > 0) ? battle.readyUsers[0] : null;
       finishBattle(winner, combatID, channel, true);
       return;
     }
@@ -83,7 +83,6 @@ const gameLoop = async (combatID, channel) => {
 }
 
 const finishBattle = async (winner, combatID, channel, timeout=false) => {
-  if (timeout) channel.send('Combat timed out.');
   const battle = getBattle(combatID);
   const { users, GM } = battle;
   
@@ -91,11 +90,33 @@ const finishBattle = async (winner, combatID, channel, timeout=false) => {
     const loser = users.find((u) => u !== winner);
     const winnerName = GM.users.find(u => u.id === winner).name;
     const loserName = GM.users.find(u => u.id === loser).name;
+    let winnerOldElo, loserOldElo, winnerNewElo, loserNewElo;
     await syncUpdate(winner, loser, (winnerData, loserData) => {
+      winnerOldElo = Math.round(winnerData.stats.glicko.elo);
+      loserOldElo = Math.round(loserData.stats.glicko.elo);
       updateGlicko(winnerData.stats.glicko, loserData.stats.glicko);
+      winnerNewElo = Math.round(winnerData.stats.glicko.elo);
+      loserNewElo = Math.round(loserData.stats.glicko.elo);
       return [winnerData, loserData];
     });
-    // channel.send(`${winnerName}: ${winnerELO}, ${loserName}: ${loserELO}`);
+    const embed = new EmbedBuilder()
+      .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
+      .addFields({ name: '🏆 ' + winnerName, value: `${winnerNewElo} (+${winnerNewElo - winnerOldElo})`, inline: true })
+      .addFields({ name: '\u200B', value: '\u200B', inline: true })
+      .addFields({ name: loserName, value: `${loserNewElo} (-${loserOldElo - loserNewElo})`, inline: true })
+    if (timeout) embed.setDescription('Combat timed out.');
+
+    channel.send({ embeds: [embed] });
+  } else {
+    const fullUsers = GM.users;
+    const embed = new EmbedBuilder()
+      .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
+      .addFields({ name: fullUsers[0].name, value: String(fullUsers[0].elo), inline: true })
+      .addFields({ name: '\u200B', value: '\u200B', inline: true })
+      .addFields({ name: fullUsers[1].name, value: String(fullUsers[1].elo), inline: true })
+    if (timeout) embed.setDescription('Combat timed out.');
+
+    channel.send({ embeds: [embed] });
   };
   
   endBattle(combatID);

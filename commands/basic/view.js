@@ -138,12 +138,13 @@ const executeStats = async (interaction) => {
   const hoursUntil = Math.floor(timeUntil / MS_HOUR);
   const minutesUntil = Math.floor((timeUntil % MS_HOUR) / MS_MINUTE);
 
-  freeRollText = `🎲 Free Rolls: ${userData.stats.freeRolls}`;
-  nextRollText = `🎲 Next Roll: ${(timeUntil > 0) ? `${hoursUntil} hours, ${minutesUntil} minutes` : 'Available'}`
-  coinsText = `🪙 Coins: ${userData.stats.coins}`
-  eloText = `📈 Rating: ${Math.round(userData.stats.glicko.elo)}`
-  partySizeText = `👥 Party Size: ${userData.party.length}/${PARTY_SIZE}`
-  collectionSizeText = `👥 Collection Size: ${userData.collection.length}/${COLLECTION_SIZE}`
+  const freeRollText = `🎲 Free Rolls: ${userData.stats.freeRolls}`;
+  const nextRollText = `🎲 Next Roll: ${(timeUntil > 0) ? `${hoursUntil} hours, ${minutesUntil} minutes` : 'Available'}`
+  const coinsText = `🪙 Coins: ${userData.stats.coins}`
+  const uncertainty = userData.stats.glicko.rd > 50 ? '?' : `±${Math.round(userData.stats.glicko.rd * 2)}`;
+  const eloText = `📈 Rating: ${Math.round(userData.stats.glicko.elo)} (${uncertainty})`
+  const partySizeText = `👥 Party Size: ${userData.party.length}/${PARTY_SIZE}`
+  const collectionSizeText = `👥 Collection Size: ${userData.collection.length}/${COLLECTION_SIZE}`
 
   await interaction.reply({
     content: [
@@ -154,7 +155,7 @@ const executeStats = async (interaction) => {
       partySizeText,
       collectionSizeText,
     ].join('\n'),
-    ephemeral: true,
+//    ephemeral: true,
   });
 }
 

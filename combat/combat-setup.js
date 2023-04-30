@@ -33,8 +33,8 @@ const startBattle = async (user1, user2, name1, name2, channel) => {
   const userData1 = await getUser(user1);
   const userData2 = await getUser(user2);
   const gm = new GameMaster(channel)
-    .loadUser(user1, name1)
-    .loadUser(user2, name2)
+    .loadUser(user1, name1, userData1.stats.glicko.elo)
+    .loadUser(user2, name2, userData2.stats.glicko.elo)
   parseParty(userData1).reduce((cur, card) => cur.loadUnit(card, user1), gm);
   parseParty(userData2).reduce((cur, card) => cur.loadUnit(card, user2), gm);
 

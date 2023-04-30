@@ -21,10 +21,11 @@ module.exports = class GameMaster {
     this.commands = [];
   }
 
-  loadUser(id, name) {
+  loadUser(id, name, elo) {
     this.users.push({
       id: id,
       name: name,
+      elo: elo,
     });
     this.units[id] = [];
     this.activeUnits[id] = [];
