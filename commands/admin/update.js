@@ -27,7 +27,6 @@ v1.0 template:
 
 const update = {
   '1.0': async (userData) => {
-    // userData.items = {};
     return userData;
   },
 }
@@ -42,13 +41,6 @@ module.exports = {
     if (userData === null) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
-        ephemeral: true,
-      });
-      return;
-    }
-    if (getCombatID(user)) {
-      await interaction.reply({
-        content: 'You are currently in a battle.',
         ephemeral: true,
       });
       return;

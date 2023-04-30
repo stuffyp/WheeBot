@@ -53,13 +53,6 @@ module.exports = {
     const userData = await getUser(user);
     const success = await validateUser(userData, interaction);
     if (!success) return;
-    if (getCombatID(user)) {
-      await interaction.reply({
-        content: 'You are currently in a battle.',
-        ephemeral: true,
-      });
-      return;
-    }
 
     const cardID = formatCardID(interaction.options.getString('card_name'));
     const subcollection = userData.collection.filter((card) => card.id === cardID);
@@ -159,6 +152,14 @@ module.exports = {
             reactionCollector.stop();
             buttonCollector.stop();
             await updateUser(user, async (userData) => {
+              if (getCombatID(user)) {
+                await interaction.editReply({
+                  content: `Oops! It appears that you are currently in battle. Command aborted.`,
+                  embeds: [],
+                  components: [],
+                });
+                return null;
+              }
               const coinGain = retireCoins(getCard(card.id).rarity, card.level);
               const updatedCollection = userData.collection.filter((c) => (c.fullID !== card.fullID));
               if (updatedCollection.length === userData.collection.length) {
@@ -186,6 +187,14 @@ module.exports = {
           reactionCollector.stop();
           buttonCollector.stop();
           await updateUser(user, async (userData) => {
+            if (getCombatID(user)) {
+              await interaction.editReply({
+                content: `Oops! It appears that you are currently in battle. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
             if (
               userData.collection.every((c) => c.fullID !== card.fullID) || 
               userData.party.includes(card.fullID) || 
@@ -212,6 +221,14 @@ module.exports = {
           reactionCollector.stop();
           buttonCollector.stop();
           await updateUser(user, async (userData) => {
+            if (getCombatID(user)) {
+              await interaction.editReply({
+                content: `Oops! It appears that you are currently in battle. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
             const updatedParty = userData.party.filter((c) => c !== card.fullID);
             if (updatedParty.length === userData.party.length) {
               await interaction.editReply({
@@ -247,6 +264,14 @@ module.exports = {
           const itemID = formatItemID(itemName);
 
           await updateUser(user, async (userData) => {
+            if (getCombatID(user)) {
+              await interaction.editReply({
+                content: `Oops! It appears that you are currently in battle. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
             const originalCard = userData.collection.find((c) => c.fullID === card.fullID);
             const available = userData.collection.filter((c) => c.item === itemID).length < userData.items[itemID];
             if (!originalCard || originalCard.item) {
@@ -279,6 +304,14 @@ module.exports = {
           reactionCollector.stop();
           buttonCollector.stop();
           await updateUser(user, async (userData) => {
+            if (getCombatID(user)) {
+              await interaction.editReply({
+                content: `Oops! It appears that you are currently in battle. Command aborted.`,
+                embeds: [],
+                components: [],
+              });
+              return null;
+            }
             const originalCard = userData.collection.find((c) => c.fullID === card.fullID);
             if (!(originalCard && originalCard.item)) {
               await interaction.editReply({
