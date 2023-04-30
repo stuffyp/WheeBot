@@ -141,7 +141,7 @@ const executeStats = async (interaction) => {
   freeRollText = `🎲 Free Rolls: ${userData.stats.freeRolls}`;
   nextRollText = `🎲 Next Roll: ${(timeUntil > 0) ? `${hoursUntil} hours, ${minutesUntil} minutes` : 'Available'}`
   coinsText = `🪙 Coins: ${userData.stats.coins}`
-  eloText = `📈 Rating: ${userData.stats.elo}`
+  eloText = `📈 Rating: ${Math.round(userData.stats.glicko.elo)}`
   partySizeText = `👥 Party Size: ${userData.party.length}/${PARTY_SIZE}`
   collectionSizeText = `👥 Collection Size: ${userData.collection.length}/${COLLECTION_SIZE}`
 

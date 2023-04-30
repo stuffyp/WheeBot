@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { USER_TEMPLATE } = require("../../util/constants.js");
 const { askConfirmation } = require("../../util/ui-logic.js");
 const { getUser, updateUser } = require("../../manage-user.js");
+const { getCombatID } = require("../../combat/battle-storage.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,6 +14,13 @@ module.exports = {
     if (userData === null) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
+        ephemeral: true,
+      });
+      return;
+    }
+    if (getCombatID(user)) {
+      await interaction.reply({
+        content: 'You are currently in a battle.',
         ephemeral: true,
       });
       return;
@@ -35,15 +43,22 @@ module.exports = {
     
     if (confirmation) {
       await updateUser(user, async (userData) => {
+        if (getCombatID(user)) {
+          await interaction.editReply({
+            content: 'Command failed. You are currently in a battle.',
+            ephemeral: true,
+          });
+          return null;
+        }
         oldIdSeed = userData.idSeed;
         userData = USER_TEMPLATE;
         userData.idSeed = oldIdSeed;
+        await interaction.editReply({ 
+          content: `Account successfully reset.`,
+          components: [],
+          ephemeral: true,
+        });
         return userData;
-      });
-      await interaction.editReply({ 
-        content: `Account successfully reset.`,
-        components: [],
-        ephemeral: true,
       });
     } else {
       await interaction.editReply({ 

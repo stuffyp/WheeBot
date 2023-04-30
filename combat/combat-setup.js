@@ -43,9 +43,9 @@ const startBattle = async (user1, user2, name1, name2, channel) => {
 
   const embed = new EmbedBuilder()
     .setTitle('⚠️⚠️⚠️\tBATTLE\t⚠️⚠️⚠️')
-    .addFields({ name: name1, value: `(${userData1.stats.elo} R)`, inline: true })
+    .addFields({ name: name1, value: `(${Math.round(userData1.stats.glicko.elo)} R)`, inline: true })
     .addFields({ name: '\u200B', value: '\u200B', inline: true })
-    .addFields({ name: name2, value: `(${userData2.stats.elo} R)`, inline: true })
+    .addFields({ name: name2, value: `(${Math.round(userData2.stats.glicko.elo)} R)`, inline: true })
 
   const message = await channel.send({ embeds: [embed], components: [chooseTeamRow] });
 

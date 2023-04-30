@@ -51,7 +51,8 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
         'level'       in ability && 
         'type'        in ability &&
         'priority'    in ability &&
-        'execute'     in ability
+        'execute'     in ability &&
+        'target'      in ability
       );
     })) {
       console.log(`[WARNING] The card at ${filePath} is missing ability properties.`);

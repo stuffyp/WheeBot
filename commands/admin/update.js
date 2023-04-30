@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { VERSION_NUMBER } = require("../../util/constants.js");
 const { getUser, updateUser } = require("../../manage-user.js");
+const { getCombatID } = require("../../combat/battle-storage.js");
+
 
 /*
 v1.0 template:
@@ -40,6 +42,13 @@ module.exports = {
     if (userData === null) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
+        ephemeral: true,
+      });
+      return;
+    }
+    if (getCombatID(user)) {
+      await interaction.reply({
+        content: 'You are currently in a battle.',
         ephemeral: true,
       });
       return;

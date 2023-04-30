@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets } = require('../../imports.js');
 
 const NAME = 'Milkshake';
 const DESCRIPTION = 'Tastes good.';
@@ -17,6 +17,7 @@ const brainFreeze = {
   level: 1,
   type: Types.Water,
   priority: 0,
+  target: Targets.Field,
   execute: (self, target, gameState) => {
     // pass
   },
@@ -28,6 +29,7 @@ const foo = {
   level: 5,
   type: Types.Shock,
   priority: 0,
+  target: Targets.Field,
   execute: (params) => {
     // pass
   },

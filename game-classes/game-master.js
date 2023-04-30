@@ -10,6 +10,7 @@ module.exports = class GameMaster {
   log;
   channel;
   winner;
+  commands;
   constructor(channel) {
     this.users = [];
     this.units = {};
@@ -17,6 +18,7 @@ module.exports = class GameMaster {
     this.log = [];
     this.channel = channel;
     this.winner = null;
+    this.commands = [];
   }
 
   loadUser(id, name) {

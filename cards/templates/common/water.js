@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets } = require('../../imports.js');
 
 const NAME = 'Water';
 const DESCRIPTION = 'A necessity of life.';
@@ -17,6 +17,7 @@ const hydrate = {
   level: 1,
   type: Types.Water,
   priority: 0,
+  target: Targets.Field,
   execute: (params) => {
     // pass
   },

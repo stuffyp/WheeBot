@@ -3,9 +3,10 @@ const { MS_MINUTE } = require("../../util/constants.js");
 const { getUser, updateUser, syncCombat } = require("../../manage-user.js");
 const { validateUser } = require("../../util/ui-logic.js");
 const { startBattle } = require("../../combat/combat-setup.js");
-const { getCombatID, refreshBattles } = require("../../combat/battle-storage.js");
+const { getCombatID, setCombatID, refreshBattles } = require("../../combat/battle-storage.js");
 
 const TIME_LIMIT = 15 * MS_MINUTE;
+const WAITING = 'waiting';
 
 const acceptButton = new ButtonBuilder()
   .setCustomId('accept')
@@ -41,7 +42,7 @@ const executeStart = async (interaction) => {
     });
     return;
   }
-  
+
   const message = await interaction.reply({
     content: `${interaction.user.username} issued a challenge!`,
     components: [acceptActionRow],
@@ -52,6 +53,7 @@ const executeStart = async (interaction) => {
     filter: messageFilter,
     time: TIME_LIMIT,
   });
+  let challengeAccepted = false;
   buttonCollector.on('collect', async (i) => {
     const otherUser = i.user.id;
     if (otherUser === user) {
@@ -72,9 +74,16 @@ const executeStart = async (interaction) => {
       return;
     }
     const syncSuccess = await syncCombat(user, otherUser);
-    if (!syncSuccess) {
+    if (syncSuccess === 0) {
       await i.reply({
         content: 'Interaction failed. One of you two is already in a battle.',
+        ephemeral: true,
+      });
+      return;
+    }
+    if (syncSuccess === -1) {
+      await i.reply({
+        content: 'Interaction failed. One of you two is missing a party.',
         ephemeral: true,
       });
       return;
@@ -84,7 +93,16 @@ const executeStart = async (interaction) => {
       content: `${i.user.username} accepted ${interaction.user.username}'s challenge!`,
       components: [],
     });
+    challengeAccepted = true;
     startBattle(user, otherUser, interaction.user.username, i.user.username, interaction.channel);
+  });
+
+  buttonCollector.on('end', () => {
+    if (challengeAccepted) return;
+    interaction.editReply({
+      content: 'Challenge timed out.',
+      components: [],
+    });
   });
   
 }

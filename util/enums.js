@@ -48,4 +48,10 @@ module.exports = {
     Magic: 'Magic',
     None: 'None',
   },
+
+  Targets: {
+    None: 'None',
+    Sub: 'Sub',
+    Field: 'Field',
+  },
 }

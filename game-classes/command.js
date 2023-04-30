@@ -1,12 +1,12 @@
 module.exports = class Command {
   agent;
-  targets;
+  target;
   execute;
   priority;
   speed;
   constructor() {
     this.agent = null;
-    this.targets = [];
+    this.target = null;
     this.execute = () => { return };
   }
 
@@ -15,8 +15,8 @@ module.exports = class Command {
     return this;
   }
 
-  addTarget(target) {
-    this.targets.push(target);
+  setTarget(target) {
+    this.target = target;
     return this;
   }
 

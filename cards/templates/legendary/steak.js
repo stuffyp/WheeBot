@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets } = require('../../imports.js');
 
 const NAME = 'Steak';
 const DESCRIPTION = 'Fresh off the grill.';
@@ -17,6 +17,7 @@ const wellDone = {
   level: 1,
   type: Types.Fire,
   priority: 0,
+  target: Targets.Field,
   execute: (params) => {
     // pass
   },

@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets } = require('../../imports.js');
 
 const NAME = 'Baguette';
 const DESCRIPTION = 'Your standard fare.';
@@ -17,6 +17,7 @@ const harden = {
   level: 1,
   type: Types.None,
   priority: 0,
+  target: Targets.Field,
   execute: (params) => {
     // pass
   },

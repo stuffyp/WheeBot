@@ -9,7 +9,11 @@ const MS_MINUTE = 60 * MS_SECOND;
 const MS_HOUR = 60 * MS_MINUTE;
 const MS_DAY = 24 * MS_HOUR;
 
-const STARTING_ELO = 1200;
+const STARTING_GLICKO = {
+  elo: 1500,
+  rd: 300,
+  lastUpdated: 0,
+};
 
 module.exports = {
   VERSION_NUMBER: VERSION_NUMBER,
@@ -22,6 +26,8 @@ module.exports = {
   ROLL_COOLDOWN: 0,//12 * MS_HOUR,
   COLLECTION_SIZE: 200,
   PARTY_SIZE: 7,
+
+  STARTING_GLICKO: STARTING_GLICKO,
   
   USER_TEMPLATE: {
     collection: [],
@@ -31,7 +37,7 @@ module.exports = {
       lastRoll: 0,
       freeRolls: 5,
       coins: 0,
-      elo: STARTING_ELO,
+      glicko: STARTING_GLICKO,
     },
     idSeed: 12345,
     version: VERSION_NUMBER,

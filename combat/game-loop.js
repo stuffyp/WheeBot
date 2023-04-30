@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { endBattle, getBattle, updateBattle, waitReady } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
-const { newElo } = require('../util/math-func.js');
+const { updateGlicko } = require('../util/glicko.js');
 const { handleTurn } = require('./ui.js');
 const { syncUpdate } = require('../manage-user.js');
 
@@ -91,16 +91,11 @@ const finishBattle = async (winner, combatID, channel, timeout=false) => {
     const loser = users.find((u) => u !== winner);
     const winnerName = GM.users.find(u => u.id === winner).name;
     const loserName = GM.users.find(u => u.id === loser).name;
-    let winnerELO;
-    let loserELO;
     await syncUpdate(winner, loser, (winnerData, loserData) => {
-      winnerELO = newElo(winnerData.stats.elo, loserData.stats.elo, 1);
-      loserELO = newElo(loserData.stats.elo, winnerData.stats.elo, 0);
-      winnerData.stats.elo = winnerELO;
-      loserData.stats.elo = loserELO;
+      updateGlicko(winnerData.stats.glicko, loserData.stats.glicko);
       return [winnerData, loserData];
     });
-    channel.send(`${winnerName}: ${winnerELO}, ${loserName}: ${loserELO}`);
+    // channel.send(`${winnerName}: ${winnerELO}, ${loserName}: ${loserELO}`);
   };
   
   endBattle(combatID);

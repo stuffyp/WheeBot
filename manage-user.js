@@ -102,18 +102,24 @@ module.exports = {
     return shop;
   },
 
-
+  //error codes:
+  // 0 : someone is in combat
+  // -1: someone deleted their party
+  // 1: success
   syncCombat: async (user1, user2) => {
     const u1 = user1 < user2 ? user1 : user2;
     const u2 = user1 < user2 ? user2 : user1; // deterministic ordering of mutex requests to avoid deadlock
-    let success = false;
+    let success = null;
     await locks[u1].runExclusive(async () => {
       await locks[u2].runExclusive(async () => {
-        if (getCombatID(u1) || getCombatID(u2)) return;
+        if (getCombatID(u1) || getCombatID(u2)) { success = 0; return; }
+        const userData1 = await db.get(idToKey(user1));
+        const userData2 = await db.get(idToKey(user2));
+        if (!(userData1.party.length && userData2.party.length)) { success = -1; return; }
         const combatID = generateBattle();
         setCombatID(u1, combatID);
         setCombatID(u2, combatID);
-        success = true;
+        success = 1;
       });
     });
     return success;

@@ -59,6 +59,11 @@ const handleTurn = async (interaction, doForfeit) => {
   let confirmation;
   switch (interaction.customId) {
     case 'action':
+      const user = interaction.user.id;
+      const battle = getBattle(getCombatID(user));
+      const gm = battle.GM;
+
+      // TODO
       break;
     case 'endTurn':
       confirmation = await askConfirmation(interaction);

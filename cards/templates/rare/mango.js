@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets } = require('../../imports.js');
 
 const NAME = 'Mango';
 const DESCRIPTION = 'We like fruits.';
@@ -17,6 +17,7 @@ const foo = {
   level: 1,
   type: Types.Plant,
   priority: 0,
+  target: Targets.Field,
   execute: (params) => {
     // pass
   },

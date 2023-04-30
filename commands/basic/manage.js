@@ -12,6 +12,8 @@ const { formatItemID, getItem } = require("../../items/read-items.js");
 const { VERSION_NUMBER, MS_MINUTE, PARTY_SIZE } = require("../../util/constants.js");
 const { FULL_NAV_EMOJIS, handleNav, askConfirmation, validateUser } = require("../../util/ui-logic.js");
 const { retireCoins } = require("../../util/math-func.js");
+const { getCombatID } = require("../../combat/battle-storage.js");
+
 
 const TIME_LIMIT = 15 * MS_MINUTE;
 const MODAL_TIME_LIMIT = MS_MINUTE;
@@ -51,6 +53,13 @@ module.exports = {
     const userData = await getUser(user);
     const success = await validateUser(userData, interaction);
     if (!success) return;
+    if (getCombatID(user)) {
+      await interaction.reply({
+        content: 'You are currently in a battle.',
+        ephemeral: true,
+      });
+      return;
+    }
 
     const cardID = formatCardID(interaction.options.getString('card_name'));
     const subcollection = userData.collection.filter((card) => card.id === cardID);
@@ -223,8 +232,6 @@ module.exports = {
           break;
 
         case 'equip':
-          reactionCollector.stop();
-          buttonCollector.stop();
           await i.showModal(equipModal);
           const submitted = await i.awaitModalSubmit({
             filter: (i) => i.customId === 'modal',
@@ -232,6 +239,9 @@ module.exports = {
           }).catch(error => {
             console.error(error);
           });
+          if (!submitted) break;
+          reactionCollector.stop();
+          buttonCollector.stop();
           submitted.deferUpdate();
           const itemName = submitted.fields.getTextInputValue('itemName');
           const itemID = formatItemID(itemName);
