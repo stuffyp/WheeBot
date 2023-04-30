@@ -9,12 +9,14 @@ module.exports = class GameMaster {
   activeUnits;
   log;
   channel;
+  winner;
   constructor(channel) {
     this.users = [];
     this.units = {};
     this.activeUnits = {};
     this.log = [];
     this.channel = channel;
+    this.winner = null;
   }
 
   loadUser(id, name) {

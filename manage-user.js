@@ -118,4 +118,21 @@ module.exports = {
     });
     return success;
   },
+
+  syncUpdate: async (user1, user2, func) => {
+    const u1 = user1 < user2 ? user1 : user2;
+    const u2 = user1 < user2 ? user2 : user1; // deterministic ordering of mutex requests to avoid deadlock
+    await locks[u1].runExclusive(async () => {
+      await locks[u2].runExclusive(async () => {
+        const userData1 = await db.get(idToKey(user1));
+        const userData2 = await db.get(idToKey(user2));
+        const update = await func(userData1, userData2);
+        if (update) {
+          const [new1, new2] = update;
+          await db.set(idToKey(user1), new1);
+          await db.set(idToKey(user2), new2);
+        }
+      });
+    });
+  },
 }

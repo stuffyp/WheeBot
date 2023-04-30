@@ -1,14 +1,16 @@
 const { randInt } = require('../util/random.js');
 const { MS_MINUTE } = require('../util/constants.js');
 
-const TIMEOUT = 30 * MS_MINUTE;
+const REFRESH_TIMEOUT = 30 * MS_MINUTE;
+const TIMEOUT = 5 * MS_MINUTE;
 
 const activeBattles = {};
 const userToCombatID = {};
 
 const refreshBattles = () => {
   Object.values(activeBattles).forEach((battle) => {
-    if (battle.lastUpdated + TIMEOUT < Date.now()) endBattle(battle.combatID);
+    if (battle === null) return;
+    if (battle.lastUpdated + REFRESH_TIMEOUT < Date.now()) endBattle(battle.combatID);
   });
 }
 

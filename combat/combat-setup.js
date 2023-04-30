@@ -50,25 +50,17 @@ const startBattle = async (user1, user2, name1, name2, channel) => {
   const message = await channel.send({ embeds: [embed], components: [chooseTeamRow] });
 
   const messageFilter = (i) => [user1, user2].includes(i.user.id);
-  const acknowledgedUsers = [];
   const buttonCollector = message.createMessageComponentCollector({
     filter: messageFilter,
     time: TIME_LIMIT,
   });
   
   buttonCollector.on('collect', async i => {
-    if (acknowledgedUsers.includes(i.user.id)) {
+    if (battle.readyUsers.includes(i.user.id)) {
       i.deferUpdate();
       return;
     }
-    acknowledgedUsers.push(i.user.id); // avoids multiple button press
-    
     await teamSelect(i);
-    if (battle.readyUsers.length > 1) {
-      buttonCollector.stop();
-      updateBattle(combatID);
-      gameLoop(combatID, channel);
-    };
   });
   
   buttonCollector.on('end', () => {

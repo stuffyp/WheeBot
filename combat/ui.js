@@ -1,6 +1,7 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
+const { askConfirmation } = require('../util/ui-logic.js');
 
 const TIMEOUT = 5 * MS_MINUTE;
 
@@ -54,6 +55,25 @@ const teamSelect = async (interaction) => {
   return true;
 }
 
+const handleTurn = async (interaction, doForfeit) => {
+  let confirmation;
+  switch (interaction.customId) {
+    case 'action':
+      break;
+    case 'endTurn':
+      confirmation = await askConfirmation(interaction);
+      if (confirmation) readyUser(interaction.user.id);
+      break;
+    case 'forfeit':
+      confirmation = await askConfirmation(interaction);
+      if (confirmation) doForfeit(interaction.user.id);
+      break;
+    default:
+      break;
+  }
+}
+
 module.exports = {
   teamSelect: teamSelect,
+  handleTurn: handleTurn,
 }

@@ -124,4 +124,11 @@ module.exports = {
   damageCalc: (power, attack, defense, attackType, defenseTypes) => {
     return Math.ceil(power * attack * typeAdvantage(attackType, defenseTypes) / defense);
   },
+
+  newElo: (elo, opponent, score) => {
+    const r1 = Math.pow(10, elo / 400);
+    const r2 = Math.pow(10, opponent / 400);
+    const expected = r1 / (r1 + r2);
+    return elo + Math.round(48 * (score - expected));
+  }
 }

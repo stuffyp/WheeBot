@@ -53,7 +53,11 @@ module.exports = {
 
     let returnValue;
     try {
-      const confirmation = await message.awaitMessageComponent({ time: timeout });
+      const messageFilter = i => ['confirm', 'cancel'].includes(i.customId) && i.user.id === interaction.user.id;
+      const confirmation = await message.awaitMessageComponent({ 
+        filter: messageFilter, 
+        time: timeout,
+      });
     
       if (confirmation.customId === 'confirm') {
         returnValue = true;
