@@ -77,4 +77,8 @@ module.exports = class GameMaster {
     });
     return embeds;
   }
+
+  queueCommand(command) {
+    this.commands.push(command);
+  }
 }

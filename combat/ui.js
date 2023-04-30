@@ -2,6 +2,7 @@ const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
 const { askConfirmation } = require('../util/ui-logic.js');
+const Command = require('../game-classes/command.js');
 
 const TIMEOUT = 5 * MS_MINUTE;
 
@@ -41,6 +42,11 @@ const teamSelect = async (interaction) => {
     return false;
   }
 
+  if (!getCombatID(user)) {
+    await interaction.editReply({ content: 'Oops! You are out of sync. Aborting command.', components: [], ephemeral: true });
+    return false;
+  }
+
   const values = confirmation.values.map((s) => parseInt(s));
   values.forEach((fullID) => {
     gm.setActiveUnit(user, fullID);
@@ -55,23 +61,121 @@ const teamSelect = async (interaction) => {
   return true;
 }
 
+const moveSelect = async (interaction) => {
+  const user = interaction.user.id;
+  const battle = getBattle(getCombatID(user));
+  const gm = battle.GM;
+  const activeUnits = gm.activeUnits[user];
+
+  let selectOptions = activeUnits.map((u) => {
+    return new StringSelectMenuOptionBuilder()
+      .setLabel(`${u.unit.name}`)
+      .setValue(String(u.fullID))
+  });
+  let select = new StringSelectMenuBuilder()
+    .setCustomId('agentSelect')
+    .addOptions(selectOptions)
+  let row = new ActionRowBuilder()
+    .addComponents(select)
+  let message = await interaction.reply({
+    content: 'Select a creature you control.',
+    components: [row],
+    ephemeral: true,
+  });
+  let confirmation = null;
+  let success = false;
+  
+  const waitSelect = async (customId) => {
+    const filter = i => i.customId === customId && i.user.id === interaction.user.id;
+    try {
+      confirmation = await message.awaitMessageComponent({ filter: filter, time: TIMEOUT });
+    } catch (e) {
+      console.error(e);
+      await interaction.editReply({ content: 'Command timed out.', components: [], ephemeral: true });
+      return false;
+    }
+    if (!getCombatID(user)) {
+      await interaction.editReply({ 
+        content: 'Oops! You are out of sync. Aborting command.', 
+        components: [], 
+        ephemeral: true 
+      });
+      return false;
+    }
+    confirmation.deferUpdate();
+    return true;
+  }
+
+  success = await waitSelect('agentSelect');
+  if (!success) return;
+  const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
+
+  selectOptions = agent.unit.abilities.map((a) => {
+    return new StringSelectMenuOptionBuilder()
+      .setLabel(a.name)
+      .setValue(a.name)
+  });
+  select = new StringSelectMenuBuilder()
+    .setCustomId('abilitySelect')
+    .addOptions(selectOptions)
+  row = new ActionRowBuilder()
+    .addComponents(select)
+  message = await interaction.editReply({
+    content: 'Select a move.',
+    components: [row],
+    ephemeral: true,
+  });
+
+  success = await waitSelect('abilitySelect');
+  if (!success) return;
+  const ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
+
+  const otherUser = gm.users.find((u) => u.id !== user).id;
+  selectOptions = gm.activeUnits[otherUser].map((u) => {
+    return new StringSelectMenuOptionBuilder()
+      .setLabel(u.unit.name)
+      .setValue(String(u.fullID))
+  });
+  const moreSelectOptions = activeUnits.map((u) => {
+    return new StringSelectMenuOptionBuilder()
+      .setLabel(`${u.unit.name} (friendly)`)
+      .setValue(String(u.fullID))
+  });
+  select = new StringSelectMenuBuilder()
+    .setCustomId('targetSelect')
+    .addOptions(selectOptions)
+    .addOptions(moreSelectOptions)
+  row = new ActionRowBuilder()
+    .addComponents(select)
+  message = await interaction.editReply({
+    content: 'Select a target.',
+    components: [row],
+    ephemeral: true,
+  });
+
+  success = await waitSelect('targetSelect');
+  if (!success) return;
+  const target = [...activeUnits, ...gm.activeUnits[otherUser]].find((u) => u.fullID === parseInt(confirmation.values[0]));
+  interaction.editReply({
+    content: `**${agent.unit.name}** will target **${target.unit.name}** with **${ability.name}**.`,
+    components: [],
+    ephemeral: true,
+  });
+  gm.queueCommand(new Command().setAgent(agent).setTarget(target).setExecute(ability.execute));
+}
+
 const handleTurn = async (interaction, doForfeit) => {
-  let confirmation;
   switch (interaction.customId) {
     case 'action':
-      const user = interaction.user.id;
-      const battle = getBattle(getCombatID(user));
-      const gm = battle.GM;
-
-      // TODO
+      await moveSelect(interaction);
       break;
     case 'endTurn':
-      confirmation = await askConfirmation(interaction);
-      if (confirmation) readyUser(interaction.user.id);
+      const endConfirmation = await askConfirmation(interaction);
+      if (endConfirmation) readyUser(interaction.user.id);
       break;
     case 'forfeit':
-      confirmation = await askConfirmation(interaction);
-      if (confirmation) doForfeit(interaction.user.id);
+      const forfeitConfirmation = await askConfirmation(interaction);
+      if (forfeitConfirmation) doForfeit(interaction.user.id);
       break;
     default:
       break;
