@@ -1,7 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
-const { Stats } = require('../util/enums.js');
+const { Stats, StatusEffects } = require('../util/enums.js');
+const { rollChance } = require('../util/random.js');
 const Unit = require('./unit.js');
 
 module.exports = class GameMaster {
@@ -90,6 +91,10 @@ module.exports = class GameMaster {
     const command = this.commands.shift();
     if (command.agent.unit.knockedOut()) {
       this.log.push(`${command.agent.unit.name} was knocked out and passes their turn!`);
+      return;
+    }
+    if (command.agent.unit.status === StatusEffects.Stun && rollChance(0.5)) {
+      this.log.push(`${command.agent.unit.name} was stunned and passes their turn!`);
       return;
     }
     this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);

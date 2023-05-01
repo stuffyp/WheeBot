@@ -34,6 +34,4 @@ module.exports = {
     }
   },
 }
-
-
 // console.error(module.exports.sampleRange(5, 5));

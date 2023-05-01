@@ -8,7 +8,7 @@ const RARITY = Rarities.Common;
 const HEALTH = 90;
 const ATTACK = 50;
 const DEFENSE = 40;
-const SPEED = 50;
+const SPEED = 60;
 const MAGIC = 40;
 const TYPES = [Types.Shock];
 
@@ -41,7 +41,7 @@ const SHOOTING_POWER = 0.6;
 const SHOOTING_TYPE = Types.Shock;
 const shootingStar = {
   name: 'Shooting Star', 
-  description: 'Deal moderate damage. 50% chance to stun the target.',
+  description: 'Deal moderate damage. 70% chance to stun the target.',
   level: 1,
   type: SHOOTING_TYPE,
   priority: 0,
@@ -56,13 +56,13 @@ const shootingStar = {
       SHOOTING_TYPE,
       target.types,
     );
-    if (rollChance(0.5)) {
-      target.statusEffect = StatusEffects.Stun;
+    if (rollChance(0.7)) {
+      target.status = StatusEffects.Stun;
       self.log(`${target.name} became stunned!`);
     }
     target.doDamage(damage, typeAdvantage(SHOOTING_TYPE, target.types));
-    self.emitEvent(Events.didAttack);
-    target.emitEvent(Events.gotAttacked);
+    self.emitEvent(Events.didAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.gotAttacked, { self: target, agent: self, damage: damage});
   },
 };
 

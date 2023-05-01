@@ -2,6 +2,8 @@ const Card = require('./card.js');
 const { Rarities, StatusEffects, Stats, Types, Events, Targets } = require('../util/enums.js');
 const { damageCalc, typeAdvantage } = require('../util/math-func.js');
 const { rollChance } = require('../util/random.js');
+const Modifier = require('../game-classes/modifier.js');
+const Listener = require('../game-classes/modifier.js');
 
 module.exports = {
   Card: Card,
@@ -14,4 +16,6 @@ module.exports = {
   damageCalc: damageCalc,
   typeAdvantage: typeAdvantage,
   rollChance: rollChance,
+  Modifier: Modifier,
+  Listener: Listener,
 }

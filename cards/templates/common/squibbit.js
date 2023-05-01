@@ -1,0 +1,69 @@
+const { Card, Rarities, StatusEffects, Types, Targets, 
+       Events, Stats, damageCalc, typeAdvantage, Modifier } = require('../../imports.js');
+
+const NAME = 'Squibbit';
+const DESCRIPTION = 'A common sight near rivers and lakes in the summer.';
+const IMAGE_SRC = 'pikachu.png';
+const RARITY = Rarities.Common;
+const HEALTH = 120;
+const ATTACK = 40;
+const DEFENSE = 60;
+const SPEED = 40;
+const MAGIC = 40;
+const TYPES = [Types.Water];
+
+const SPLASH_POWER = 0.6;
+const SPLASH_TYPE = Types.Water;
+const splash = {
+  name: 'Splash', 
+  description: 'Deal moderate damage to a target.',
+  level: 1,
+  type: SPLASH_TYPE,
+  priority: 0,
+  target: Targets.Field,
+  execute: (params) => {
+    const self = params.self;
+    const target = params.target;
+    const damage = damageCalc(
+      SPLASH_POWER * self.getBaseStat(Stats.Attack), 
+      self.getStat(Stats.Attack, { self: self }), 
+      target.getStat(Stats.Defense, { self: target }),
+      SPLASH_TYPE,
+      target.types,
+    );
+    target.doDamage(damage, typeAdvantage(HYDRATE_TYPE, target.types));
+    self.emitEvent(Events.didAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.gotAttacked, { self: target, agent: self, damage: damage});
+  },
+};
+
+const encouragement = {
+  name: 'Encouragement', 
+  description: "Raise target's attack and defense by 30%. Activates early.",
+  level: 1,
+  type: Types.None,
+  priority: 1,
+  target: Targets.Field,
+  execute: (params) => {
+    const target = params.target;
+    if (!target.knockedOut()) {
+      target.modifiers.push(new Modifier({
+        stat: Stats.Defense,
+        duration: Infinity,
+        modify: (def, params) => def * 1.3,
+      }));
+      target.modifiers.push(new Modifier({
+        stat: Stats.Attack,
+        duration: Infinity,
+        modify: (atk, params) => atk * 1.3,
+      }));
+      target.log(`${target.name}'s attack and defense rose!'`);
+    }
+  },
+};
+
+const ABILITIES = [splash, encouragement];
+
+const HEADER = [NAME, DESCRIPTION, IMAGE_SRC, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
+
+module.exports = new Card(...HEADER);
