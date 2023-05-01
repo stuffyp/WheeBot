@@ -51,6 +51,7 @@ module.exports = class Unit {
   status; // status effect - unique
   item; // item - unique
   log; // string output of what this unit does in a turn
+  onField; // whether unit is on field
   constructor(card) {
     this.name = card.name;
     this.health = card.health;
@@ -66,6 +67,7 @@ module.exports = class Unit {
     this.status = null;
     this.item = null;
     this.log = (text) => { console.error(`${this.name} logging into the void!`) };
+    this.onField = false;
   }
 
   setItem(item) { this.item = item; return this; }

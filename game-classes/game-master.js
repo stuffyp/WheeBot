@@ -2,13 +2,14 @@ const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
 const { Stats, StatusEffects } = require('../util/enums.js');
-const { rollChance } = require('../util/random.js');
+const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
 
 module.exports = class GameMaster {
   users;
   units;
   activeUnits;
+  graveyard;
   log;
   channel;
   winner;
@@ -18,6 +19,7 @@ module.exports = class GameMaster {
     this.users = [];
     this.units = {};
     this.activeUnits = {};
+    this.graveyard = {};
     this.log = [];
     this.channel = channel;
     this.winner = null;
@@ -33,6 +35,7 @@ module.exports = class GameMaster {
     });
     this.units[id] = [];
     this.activeUnits[id] = [];
+    this.graveyard[id] = [];
     return this;
   }
 
@@ -64,7 +67,38 @@ module.exports = class GameMaster {
   setActiveUnit(userId, fullID) {
     const unit = this.units[userId].find(u => u.fullID === fullID);
     this.activeUnits[userId].push(unit);
+    unit.unit.onField = true;
     this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
+  }
+
+  substitute(userId, fullID1, fullID2) {
+    const unitIndex = this.activeUnits[userId].findIndex(u => u.fullID === fullID1);
+    const sub = this.units[userId].find(u => u.fullID === fullID2);
+    if (!sub) {
+      const intendedSub = [...this.activeUnits[userId], ...this.graveyard[userId]].find(u => u.fullID === fullID2);
+      const intendedUnit = this.activeUnits[userId].find(u => u.fullID === fullID1);
+      this.log.push(`${intendedUnit.unit.name} tried to swap out with ${intendedSub.unit.name} but failed!`);
+      return;
+    }
+    sub.unit.onField = true;
+    this.units[userId] = this.units[userId].filter(u => u.fullID !== fullID2);
+    const unit = this.activeUnits[userId].splice(unitIndex, 1, sub)[0];
+    unit.unit.onField = false;
+    this.units[userId].push(unit);
+    this.log.push(`${sub.unit.name} swapped in for ${unit.unit.name}!`);
+  }
+
+  #cleanUpKO(userId) {
+    const field = this.activeUnits[userId];
+    const subs = this.units[userId];
+    while(subs.length && field.some((u) => u.unit.knockedOut())) {
+      // console.error(subs, field);
+      this.substitute(userId, field.find(u => u.unit.knockedOut()).fullID, subs[randInt(subs.length)].fullID);
+      this.graveyard[userId].push(subs.pop()); // relies on assumption that substitute pushes to end
+    }
+    const leftover = field.filter(u => u.unit.knockedOut());
+    this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
+    this.graveyard[userId].push(...leftover);
   }
 
   display() {
@@ -97,6 +131,11 @@ module.exports = class GameMaster {
       this.log.push(`${command.agent.unit.name} was stunned and passes their turn!`);
       return;
     }
+    if (!command.target.unit.onField) {
+      this.log.push(`**${command.agent.unit.name}** tried to target **${command.target.unit.name}** with **${command.name}**, but failed due to a change in formation!`);
+      return;
+    }
+    
     this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);
     const user = command.agent.user;
     const otherUser = this.users.find((u) => u.id !== user).id;
@@ -106,6 +145,8 @@ module.exports = class GameMaster {
       allies: this.activeUnits[user].map(u => u.unit),
       enemies: this.activeUnits[otherUser].map(u => u.unit),
     });
+    this.#cleanUpKO(user);
+    this.#cleanUpKO(otherUser);
   }
 
   #checkWin() {

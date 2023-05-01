@@ -119,9 +119,9 @@ const finishBattle = async (winner, combatID, channel, timeout=false) => {
     const fullUsers = GM.users;
     const embed = new EmbedBuilder()
       .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
-      .addFields({ name: fullUsers[0].name, value: String(fullUsers[0].elo), inline: true })
+      .addFields({ name: fullUsers[0].name, value: String(Math.round(fullUsers[0].elo)), inline: true })
       .addFields({ name: '\u200B', value: '\u200B', inline: true })
-      .addFields({ name: fullUsers[1].name, value: String(fullUsers[1].elo), inline: true })
+      .addFields({ name: fullUsers[1].name, value: String(Math.round(fullUsers[1].elo)), inline: true })
     if (timeout) embed.setDescription('Combat timed out.');
 
     channel.send({ embeds: [embed] });
