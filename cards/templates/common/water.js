@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types, Targets, Events, Stats, damageCalc } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Targets, Events, Stats, damageCalc, typeAdvantage } = require('../../imports.js');
 
 const NAME = 'Water';
 const DESCRIPTION = 'A necessity of life.';
@@ -30,7 +30,7 @@ const hydrate = {
       HYDRATE_TYPE,
       target.types,
     );
-    target.doDamage(damage);
+    target.doDamage(damage, typeAdvantage(HYDRATE_TYPE, target.types));
     self.emitEvent(Events.didAttack);
     target.emitEvent(Events.gotAttacked);
   },

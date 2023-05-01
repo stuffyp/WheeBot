@@ -1,4 +1,4 @@
-const { Card, Rarities, StatusEffects, Types, Stats, Events, Targets, damageCalc } = require('../../imports.js');
+const { Card, Rarities, StatusEffects, Types, Stats, Events, Targets, damageCalc, typeAdvantage } = require('../../imports.js');
 
 const NAME = 'Baguette';
 const DESCRIPTION = 'Your standard fare.';
@@ -30,7 +30,7 @@ const harden = {
       HARDEN_TYPE,
       target.types,
     );
-    target.doDamage(damage);
+    target.doDamage(damage, typeAdvantage(HARDEN_TYPE, target.types));
     self.emitEvent(Events.didAttack);
     target.emitEvent(Events.gotAttacked);
   },
@@ -55,7 +55,7 @@ const slam = {
       SLAM_TYPE,
       target.types,
     );
-    target.doDamage(damage);
+    target.doDamage(damage, typeAdvantage(SLAM_TYPE, target.types));
     self.emitEvent(Events.didAttack);
     target.emitEvent(Events.gotAttacked);
   },

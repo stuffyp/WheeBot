@@ -91,6 +91,7 @@ const gameLoop = async (combatID, channel) => {
 
 const finishBattle = async (winner, combatID, channel, timeout=false) => {
   const battle = getBattle(combatID);
+  if (!battle) return;
   const { users, GM } = battle;
   
   if (winner) {

@@ -161,10 +161,13 @@ module.exports = class Unit {
     }
   }
 
-  doDamage(damage) {
+  doDamage(damage, effective=1) {
     if (this.knockedOut()) return;
     this.health = Math.max(0, this.health - damage);
-    this.log(`${this.name} took ${damage} damage!`);
+    let effectiveText = '';
+    if (effective < 1) effectiveText = ' It was not very effective...';
+    if (effective > 1) effectiveText = ' It was super effective!'
+    this.log(`${this.name} took ${damage} damage!${effectiveText}`);
     if (this.knockedOut()) this.knockOut();
   }
 

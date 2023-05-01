@@ -135,12 +135,12 @@ const moveSelect = async (interaction) => {
   selectOptions = gm.activeUnits[otherUser].map((u) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(u.unit.name)
-      .setValue(String(u.fullID))
+      .setValue('o'+String(u.fullID))
   });
   const moreSelectOptions = activeUnits.map((u) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(`${u.unit.name} (friendly)`)
-      .setValue(String(u.fullID))
+      .setValue('u'+String(u.fullID))
   });
   select = new StringSelectMenuBuilder()
     .setCustomId('targetSelect')
@@ -156,7 +156,8 @@ const moveSelect = async (interaction) => {
 
   success = await waitSelect('targetSelect');
   if (!success) return;
-  const target = [...activeUnits, ...gm.activeUnits[otherUser]].find((u) => u.fullID === parseInt(confirmation.values[0]));
+  const formation = confirmation.values[0][0] === 'u' ? activeUnits : gm.activeUnits[otherUser];
+  const target = formation.find((u) => u.fullID === parseInt(confirmation.values[0].slice(1, Infinity)));
   if (battle.readyUsers.includes(user)) {
     interaction.editReply({
       content: `Oops! You have ended your turn. Aborting command.`,
