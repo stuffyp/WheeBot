@@ -1,5 +1,6 @@
 const Card = require('./card.js');
-const { Rarities, StatusEffects, Types, Targets } = require('../util/enums.js');
+const { Rarities, StatusEffects, Stats, Types, Events, Targets } = require('../util/enums.js');
+const { damageCalc } = require('../util/math-func.js');
 
 module.exports = {
   Card: Card,
@@ -7,4 +8,7 @@ module.exports = {
   StatusEffects: StatusEffects,
   Targets: Targets,
   Types: Types,
+  Events: Events,
+  Stats: Stats,
+  damageCalc: damageCalc,
 }

@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
+const { Stats } = require('../util/enums.js');
 const Unit = require('./unit.js');
 
 module.exports = class GameMaster {
@@ -10,6 +11,7 @@ module.exports = class GameMaster {
   log;
   channel;
   winner;
+  gameOver;
   commands;
   constructor(channel) {
     this.users = [];
@@ -18,6 +20,7 @@ module.exports = class GameMaster {
     this.log = [];
     this.channel = channel;
     this.winner = null;
+    this.gameOver = false;
     this.commands = [];
   }
 
@@ -79,6 +82,79 @@ module.exports = class GameMaster {
   }
 
   queueCommand(command) {
+    this.commands = this.commands.filter((c) => c.agent.fullID !== command.agent.fullID);
     this.commands.push(command);
+  }
+
+  #executeCommand() {
+    const command = this.commands.shift();
+    if (command.agent.unit.knockedOut()) {
+      this.log.push(`${command.agent.unit.name} was knocked out and passes their turn!`);
+      return;
+    }
+    this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);
+    const user = command.agent.user;
+    const otherUser = this.users.find((u) => u.id !== user).id;
+    command.execute({
+      self: command.agent.unit,
+      target: command.target.unit,
+      allies: this.activeUnits[user].map(u => u.unit),
+      enemies: this.activeUnits[otherUser].map(u => u.unit),
+    });
+  }
+
+  #checkWin() {
+    const user = this.users[0].id;
+    const otherUser = this.users[1].id;
+    const userKO = this.activeUnits[user].every(u => u.unit.knockedOut());
+    const otherUserKO = this.activeUnits[otherUser].every(u => u.unit.knockedOut());
+    if (userKO && otherUserKO) {
+      this.gameOver = true;
+      return true;
+    } else if (userKO) {
+      this.gameOver = true;
+      return true;
+      this.winner = otherUser;
+    } else if (otherUserKO) {
+      this.gameOver = true;
+      this.winner = user;
+      return true;
+    }
+    return false;
+    // pass
+  }
+
+  executeCommands() {
+    const user = this.users[0].id;
+    const otherUser = this.users[1].id;
+    let activeUnits = [...this.activeUnits[user], ...this.activeUnits[otherUser]];
+    activeUnits.sort((a, b) => {
+      return b.unit.speed - a.unit.speed || Math.random() - 0.5;
+    });
+    while (activeUnits.length) {
+      const u = activeUnits.shift();
+      if (u.unit.knockedOut()) continue;
+      u.unit.startTurn({ self: u.unit });
+      if (this.#checkWin()) return;
+    }
+    
+    this.commands.sort((a, b) => {
+      return b.priority - a.priority || b.speed - a.speed || Math.random() - 0.5;
+    });
+    while (this.commands.length) {
+      this.#executeCommand();
+      if (this.#checkWin()) return;
+    }
+
+    activeUnits = [...this.activeUnits[user], ...this.activeUnits[otherUser]];
+    activeUnits.sort((a, b) => {
+      return b.unit.speed - a.unit.speed || Math.random() - 0.5;
+    });
+    while (activeUnits.length) {
+      const u = activeUnits.shift();
+      if (u.unit.knockedOut()) continue;
+      u.unit.endTurn({ self: u.unit });
+      if (this.#checkWin()) return;
+    }
   }
 }

@@ -113,6 +113,7 @@ module.exports = class Unit {
   }
 
   emitEvent(event, params) {
+    if (this.knockedOut()) return;
     const listeners = this.item ? [...this.listeners, ...this.item.listeners] : this.listeners;
     listeners.forEach(listener => { 
       const out = listener.doEffect(event, params);
@@ -152,11 +153,24 @@ module.exports = class Unit {
 
   endTurn(params) {
     this.emitEvent(Events.TurnEnd, params);
-    this.cleanUpTimers(this.listeners, params);
-    this.cleanUpTimers(this.modifiers, params);
+    this.#cleanUpTimers(this.listeners, params);
+    this.#cleanUpTimers(this.modifiers, params);
     if (this.item) {
-      this.cleanUpTimers(this.item.listeners, params);
-      this.cleanUpTimers(this.item.modifiers, params);
+      this.#cleanUpTimers(this.item.listeners, params);
+      this.#cleanUpTimers(this.item.modifiers, params);
     }
+  }
+
+  doDamage(damage) {
+    if (this.knockedOut()) return;
+    this.health = Math.max(0, this.health - damage);
+    this.log(`${this.name} took ${damage} damage!`);
+    if (this.knockedOut()) this.knockOut();
+  }
+
+  doHeal(heal) {
+    if (this.knockedOut()) return;
+    this.health = Math.min(this.maxHealth, this.health + heal);
+    this.log(`${this.name} recovered ${heal} health!`);
   }
 }

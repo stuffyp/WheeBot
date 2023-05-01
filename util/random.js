@@ -24,7 +24,15 @@ module.exports = {
       result.push(bucketCopy.splice(randInt(bucketCopy.length), 1)[0]);
     }
     return result;
-  }
+  },
+  shuffleArray: (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = randInt(i + 1);
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+  },
 }
 
 

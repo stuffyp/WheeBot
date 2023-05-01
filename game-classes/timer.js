@@ -10,5 +10,5 @@ module.exports = class Timer {
   }
 
   tick() { this.turnCount++ }
-  done() { return this.turnCount === duration } // activates only on the turn the timer finishes
+  done() { return this.turnCount === this.duration } // activates only on the turn the timer finishes
 }

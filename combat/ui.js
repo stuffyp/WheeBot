@@ -1,6 +1,7 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
+const { Stats } = require('../util/enums.js');
 const { askConfirmation } = require('../util/ui-logic.js');
 const Command = require('../game-classes/command.js');
 
@@ -156,12 +157,27 @@ const moveSelect = async (interaction) => {
   success = await waitSelect('targetSelect');
   if (!success) return;
   const target = [...activeUnits, ...gm.activeUnits[otherUser]].find((u) => u.fullID === parseInt(confirmation.values[0]));
+  if (battle.readyUsers.includes(user)) {
+    interaction.editReply({
+      content: `Oops! You have ended your turn. Aborting command.`,
+      components: [],
+      ephemeral: true,
+    });
+    return;
+  }
   interaction.editReply({
     content: `**${agent.unit.name}** will target **${target.unit.name}** with **${ability.name}**.`,
     components: [],
     ephemeral: true,
   });
-  gm.queueCommand(new Command().setAgent(agent).setTarget(target).setExecute(ability.execute));
+  gm.queueCommand(new Command()
+    .setAgent(agent)
+    .setTarget(target)
+    .setExecute(ability.execute)
+    .setPriority(ability.priority)
+    .setName(ability.name)
+    .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+  );
 }
 
 const handleTurn = async (interaction, doForfeit) => {

@@ -71,12 +71,19 @@ const gameLoop = async (combatID, channel) => {
     updateBattle(combatID);
     
     // when both users end turn, execute GM
+    GM.executeCommands();
+    
     // write log to channel
+    const log = GM.getLog();
+    while (log.length) {
+      const chunk = log.splice(0, 5);
+      await channel.send(chunk.join('\n'));
+    }
     
     // check win
-    if (GM.winner) {
+    if (GM.gameOver) {
       buttonCollector.stop();
-      finishBattle(winner, combatID, channel);
+      finishBattle(GM.winner, combatID, channel);
       return;
     }
   }
