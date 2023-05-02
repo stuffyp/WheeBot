@@ -50,7 +50,7 @@ module.exports = class GameMaster {
   }
 
   loadUnit(cardFromDb, userId) {
-    const {id, level, exp, fullID, item} = cardFromDb;
+    const { id, level, exp, fullID, item } = cardFromDb;
     const username = this.users.find(u => u.id === userId).name;
     this.units[userId].push({
       user: userId,
@@ -105,7 +105,7 @@ module.exports = class GameMaster {
   }
 
   display() {
-    const embeds = this.users.map(({id, name}) => {
+    const embeds = this.users.map(({ id, name }) => {
       const availableUnits = this.activeUnits[id].length + this.units[id].length;
       const totalUnits = availableUnits + this.graveyard[id].length;
       return new EmbedBuilder()
@@ -172,7 +172,7 @@ module.exports = class GameMaster {
       target: command.target ? command.target.unit : null,
       allies: this.activeUnits[user].map(u => u.unit),
       enemies: this.activeUnits[otherUser].map(u => u.unit),
-      sub: () => { 
+      sub: () => {
         if (command.agent.unit.status === StatusEffects.Trapped) {
           this.log.push(`${command.agent.unit.name} tried to swap out but was trapped!`);
           return;
