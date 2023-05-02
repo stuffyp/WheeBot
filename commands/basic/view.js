@@ -18,9 +18,11 @@ const INVENTORY_SLICE_SIZE = 10;
 
 const executeView = async (interaction) => {
   const userId = interaction.user.id;
+  const userCheck = await getUser(userId);
+  const success = await validateUser(userCheck, interaction);
+  if (!success) return;
   await sortUser(userId, interaction.options.getString('sort_by') ?? SortBy.ID);
   const user = await getUser(userId);
-  await validateUser(user, interaction);
   if (user.cardCollection.length === 0) {
     await interaction.reply('Your collection is empty.');
     return;
@@ -51,10 +53,11 @@ const executeView = async (interaction) => {
 
 const executeDetailed = async (interaction) => {
   const userId = interaction.user.id;
+  const userCheck = await getUser(userId);
+  const success = await validateUser(userCheck, interaction);
+  if (!success) return;
   await sortUser(userId, interaction.options.getString('sort_by') ?? SortBy.ID);
   const user = await getUser(userId);
-  const success = await validateUser(user, interaction);
-  if (!success) return;
   if (user.cardCollection.length === 0) {
     await interaction.reply('Your collection is empty.');
     return;

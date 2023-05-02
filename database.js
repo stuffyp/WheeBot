@@ -95,44 +95,42 @@ const updateUser = async (id, callback) => {
 };
 
 const sortUser = async (userId, sortBy) => {
-    await locks[userId].runExclusive(async () => {
-        const user = await getUser(userId);
-        if (user === null) return;
-        updateUser(userId, (u) => {
-            switch (sortBy) {
-                case SortBy.ID:
-                    u.cardCollection = u.cardCollection.sort((a, b) => {
-                        const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-                        return aRarity - bRarity || a.id.localeCompare(b.id) || a.level - b.level;
-                    });
-                    break;
+    const user = await getUser(userId);
+    if (user === null) return;
+    await updateUser(userId, (u) => {
+        switch (sortBy) {
+            case SortBy.ID:
+                u.cardCollection = u.cardCollection.sort((a, b) => {
+                    const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+                    return aRarity - bRarity || a.id.localeCompare(b.id) || a.level - b.level;
+                });
+                break;
 
-                case SortBy.ID_r:
-                    u.cardCollection = u.cardCollection.sort((a, b) => {
-                        const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-                        return bRarity - aRarity || b.id.localeCompare(a.id) || b.level - a.level;
-                    });
-                    break;
+            case SortBy.ID_r:
+                u.cardCollection = u.cardCollection.sort((a, b) => {
+                    const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+                    return bRarity - aRarity || b.id.localeCompare(a.id) || b.level - a.level;
+                });
+                break;
 
-                case SortBy.Level:
-                    u.cardCollection = u.cardCollection.sort((a, b) => {
-                        const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-                        return a.level - b.level || aRarity - bRarity || a.id.localeCompare(b.id);
-                    });
-                    break;
+            case SortBy.Level:
+                u.cardCollection = u.cardCollection.sort((a, b) => {
+                    const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+                    return a.level - b.level || aRarity - bRarity || a.id.localeCompare(b.id);
+                });
+                break;
 
-                case SortBy.Level_r:
-                    u.cardCollection = u.cardCollection.sort((a, b) => {
-                        const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
-                        return b.level - a.level || bRarity - aRarity || b.id.localeCompare(a.id);
-                    });
-                    break;
+            case SortBy.Level_r:
+                u.cardCollection = u.cardCollection.sort((a, b) => {
+                    const [aRarity, bRarity] = [getRarity(a.id), getRarity(b.id)];
+                    return b.level - a.level || bRarity - aRarity || b.id.localeCompare(a.id);
+                });
+                break;
 
-                default:
-                    throw new Error(`Invalid sorting parameter: ${sortBy}`);
-            }
-            return u;
-        });
+            default:
+                throw new Error(`Invalid sorting parameter: ${sortBy}`);
+        }
+        return u;
     });
 };
 
