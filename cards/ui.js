@@ -33,6 +33,9 @@ const display = (card, level=null) => {
     	{ name: `Health`, value: `${card.health}`, inline: true },
       { name: `Attack`, value: `${card.attack}`, inline: true },
       { name: `Defense`, value: `${card.defense}`, inline: true },
+      { name: `Speed`, value: `${card.speed}`, inline: true },
+      { name: `Magic`, value: `${card.magic}`, inline: true },
+      { name: '\u200b', value: '\u200b', inline: true },
     )
     .addFields(abilities)
 }
