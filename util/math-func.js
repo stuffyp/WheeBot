@@ -101,7 +101,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Mystic}`]: 1,
     [`${Types.None}`]: 1,
   },
-}
+};
 
 const RARITY_COIN_MULT = {
   [`${Rarities.Common}`]: 1,
@@ -110,18 +110,20 @@ const RARITY_COIN_MULT = {
   [`${Rarities.Legendary}`]: 8,
 };
 
+const retireCoins = (rarity, level) => {
+  return Math.floor(Math.pow(level + 20, 2) * RARITY_COIN_MULT[rarity] * randRange(75, 125) / 400);
+};
+
 const typeAdvantage = (attackType, defenseTypes) => {
   return defenseTypes.reduce((cur, dType) => cur * TYPE_ADVANTAGE[attackType][dType], 1);
-}
+};
+
+const damageCalc = (power, attack, defense, attackType, defenseTypes) => {
+  return Math.ceil(power * attack * typeAdvantage(attackType, defenseTypes) / defense);
+};
 
 module.exports = {
-  retireCoins: (rarity, level) => {
-    return Math.floor(Math.pow(level + 20, 2) * RARITY_COIN_MULT[rarity] * randRange(75, 125) / 400);
-  },
-
-  typeAdvantage: typeAdvantage,
-
-  damageCalc: (power, attack, defense, attackType, defenseTypes) => {
-    return Math.ceil(power * attack * typeAdvantage(attackType, defenseTypes) / defense);
-  },
-}
+  retireCoins,
+  typeAdvantage,
+  damageCalc,
+};

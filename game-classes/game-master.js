@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
-const { Stats, StatusEffects, Targets } = require('../util/enums.js');
+const { StatusEffects, Targets } = require('../util/enums.js');
 const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
 
@@ -50,7 +50,7 @@ module.exports = class GameMaster {
   }
 
   loadUnit(cardFromDb, userId) {
-    const {id, level, exp, fullID, item} = cardFromDb;
+    const { id, level, exp, fullID, item } = cardFromDb;
     this.units[userId].push({
       user: userId,
       fullID: fullID,
@@ -65,7 +65,11 @@ module.exports = class GameMaster {
   }
 
   setActiveUnit(userId, fullID) {
+    console.error(this.units[userId]);
+    console.error(this.units[userId][0].fullID);
+    console.error(fullID);
     const unit = this.units[userId].find(u => u.fullID === fullID);
+    console.error(unit);
     this.activeUnits[userId].push(unit);
     unit.unit.onField = true;
     this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
@@ -91,10 +95,11 @@ module.exports = class GameMaster {
   #cleanUpKO(userId) {
     const field = this.activeUnits[userId];
     const subs = this.units[userId];
-    while(subs.length && field.some((u) => u.unit.knockedOut())) {
+    while (subs.length && field.some((u) => u.unit.knockedOut())) {
       // console.error(subs, field);
       this.substitute(userId, field.find(u => u.unit.knockedOut()).fullID, subs[randInt(subs.length)].fullID);
-      this.graveyard[userId].push(subs.pop()); // relies on assumption that substitute pushes to end
+      // relies on assumption that substitute pushes to end
+      this.graveyard[userId].push(subs.pop());
     }
     const leftover = field.filter(u => u.unit.knockedOut());
     this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
@@ -102,7 +107,7 @@ module.exports = class GameMaster {
   }
 
   display() {
-    const embeds = this.users.map(({id, name}) => {
+    const embeds = this.users.map(({ id, name }) => {
       return new EmbedBuilder()
         .setTitle(name)
         .addFields(this.activeUnits[id].map((u) => {
@@ -111,7 +116,7 @@ module.exports = class GameMaster {
             value: `❤️: ${u.unit.health}/${u.unit.maxHealth}`,
             inline: true,
           });
-        }))
+        }));
     });
     return embeds;
   }
@@ -132,7 +137,7 @@ module.exports = class GameMaster {
       return;
     }
 
-    switch(command.targetType) {
+    switch (command.targetType) {
       case Targets.None:
         this.log.push(`**${command.agent.unit.name}** used **${command.name}**!`);
         break;
@@ -153,7 +158,7 @@ module.exports = class GameMaster {
       default:
         break;
     }
-    
+
     const user = command.agent.user;
     const otherUser = this.users.find((u) => u.id !== user).id;
     command.execute({
@@ -161,7 +166,7 @@ module.exports = class GameMaster {
       target: command.target ? command.target.unit : null,
       allies: this.activeUnits[user].map(u => u.unit),
       enemies: this.activeUnits[otherUser].map(u => u.unit),
-      sub: () => { this.substitute(user, command.agent.fullID, command.target.fullID) },
+      sub: () => { this.substitute(user, command.agent.fullID, command.target.fullID); },
     });
     this.#cleanUpKO(user);
     this.#cleanUpKO(otherUser);
@@ -177,8 +182,8 @@ module.exports = class GameMaster {
       return true;
     } else if (userKO) {
       this.gameOver = true;
-      return true;
       this.winner = otherUser;
+      return true;
     } else if (otherUserKO) {
       this.gameOver = true;
       this.winner = user;
@@ -201,7 +206,7 @@ module.exports = class GameMaster {
       u.unit.startTurn({ self: u.unit });
       if (this.#checkWin()) return;
     }
-    
+
     this.commands.sort((a, b) => {
       return b.priority - a.priority || b.speed - a.speed || Math.random() - 0.5;
     });
@@ -221,4 +226,4 @@ module.exports = class GameMaster {
       if (this.#checkWin()) return;
     }
   }
-}
+};

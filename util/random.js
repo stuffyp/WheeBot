@@ -28,10 +28,10 @@ module.exports = {
   shuffleArray: (arr) => {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = randInt(i + 1);
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
   },
-}
+};
 // console.error(module.exports.sampleRange(5, 5));

@@ -10,7 +10,7 @@ module.exports = class Command {
     this.agent = null;
     this.target = null;
     this.name = '0xDEADBEEF';
-    this.execute = () => { return };
+    this.execute = () => { return; };
   }
 
   setAgent(agent) {
@@ -24,7 +24,8 @@ module.exports = class Command {
   }
 
   setTargetType(targetType) {
-    this.targetType = targetType; // field, none, or sub
+    this.targetType = targetType;
+    // field, none, or sub
     return this;
   }
 
@@ -47,4 +48,4 @@ module.exports = class Command {
     this.priority = priority;
     return this;
   }
-}
+};

@@ -1,12 +1,11 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
-const { MS_MINUTE } = require("../../util/constants.js");
-const { getUser, updateUser, syncCombat } = require("../../manage-user.js");
-const { validateUser } = require("../../util/ui-logic.js");
-const { startBattle } = require("../../combat/combat-setup.js");
-const { getCombatID, setCombatID, refreshBattles } = require("../../combat/battle-storage.js");
+const { MS_MINUTE } = require('../../util/constants.js');
+const { getUser, syncCombat } = require('../../database.js');
+const { validateUser } = require('../../util/ui-logic.js');
+const { startBattle } = require('../../combat/combat-setup.js');
+const { getCombatID, refreshBattles } = require('../../combat/battle-storage.js');
 
 const TIME_LIMIT = 15 * MS_MINUTE;
-const WAITING = 'waiting';
 
 const acceptButton = new ButtonBuilder()
   .setCustomId('accept')
@@ -18,16 +17,16 @@ const data = new SlashCommandBuilder()
 	.setName('battle')
 	.setDescription('Initiate combat.')
 	.addSubcommand(subcommand =>
-  		subcommand
-  			.setName('start')
-  			.setDescription('Initiate a challenge'))
+      subcommand
+        .setName('start')
+        .setDescription('Initiate a challenge'));
 
 const executeStart = async (interaction) => {
-  const user = interaction.user.id;
-  const userData = await getUser(user);
-  const success = await validateUser(userData, interaction);
+  const userId = interaction.user.id;
+  const user = await getUser(userId);
+  const success = await validateUser(user, interaction);
   if (!success) return;
-  if (userData.party.length === 0) {
+  if (user.party.length === 0) {
     await interaction.reply({
       content: 'Your party is too small (use /manage to add cards to your party).',
       ephemeral: true,
@@ -35,7 +34,7 @@ const executeStart = async (interaction) => {
     return;
   }
   refreshBattles();
-  if (getCombatID(user)) {
+  if (getCombatID(userId)) {
     await interaction.reply({
       content: 'You are already in a battle.',
       ephemeral: true,
@@ -55,25 +54,25 @@ const executeStart = async (interaction) => {
   });
   let challengeAccepted = false;
   buttonCollector.on('collect', async (i) => {
-    const otherUser = i.user.id;
-    if (otherUser === user) {
+    const otherUserId = i.user.id;
+    if (otherUserId === userId) {
       await i.reply({
         content: 'Please wait for someone else to accept your challenge.',
         ephemeral: true,
       });
       return;
     }
-    const otherUserData = await getUser(otherUser);
-    const otherSuccess = await validateUser(otherUserData, i);
+    const otherUser = await getUser(otherUserId);
+    const otherSuccess = await validateUser(otherUser, i);
     if (!otherSuccess) return;
-    if (otherUserData.party.length === 0) {
+    if (otherUser.party.length === 0) {
       await i.reply({
         content: 'Your party is too small (use /manage to add cards to your party).',
         ephemeral: true,
       });
       return;
     }
-    const syncSuccess = await syncCombat(user, otherUser);
+    const syncSuccess = await syncCombat(userId, otherUserId);
     if (syncSuccess === 0) {
       await i.reply({
         content: 'Interaction failed. One of you two is already in a battle.',
@@ -94,7 +93,7 @@ const executeStart = async (interaction) => {
       components: [],
     });
     challengeAccepted = true;
-    startBattle(user, otherUser, interaction.user.username, i.user.username, interaction.channel);
+    startBattle(userId, otherUserId, interaction.user.username, i.user.username, interaction.channel);
   });
 
   buttonCollector.on('end', () => {
@@ -104,8 +103,7 @@ const executeStart = async (interaction) => {
       components: [],
     });
   });
-  
-}
+};
 
 const execute = async (interaction) => {
   switch (interaction.options.getSubcommand()) {
@@ -115,7 +113,7 @@ const execute = async (interaction) => {
     default:
       console.error(`An unknown subcommand was registered: ${interaction.options.getSubcommand()}`);
   }
-}
+};
 
 module.exports = {
 	data,

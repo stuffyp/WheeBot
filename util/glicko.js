@@ -1,4 +1,4 @@
-const { STARTING_GLICKO, MS_DAY } = require('./constants.js');
+const { MS_DAY } = require('./constants.js');
 
 const MAX_RD = 300;
 const MIN_RD = 30;
@@ -10,18 +10,22 @@ const SQRT3 = Math.sqrt(3);
 const calcRD = (glicko) => {
   const daysInactive = Math.floor((Date.now() - glicko.lastUpdated) / MS_DAY);
   return Math.min(Math.hypot(glicko.rd, C * Math.sqrt(daysInactive)), MAX_RD);
-}
+};
+
 const calcG = (rd) => {
   return 1 / Math.hypot(1, SQRT3 * Q * rd / Math.PI);
-}
+};
+
 const expected = (g, diff) => {
   const ex = g * diff / -400;
   return 1 / (1 + Math.pow(10, ex));
-}
+};
+
 // 1/d^2
-const dSquaredInv = (g, expected) => {
-  return (Q * g)**2 * expected * (1 - expected);
-}
+const dSquaredInv = (g, exp) => {
+  return (Q * g) ** 2 * exp * (1 - exp);
+};
+
 const denom = (dsInv, rd) => (dsInv + rd ** -2);
 
 module.exports = {
@@ -43,8 +47,8 @@ module.exports = {
     loser.elo += Q * g_w * (0 - expected_l) / denom_l;
     winner.rd = Math.max(MIN_RD, Math.sqrt(1 / denom_w));
     loser.rd = Math.max(MIN_RD, Math.sqrt(1 / denom_l));
-    
+
     winner.lastUpdated = Date.now();
     loser.lastUpdated = Date.now();
   },
-}
+};

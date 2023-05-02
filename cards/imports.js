@@ -18,4 +18,4 @@ module.exports = {
   rollChance: rollChance,
   Modifier: Modifier,
   Listener: Listener,
-}
+};

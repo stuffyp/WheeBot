@@ -9,7 +9,8 @@ module.exports = class ItemBuilder {
   constructor() {
     this.listeners = [];
     this.modifiers = [];
-    this.name = '0xDEADBEEF'; // should be modified
+    // should be modified
+    this.name = '0xDEADBEEF';
     this.consume = (params) => { return; };
   }
 
@@ -17,4 +18,4 @@ module.exports = class ItemBuilder {
   addModifier(params) { this.modifiers.push(new Modifier(params)); return this; }
   setConsume(consume) { this.consume = consume; return this; }
   setName(name) { this.name = name; return this; }
-}
+};

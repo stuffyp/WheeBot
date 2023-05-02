@@ -12,11 +12,12 @@ const refreshBattles = () => {
     if (battle === null) return;
     if (battle.lastUpdated + REFRESH_TIMEOUT < Date.now()) endBattle(battle.combatID);
   });
-}
+};
 
 const generateBattle = () => {
   let combatID = randInt(999_999_999);
   while (activeBattles[combatID]) combatID = randInt(999_999_999);
+  // placeholder
   activeBattles[combatID] = {
     lastUpdated: Date.now(),
     combatID: combatID,
@@ -24,9 +25,9 @@ const generateBattle = () => {
     readyUsers: [],
     listeners: [],
     GM: null,
-  }; // placeholder
+  };
   return combatID;
-}
+};
 
 const endBattle = (combatID) => {
   const users = activeBattles[combatID].users;
@@ -34,9 +35,9 @@ const endBattle = (combatID) => {
   users.forEach((u) => {
     userToCombatID[u] = null;
   });
-}
+};
 
-const updateBattle = (combatID) => { 
+const updateBattle = (combatID) => {
   activeBattles[combatID].lastUpdated = Date.now();
 };
 
@@ -44,16 +45,16 @@ const getBattle = (combatID) => activeBattles[combatID];
 
 const setGM = (combatID, gm) => {
   activeBattles[combatID].GM = gm;
-}
+};
 
 const getCombatID = (userId) => {
   return userToCombatID[userId];
-}
+};
 
 const setCombatID = (userId, combatID) => {
   userToCombatID[userId] = combatID;
   activeBattles[combatID].users.push(userId);
-}
+};
 
 const readyUser = (userId) => {
   const combatID = userToCombatID[userId];
@@ -67,18 +68,18 @@ const readyUser = (userId) => {
     battle.listeners = [];
     battle.readyUsers = [];
   }
-}
+};
 
 const waitReady = (combatId) => {
   return new Promise((resolve, reject) => {
-    activeBattles[combatId].listeners.push(() => { resolve() });
-    setTimeout(() => { reject() }, TIMEOUT);
+    activeBattles[combatId].listeners.push(() => { resolve(); });
+    setTimeout(() => { reject(); }, TIMEOUT);
   });
-}
+};
 
 const dump = () => {
   return activeBattles;
-}
+};
 
 module.exports = {
   generateBattle,
@@ -92,4 +93,4 @@ module.exports = {
   readyUser,
   waitReady,
   dump,
-}
+};

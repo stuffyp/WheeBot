@@ -1,12 +1,12 @@
 const { EmbedBuilder } = require('discord.js');
-const { getItem } = require("./read-items.js");
+const { getItem } = require('./read-items.js');
 
 const display = (item) => {
   return new EmbedBuilder()
     .setTitle(item.name)
     .setDescription(item.description)
-    .addFields({ name: 'Cost', value: `${item.cost}` })
-}
+    .addFields({ name: 'Cost', value: `${item.cost}` });
+};
 
 module.exports = {
   display: display,
@@ -20,7 +20,7 @@ module.exports = {
     return new EmbedBuilder()
       .setTitle('Inventory')
       .addFields(outputFields)
-      .setFooter({ text: `Page ${index + 1}/${totalPages}` })
+      .setFooter({ text: `Page ${index + 1}/${totalPages}` });
   },
   displayShop: (ids) => {
     const items = ids.map(id => getItem(id));
@@ -28,8 +28,8 @@ module.exports = {
       .setTitle('Shop')
       .setDescription('💵 Buy items (refreshes daily).')
       .addFields(items.map(item => ({
-        name: `${item.name} (\$${item.cost})`,
+        name: `${item.name} ($${item.cost})`,
         value: item.description,
       })));
-  }
-}
+  },
+};

@@ -10,7 +10,7 @@ module.exports = class Card {
   magic;
   types;
   abilities;
-  constructor(name, description, imageSrc, rarity, health, attack, defense, speed, magic, types, abilities){
+  constructor(name, description, imageSrc, rarity, health, attack, defense, speed, magic, types, abilities) {
     this.name = name;
     this.description = description;
     this.imageSrc = imageSrc;
@@ -23,4 +23,4 @@ module.exports = class Card {
     this.types = types;
     this.abilities = abilities; // array of abilities
   }
-}
+};

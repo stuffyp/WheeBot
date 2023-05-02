@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { VERSION_NUMBER } = require("../../util/constants.js");
-const { getUser, updateUser } = require("../../manage-user.js");
-const { getCombatID } = require("../../combat/battle-storage.js");
+const { VERSION_NUMBER } = require('../../util/constants.js');
+const { getUser, updateUser } = require('../../database.js');
+// const { getCombatID } = require('../../combat/battle-storage.js');
 
 
 /*
@@ -29,7 +29,7 @@ const update = {
   '1.0': async (userData) => {
     return userData;
   },
-}
+};
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -38,6 +38,7 @@ module.exports = {
 	async execute(interaction) {
     const user = interaction.user.id;
     const userData = await getUser(user);
+    // if we revive this command need to refactor and switch to validateUser
     if (userData === null) {
       await interaction.reply({
         content: 'You have not yet registered for an account.',
@@ -47,13 +48,14 @@ module.exports = {
     }
     await interaction.deferReply({ ephemeral: true });
 
-    if (!(userData.version in update)){
+    if (!(userData.version in update)) {
       await interaction.editReply({
         content: 'An unexpected error occurred.',
         ephemeral: true,
       });
       return;
     }
+    // this updateUser probably doesn't work in Mongo database code
     await updateUser(user, update[userData.version]);
     await interaction.editReply({ content: `Successfully updated to version ${VERSION_NUMBER}!`, ephemeral: true });
 	},

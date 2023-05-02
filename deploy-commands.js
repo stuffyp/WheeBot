@@ -1,14 +1,12 @@
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
+const { TOKEN, CLIENT_ID, GUILD_ID } = require('./config.json');
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
-
-const CLIENT_ID = String(process.env.CLIENT_ID);
-const TEST_SERVER = String(process.env.TEST_SERVER);
 
 for (const folder of commandFolders) {
 	// Grab all the command files from the commands directory you created earlierc
@@ -27,7 +25,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(process.env.TOKEN);
+const rest = new REST().setToken(TOKEN);
 
 // and deploy your commands!
 (async () => {
@@ -36,16 +34,16 @@ const rest = new REST().setToken(process.env.TOKEN);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		// const data = await rest.put(
-  //   	Routes.applicationCommands(CLIENT_ID),
-  //   	{ body: commands },
-  //   );
-    const data = await rest.put(
-			Routes.applicationGuildCommands(CLIENT_ID, TEST_SERVER),
+		//   	Routes.applicationCommands(CLIENT_ID),
+		//   	{ body: commands },
+		//   );
+		const data = await rest.put(
+			Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
 			{ body: commands },
 		);
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-    console.log(commands);
+		console.log(commands);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
 		console.error(error);
