@@ -31,6 +31,7 @@ const teamSelect = async (interaction) => {
     content: 'Select your starting team!',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   const filter = i => i.customId === 'select' && i.user.id === interaction.user.id;
@@ -44,6 +45,10 @@ const teamSelect = async (interaction) => {
   }
 
   if (!getCombatID(user)) {
+    await interaction.editReply({ content: 'Oops! You are out of sync. Aborting command.', components: [], ephemeral: true });
+    return false;
+  }
+  if (gm.activeUnits[user].length) {
     await interaction.editReply({ content: 'Oops! You are out of sync. Aborting command.', components: [], ephemeral: true });
     return false;
   }
@@ -85,6 +90,7 @@ const moveSelect = async (interaction) => {
     content: 'Select a creature you control.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
   let confirmation = null;
   let success = false;
@@ -114,7 +120,9 @@ const moveSelect = async (interaction) => {
   if (!success) return;
   const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
 
-  selectOptions = agent.unit.abilities.map((a) => {
+  selectOptions = agent.unit.abilities.filter((a) => {
+    return a.target !== Targets.Sub || subs;
+  }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(a.name)
       .setValue(a.name);
@@ -128,12 +136,19 @@ const moveSelect = async (interaction) => {
       .setValue('Substitute'),
     );
   }
+  if (agent.unit.item && agent.unit.item.consume) {
+    select.addOptions(new StringSelectMenuOptionBuilder()
+      .setLabel(agent.unit.item.name)
+      .setValue('Item')
+    );
+  }
   row = new ActionRowBuilder()
     .addComponents(select);
   message = await interaction.editReply({
     content: 'Select a move.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   success = await waitSelect('abilitySelect');
@@ -153,6 +168,25 @@ const moveSelect = async (interaction) => {
         .setLabel(u.unit.name)
         .setValue('u' + String(u.fullID));
     });
+  } else if (confirmation.values[0] === 'Item') { 
+    targetType = Targets.Field; 
+    ability = {
+      name: agent.unit.item.name,
+      priority: 0,
+      execute: (params) => {
+        agent.unit.item.consume(params);
+      },
+    }
+    selectOptions = gm.activeUnits[otherUser].map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('o'+String(u.fullID))
+    });
+    selectOptions.push(...activeUnits.map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('u'+String(u.fullID))
+    }));
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
     if (ability.target === Targets.None) {
@@ -203,6 +237,7 @@ const moveSelect = async (interaction) => {
     content: 'Select a target.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   success = await waitSelect('targetSelect');
