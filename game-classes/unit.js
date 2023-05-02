@@ -37,12 +37,14 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 */
 
 module.exports = class Unit {
+  simpleName;
   name;
   maxHealth;
   health;
   attack;
   defense;
   speed;
+  magicRegen;
   magic;
   types;
   abilities;
@@ -52,14 +54,16 @@ module.exports = class Unit {
   item; // item - unique
   log; // string output of what this unit does in a turn
   onField; // whether unit is on field
+  mostRecentCost; // whether the last move used cost mana
   constructor(card) {
-    this.name = card.name;
+    this.simpleName = card.name;
     this.health = card.health;
     this.maxHealth = card.health;
     this.attack = card.attack;
     this.defense = card.defense;
     this.speed = card.speed;
-    this.magic = card.magic;
+    this.magicRegen = card.magic;
+    this.magic = 100;
     this.types = card.types;
     this.abilities = card.abilities;
     this.modifiers = [];
@@ -68,12 +72,17 @@ module.exports = class Unit {
     this.item = null;
     this.log = (t) => { console.error(`${this.name} logging into the void!`); };
     this.onField = false;
+    this.mostRecentCost = 0;
   }
 
   setItem(item) { this.item = item; return this; }
   setLog(log) { this.log = log; return this; }
   setLevel(level) {
     this.abilities = this.abilities.filter((ability) => ability.level <= level);
+    return this;
+  }
+  setName(username) {
+    this.name = `${username}'s ${this.simpleName}`;
     return this;
   }
 
@@ -163,6 +172,10 @@ module.exports = class Unit {
       this.#cleanUpTimers(this.item.listeners, params);
       this.#cleanUpTimers(this.item.modifiers, params);
     }
+    if (!this.knockedOut() && !this.mostRecentCost) {
+      this.magic = Math.min(100, this.magic + this.magicRegen);
+    }
+    this.mostRecentCost = 0;
   }
 
   doDamage(damage, effective = 1, reason = '') {

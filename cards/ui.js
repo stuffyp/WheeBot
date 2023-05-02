@@ -19,7 +19,7 @@ const getImagePath = (imageSrc) => path.join(imageFolder, imageSrc);
 
 const display = (card, level = null) => {
   const abilities = card.abilities.map((ability) => {
-    return { name: `${TYPE_EMOJI[ability.type]} ${ability.name}`, value: ability.description };
+    return { name: `${TYPE_EMOJI[ability.type]} ${ability.name} (${ability.cost ?? 0})`, value: ability.description };
   });
   const cardTypes = card.types.map((type) => TYPE_EMOJI[type]).join(' ');
   const title = card.name + (level === null ? '' : ` (Level ${level})`);
@@ -29,9 +29,12 @@ const display = (card, level = null) => {
     .setDescription(card.description)
     .addFields({ name: 'Types', value: cardTypes })
     .addFields(
-      { name: 'Health', value: `${card.health}`, inline: true },
-      { name: 'Attack', value: `${card.attack}`, inline: true },
-      { name: 'Defense', value: `${card.defense}`, inline: true },
+    	{ name: `Health`, value: `${card.health}`, inline: true },
+      { name: `Attack`, value: `${card.attack}`, inline: true },
+      { name: `Defense`, value: `${card.defense}`, inline: true },
+      { name: `Speed`, value: `${card.speed}`, inline: true },
+      { name: `Magic`, value: `${card.magic}`, inline: true },
+      { name: '\u200b', value: '\u200b', inline: true },
     )
     .addFields(abilities);
 };

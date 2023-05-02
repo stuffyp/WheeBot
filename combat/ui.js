@@ -168,9 +168,17 @@ const moveSelect = async (interaction) => {
         .setExecute(ability.execute)
         .setPriority(ability.priority)
         .setName(ability.name)
-        .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent })),
+        .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+        .setCost(ability.cost ?? 0)
       );
       return;
+    } else if (ability.target === Targets.Sub) {
+      targetType = Targets.Sub;
+      selectOptions = subs.map((u) => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(u.unit.name)
+          .setValue('u'+String(u.fullID))
+      });
     } else {
       targetType = Targets.Field;
       selectOptions = gm.activeUnits[otherUser].map((u) => {
@@ -180,8 +188,8 @@ const moveSelect = async (interaction) => {
       });
       selectOptions.push(...activeUnits.map((u) => {
         return new StringSelectMenuOptionBuilder()
-          .setLabel(`${u.unit.name} (friendly)`)
-          .setValue('u' + String(u.fullID));
+          .setLabel(u.unit.name)
+          .setValue('u'+String(u.fullID))
       }));
     }
   }
@@ -220,16 +228,16 @@ const moveSelect = async (interaction) => {
     components: [],
     ephemeral: true,
   });
-  const newCommand = new Command()
-  .setAgent(agent)
-  .setTarget(target)
-  .setTargetType(targetType)
-  .setExecute(ability.execute)
-  .setPriority(ability.priority)
-  .setName(ability.name)
-  .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }));
-  console.error(newCommand);
-  gm.queueCommand(newCommand);
+  gm.queueCommand(new Command()
+    .setAgent(agent)
+    .setTarget(target)
+    .setTargetType(targetType)
+    .setExecute(ability.execute)
+    .setPriority(ability.priority)
+    .setName(ability.name)
+    .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+    .setCost(ability.cost ?? 0),
+  );
 };
 
 const handleTurn = async (interaction, doForfeit) => {

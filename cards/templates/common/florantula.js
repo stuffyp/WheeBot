@@ -19,13 +19,14 @@ const cleanse = {
   type: Types.None,
   priority: -1,
   target: Targets.Field,
+  cost: 60,
   execute: (params) => {
     const self = params.self;
     const target = params.target;
     target.listeners = [];
     target.modifiers = [];
     target.status = null;
-    target.log(`${target.name} was cleansed of all effects and conditions!'`);
+    target.log(`${target.name} was cleansed of all effects and conditions!`);
   },
 };
 
