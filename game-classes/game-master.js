@@ -67,11 +67,7 @@ module.exports = class GameMaster {
   }
 
   setActiveUnit(userId, fullID) {
-    console.error(this.units[userId]);
-    console.error(this.units[userId][0].fullID);
-    console.error(fullID);
     const unit = this.units[userId].find(u => u.fullID === fullID);
-    console.error(unit);
     this.activeUnits[userId].push(unit);
     unit.unit.onField = true;
     this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
