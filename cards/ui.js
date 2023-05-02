@@ -20,7 +20,7 @@ const getImagePath = (imageSrc) => path.join(imageFolder, imageSrc);
 
 const display = (card, level=null) => {
   const abilities = card.abilities.map((ability) => {
-    return { name: `${TYPE_EMOJI[ability.type]} ${ability.name}`, value: ability.description };
+    return { name: `${TYPE_EMOJI[ability.type]} ${ability.name} (${ability.cost ?? 0})`, value: ability.description };
   });
   const cardTypes = card.types.map((type) => TYPE_EMOJI[type]).join(' ');
   const title = card.name + (level === null ? `` : ` (Level ${level})`);

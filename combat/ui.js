@@ -169,8 +169,16 @@ const moveSelect = async (interaction) => {
         .setPriority(ability.priority)
         .setName(ability.name)
         .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+        .setCost(ability.cost ?? 0)
       );
       return;
+    } else if (ability.target === Targets.Sub) {
+      targetType = Targets.Sub;
+      selectOptions = subs.map((u) => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(u.unit.name)
+          .setValue('u'+String(u.fullID))
+      });
     } else {
       targetType = Targets.Field;
       selectOptions = gm.activeUnits[otherUser].map((u) => {
@@ -228,6 +236,7 @@ const moveSelect = async (interaction) => {
     .setPriority(ability.priority)
     .setName(ability.name)
     .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+    .setCost(ability.cost ?? 0)
   );
 }
 

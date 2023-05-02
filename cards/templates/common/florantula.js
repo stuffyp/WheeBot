@@ -19,6 +19,7 @@ const cleanse = {
   type: Types.None,
   priority: -1,
   target: Targets.Field,
+  cost: 60,
   execute: (params) => {
     const self = params.self;
     const target = params.target;

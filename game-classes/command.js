@@ -6,10 +6,12 @@ module.exports = class Command {
   execute;
   priority;
   speed;
+  cost
   constructor() {
     this.agent = null;
     this.target = null;
     this.name = '0xDEADBEEF';
+    this.cost = 0;
     this.execute = () => { return };
   }
 
@@ -30,6 +32,11 @@ module.exports = class Command {
 
   setName(name) {
     this.name = name;
+    return this;
+  }
+
+  setCost(cost) {
+    this.cost = cost;
     return this;
   }
 

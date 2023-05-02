@@ -10,7 +10,7 @@ const HEALTH = 80;
 const ATTACK = 60;
 const DEFENSE = 35;
 const SPEED = 60;
-const MAGIC = 40;
+const MAGIC = 50;
 const TYPES = [Types.Fire, Types.Wind];
 
 
@@ -23,6 +23,7 @@ const fireball = {
   type: FIREBALL_TYPE,
   priority: 0,
   target: Targets.Field,
+  cost: 50,
   execute: (params) => {
     const self = params.self;
     const target = params.target;

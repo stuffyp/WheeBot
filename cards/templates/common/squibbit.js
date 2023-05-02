@@ -9,7 +9,7 @@ const HEALTH = 120;
 const ATTACK = 40;
 const DEFENSE = 60;
 const SPEED = 40;
-const MAGIC = 40;
+const MAGIC = 66;
 const TYPES = [Types.Water];
 
 const SPLASH_POWER = 0.6;
@@ -44,6 +44,7 @@ const encouragement = {
   type: Types.None,
   priority: 1,
   target: Targets.Field,
+  cost: 33,
   execute: (params) => {
     const target = params.target;
     if (!target.knockedOut()) {

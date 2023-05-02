@@ -10,7 +10,7 @@ const HEALTH = 140;
 const ATTACK = 40;
 const DEFENSE = 60;
 const SPEED = 30;
-const MAGIC = 40;
+const MAGIC = 50;
 const TYPES = [Types.Earth, Types.Beast];
 
 
@@ -52,6 +52,7 @@ const pit = {
   type: PIT_TYPE,
   priority: 0,
   target: Targets.Field,
+  cost: 50,
   execute: (params) => {
     const self = params.self;
     const target = params.target;

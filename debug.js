@@ -8,7 +8,7 @@ db.list().then(async (keys) => {
   for (const key of keys) {
     if (key.startsWith('_u_')) {
       const userData = await db.get(key);
-      userData.party = [];
+      userData.collection = userData.collection.filter(c => c.id !== 'mango');
       await db.set(key, userData);
     }
   }

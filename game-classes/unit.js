@@ -44,6 +44,7 @@ module.exports = class Unit {
   attack;
   defense;
   speed;
+  magicRegen;
   magic;
   types;
   abilities;
@@ -53,6 +54,7 @@ module.exports = class Unit {
   item; // item - unique
   log; // string output of what this unit does in a turn
   onField; // whether unit is on field
+  mostRecentCost; // whether the last move used cost mana
   constructor(card) {
     this.simpleName = card.name;
     this.health = card.health;
@@ -60,7 +62,8 @@ module.exports = class Unit {
     this.attack = card.attack;
     this.defense = card.defense;
     this.speed = card.speed;
-    this.magic = card.magic;
+    this.magicRegen = card.magic;
+    this.magic = 100;
     this.types = card.types;
     this.abilities = card.abilities;
     this.modifiers = [];
@@ -69,6 +72,7 @@ module.exports = class Unit {
     this.item = null;
     this.log = (text) => { console.error(`${this.name} logging into the void!`) };
     this.onField = false;
+    this.mostRecentCost = 0;
   }
 
   setItem(item) { this.item = item; return this; }
@@ -168,6 +172,10 @@ module.exports = class Unit {
       this.#cleanUpTimers(this.item.listeners, params);
       this.#cleanUpTimers(this.item.modifiers, params);
     }
+    if (!this.knockedOut() && !this.mostRecentCost) {
+      this.magic = Math.min(100, this.magic + this.magicRegen);
+    }
+    this.mostRecentCost = 0;
   }
 
   doDamage(damage, effective=1, reason='') {

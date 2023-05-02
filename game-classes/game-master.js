@@ -113,7 +113,7 @@ module.exports = class GameMaster {
         .addFields(this.activeUnits[id].map((u) => {
           return ({
             name: u.unit.simpleName,
-            value: `❤️: ${u.unit.health}/${u.unit.maxHealth}`,
+            value: `❤️: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100`,
             inline: true,
           });
         }))
@@ -134,6 +134,10 @@ module.exports = class GameMaster {
     }
     if (command.agent.unit.status === StatusEffects.Stun && rollChance(0.5)) {
       this.log.push(`${command.agent.unit.name} was stunned and passes their turn!`);
+      return;
+    }
+    if (command.agent.unit.magic < command.cost) {
+      this.log.push(`${command.agent.unit.name} tried to use ${command.name} but didn't have enough mana!`);
       return;
     }
 
@@ -161,6 +165,8 @@ module.exports = class GameMaster {
     
     const user = command.agent.user;
     const otherUser = this.users.find((u) => u.id !== user).id;
+    command.agent.unit.magic -= command.cost;
+    command.agent.unit.mostRecentCost = command.cost;
     command.execute({
       self: command.agent.unit,
       target: command.target ? command.target.unit : null,
@@ -188,8 +194,8 @@ module.exports = class GameMaster {
       return true;
     } else if (userKO) {
       this.gameOver = true;
-      return true;
       this.winner = otherUser;
+      return true;
     } else if (otherUserKO) {
       this.gameOver = true;
       this.winner = user;
