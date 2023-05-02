@@ -31,8 +31,8 @@ const hydrate = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(HYDRATE_TYPE, target.types));
-    self.emitEvent(Events.didAttack, { self: self, target: target, damage: damage });
-    target.emitEvent(Events.gotAttacked, { self: target, agent: self, damage: damage});
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },
 };
 

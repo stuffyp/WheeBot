@@ -1,6 +1,7 @@
 module.exports = class Command {
   agent;
   target;
+  targetType;
   name;
   execute;
   priority;
@@ -19,6 +20,11 @@ module.exports = class Command {
 
   setTarget(target) {
     this.target = target;
+    return this;
+  }
+
+  setTargetType(targetType) {
+    this.targetType = targetType; // field, none, or sub
     return this;
   }
 

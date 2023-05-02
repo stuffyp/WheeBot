@@ -3,7 +3,7 @@ const { STARTING_GLICKO, MS_DAY } = require('./constants.js');
 const MAX_RD = 300;
 const MIN_RD = 30;
 
-const C = 28;
+const C = 20;
 const Q = Math.log(10) / 400;
 const SQRT3 = Math.sqrt(3);
 

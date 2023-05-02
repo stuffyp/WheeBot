@@ -1,7 +1,7 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE } = require('../util/constants.js');
-const { Stats } = require('../util/enums.js');
+const { Stats, Targets } = require('../util/enums.js');
 const { askConfirmation } = require('../util/ui-logic.js');
 const Command = require('../game-classes/command.js');
 
@@ -54,7 +54,7 @@ const teamSelect = async (interaction) => {
   });
   readyUser(user);
   confirmation.deferUpdate();
-  interaction.editReply({
+  await interaction.editReply({
     content: 'Starting team chosen!',
     components: [],
     ephemeral: true,
@@ -62,11 +62,14 @@ const teamSelect = async (interaction) => {
   return true;
 }
 
+
 const moveSelect = async (interaction) => {
   const user = interaction.user.id;
   const battle = getBattle(getCombatID(user));
   const gm = battle.GM;
   const activeUnits = gm.activeUnits[user];
+  const subs = gm.units[user];
+  const otherUser = gm.users.find((u) => u.id !== user).id;
 
   let selectOptions = activeUnits.map((u) => {
     return new StringSelectMenuOptionBuilder()
@@ -119,6 +122,12 @@ const moveSelect = async (interaction) => {
   select = new StringSelectMenuBuilder()
     .setCustomId('abilitySelect')
     .addOptions(selectOptions)
+  if (subs.length) {
+    select.addOptions(new StringSelectMenuOptionBuilder()
+      .setLabel('Substitute')
+      .setValue('Substitute')
+    );
+  }
   row = new ActionRowBuilder()
     .addComponents(select)
   message = await interaction.editReply({
@@ -129,23 +138,57 @@ const moveSelect = async (interaction) => {
 
   success = await waitSelect('abilitySelect');
   if (!success) return;
-  const ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
+  
+  let ability;  
+  let targetType;
+  if (confirmation.values[0] === 'Substitute') { 
+    targetType = Targets.Sub; 
+    ability = {
+      name: 'Substitute',
+      priority: 0,
+      execute: (params) => { params.sub() },
+    }
+    selectOptions = subs.map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('u'+String(u.fullID))
+    });
+  } else {
+    ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
+    if (ability.target === Targets.None) {
+      targetType = Targets.None;
+      await interaction.editReply({
+        content: `**${agent.unit.name}** will use **${ability.name}**.`,
+        components: [],
+        ephemeral: true,
+      });
+      gm.queueCommand(new Command()
+        .setAgent(agent)
+        .setTargetType(targetType)
+        .setExecute(ability.execute)
+        .setPriority(ability.priority)
+        .setName(ability.name)
+        .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+      );
+      return;
+    } else {
+      targetType = Targets.Field;
+      selectOptions = gm.activeUnits[otherUser].map((u) => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(u.unit.name)
+          .setValue('o'+String(u.fullID))
+      });
+      selectOptions.push(...activeUnits.map((u) => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(`${u.unit.name} (friendly)`)
+          .setValue('u'+String(u.fullID))
+      }));
+    }
+  }
 
-  const otherUser = gm.users.find((u) => u.id !== user).id;
-  selectOptions = gm.activeUnits[otherUser].map((u) => {
-    return new StringSelectMenuOptionBuilder()
-      .setLabel(u.unit.name)
-      .setValue('o'+String(u.fullID))
-  });
-  const moreSelectOptions = activeUnits.map((u) => {
-    return new StringSelectMenuOptionBuilder()
-      .setLabel(`${u.unit.name} (friendly)`)
-      .setValue('u'+String(u.fullID))
-  });
   select = new StringSelectMenuBuilder()
     .setCustomId('targetSelect')
     .addOptions(selectOptions)
-    .addOptions(moreSelectOptions)
   row = new ActionRowBuilder()
     .addComponents(select)
   message = await interaction.editReply({
@@ -156,17 +199,23 @@ const moveSelect = async (interaction) => {
 
   success = await waitSelect('targetSelect');
   if (!success) return;
-  const formation = confirmation.values[0][0] === 'u' ? activeUnits : gm.activeUnits[otherUser];
+
+  let formation;
+  if (targetType === Targets.Sub) {
+    formation = subs;
+  } else {
+    formation = confirmation.values[0][0] === 'u' ? activeUnits : gm.activeUnits[otherUser];
+  }
   const target = formation.find((u) => u.fullID === parseInt(confirmation.values[0].slice(1, Infinity)));
   if (battle.readyUsers.includes(user)) {
-    interaction.editReply({
+    await interaction.editReply({
       content: `Oops! You have ended your turn. Aborting command.`,
       components: [],
       ephemeral: true,
     });
     return;
   }
-  interaction.editReply({
+  await interaction.editReply({
     content: `**${agent.unit.name}** will target **${target.unit.name}** with **${ability.name}**.`,
     components: [],
     ephemeral: true,
@@ -174,6 +223,7 @@ const moveSelect = async (interaction) => {
   gm.queueCommand(new Command()
     .setAgent(agent)
     .setTarget(target)
+    .setTargetType(targetType)
     .setExecute(ability.execute)
     .setPriority(ability.priority)
     .setName(ability.name)

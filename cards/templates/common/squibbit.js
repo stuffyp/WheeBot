@@ -31,15 +31,15 @@ const splash = {
       SPLASH_TYPE,
       target.types,
     );
-    target.doDamage(damage, typeAdvantage(HYDRATE_TYPE, target.types));
-    self.emitEvent(Events.didAttack, { self: self, target: target, damage: damage });
-    target.emitEvent(Events.gotAttacked, { self: target, agent: self, damage: damage});
+    target.doDamage(damage, typeAdvantage(SPLASH_TYPE, target.types));
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },
 };
 
 const encouragement = {
   name: 'Encouragement', 
-  description: "Raise target's attack and defense by 30%. Activates early.",
+  description: "Raise target's attack and defense by 30% for three turns. Activates early.",
   level: 1,
   type: Types.None,
   priority: 1,
@@ -49,12 +49,12 @@ const encouragement = {
     if (!target.knockedOut()) {
       target.modifiers.push(new Modifier({
         stat: Stats.Defense,
-        duration: Infinity,
+        duration: 2,
         modify: (def, params) => def * 1.3,
       }));
       target.modifiers.push(new Modifier({
         stat: Stats.Attack,
-        duration: Infinity,
+        duration: 2,
         modify: (atk, params) => atk * 1.3,
       }));
       target.log(`${target.name}'s attack and defense rose!'`);

@@ -32,8 +32,8 @@ const flash = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(FLASH_TYPE, target.types));
-    self.emitEvent(Events.didAttack);
-    target.emitEvent(Events.gotAttacked);
+    self.emitEvent(Events.DidAttack);
+    target.emitEvent(Events.GotAttacked);
   },
 };
 
@@ -61,8 +61,8 @@ const shootingStar = {
       self.log(`${target.name} became stunned!`);
     }
     target.doDamage(damage, typeAdvantage(SHOOTING_TYPE, target.types));
-    self.emitEvent(Events.didAttack, { self: self, target: target, damage: damage });
-    target.emitEvent(Events.gotAttacked, { self: target, agent: self, damage: damage});
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },
 };
 

@@ -68,7 +68,7 @@ module.exports = {
     [`${Types.Mystic}`]: '🟣',
     [`${Types.None}`]: '🔘',
   },
-  ROLL_CHANCES: [0.4, 0.3, 0.2, 0.1],
+  ROLL_CHANCES: [0.5, 0.3, 0.15, 0.05],
 
   SHOP_REFRESH: 12 * MS_HOUR,
   SHOP_SIZE: 3,

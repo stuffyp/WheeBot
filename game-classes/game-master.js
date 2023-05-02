@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
-const { Stats, StatusEffects } = require('../util/enums.js');
+const { Stats, StatusEffects, Targets } = require('../util/enums.js');
 const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
 
@@ -131,19 +131,37 @@ module.exports = class GameMaster {
       this.log.push(`${command.agent.unit.name} was stunned and passes their turn!`);
       return;
     }
-    if (!command.target.unit.onField) {
-      this.log.push(`**${command.agent.unit.name}** tried to target **${command.target.unit.name}** with **${command.name}**, but failed due to a change in formation!`);
-      return;
+
+    switch(command.targetType) {
+      case Targets.None:
+        this.log.push(`**${command.agent.unit.name}** used **${command.name}**!`);
+        break;
+      case Targets.Field:
+        if (!command.target.unit.onField) {
+          this.log.push(`**${command.agent.unit.name}** tried to target **${command.target.unit.name}** with **${command.name}**, but failed due to a change in formation!`);
+          return;
+        }
+        this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);
+        break;
+      case Targets.Sub:
+        if (command.target.unit.onField) {
+          this.log.push(`**${command.agent.unit.name}** tried to target **${command.target.unit.name}** with **${command.name}**, but failed due to a change in formation!`);
+          return;
+        }
+        this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);
+        break;
+      default:
+        break;
     }
     
-    this.log.push(`**${command.agent.unit.name}** targeted **${command.target.unit.name}** with **${command.name}**!`);
     const user = command.agent.user;
     const otherUser = this.users.find((u) => u.id !== user).id;
     command.execute({
       self: command.agent.unit,
-      target: command.target.unit,
+      target: command.target ? command.target.unit : null,
       allies: this.activeUnits[user].map(u => u.unit),
       enemies: this.activeUnits[otherUser].map(u => u.unit),
+      sub: () => { this.substitute(user, command.agent.fullID, command.target.fullID) },
     });
     this.#cleanUpKO(user);
     this.#cleanUpKO(otherUser);

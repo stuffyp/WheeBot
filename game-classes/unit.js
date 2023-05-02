@@ -1,4 +1,4 @@
-const { Stats, Events } = require('../util/enums.js');
+const { Stats, StatusEffects, Events } = require('../util/enums.js');
 
 /*
 Class which stores all the combat relevant information about a unit and interfaces with the game loop.
@@ -118,8 +118,7 @@ module.exports = class Unit {
     if (this.knockedOut()) return;
     const listeners = this.item ? [...this.listeners, ...this.item.listeners] : this.listeners;
     listeners.forEach(listener => { 
-      const out = listener.doEffect(event, params);
-      if (out) this.log(out);
+      listener.doEffect(event, params);
       if (this.knockedOut()) { 
         this.knockOut(); 
         return; 
@@ -134,7 +133,10 @@ module.exports = class Unit {
       this.item.listeners.forEach(listener => { listener.timer.tick() });
       this.item.modifiers.forEach(modifier => { modifier.timer.tick() });
     }
-    this.emitEvent(Events.TurnStart, params);
+    if (this.status === StatusEffects.Poison) {
+      this.doDamage(Math.ceil(this.maxHealth / 6), 1, 'poison');
+    }
+    if (!this.knockedOut()) this.emitEvent(Events.TurnStart, params);
   }
 
   #cleanUpTimers(arr, params) {
@@ -163,19 +165,26 @@ module.exports = class Unit {
     }
   }
 
-  doDamage(damage, effective=1) {
+  doDamage(damage, effective=1, reason='') {
     if (this.knockedOut()) return;
     this.health = Math.max(0, this.health - damage);
     let effectiveText = '';
     if (effective < 1) effectiveText = ' It was not very effective...';
     if (effective > 1) effectiveText = ' It was super effective!'
-    this.log(`${this.name} took ${damage} damage!${effectiveText}`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} took ${damage} damage${reasonText}!${effectiveText}`);
     if (this.knockedOut()) this.knockOut();
+    if (this.status === StatusEffects.Burn) {
+      const burnDamage = Math.ceil(0.5 * damage);
+      this.health = Math.max(0, this.health - burnDamage);
+      this.log(`${this.name} took ${burnDamage} additional damage from being on fire!`);
+    }
   }
 
-  doHeal(heal) {
+  doHeal(heal, reason='') {
     if (this.knockedOut()) return;
     this.health = Math.min(this.maxHealth, this.health + heal);
-    this.log(`${this.name} recovered ${heal} health!`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} recovered ${heal} health${reasonText}!`);
   }
 }

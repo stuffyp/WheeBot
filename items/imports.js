@@ -1,4 +1,4 @@
-const { StatusEffects, Types, Stats } = require('../util/enums.js');
+const { StatusEffects, Types, Stats, Events } = require('../util/enums.js');
 const ItemBuilder = require('../game-classes/item-builder.js');
 
 module.exports = {
@@ -6,4 +6,5 @@ module.exports = {
   StatusEffects: StatusEffects,
   Types: Types,
   Stats: Stats,
+  Events: Events,
 }

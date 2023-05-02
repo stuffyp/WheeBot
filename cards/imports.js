@@ -3,7 +3,7 @@ const { Rarities, StatusEffects, Stats, Types, Events, Targets } = require('../u
 const { damageCalc, typeAdvantage } = require('../util/math-func.js');
 const { rollChance } = require('../util/random.js');
 const Modifier = require('../game-classes/modifier.js');
-const Listener = require('../game-classes/modifier.js');
+const Listener = require('../game-classes/listener.js');
 
 module.exports = {
   Card: Card,
