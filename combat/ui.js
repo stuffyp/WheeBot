@@ -114,7 +114,9 @@ const moveSelect = async (interaction) => {
   if (!success) return;
   const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
 
-  selectOptions = agent.unit.abilities.map((a) => {
+  selectOptions = agent.unit.abilities.filter((a) => {
+    return a.target !== Targets.Sub || subs;
+  }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(a.name)
       .setValue(a.name)
@@ -126,6 +128,12 @@ const moveSelect = async (interaction) => {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel('Substitute')
       .setValue('Substitute')
+    );
+  }
+  if (agent.unit.item && agent.unit.item.consume) {
+    select.addOptions(new StringSelectMenuOptionBuilder()
+      .setLabel(agent.unit.item.name)
+      .setValue('Item')
     );
   }
   row = new ActionRowBuilder()
@@ -153,6 +161,25 @@ const moveSelect = async (interaction) => {
         .setLabel(u.unit.name)
         .setValue('u'+String(u.fullID))
     });
+  } else if (confirmation.values[0] === 'Item') { 
+    targetType = Targets.Field; 
+    ability = {
+      name: agent.unit.item.name,
+      priority: 0,
+      execute: (params) => {
+        agent.unit.item.consume(params);
+      },
+    }
+    selectOptions = gm.activeUnits[otherUser].map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('o'+String(u.fullID))
+    });
+    selectOptions.push(...activeUnits.map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('u'+String(u.fullID))
+    }));
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
     if (ability.target === Targets.None) {

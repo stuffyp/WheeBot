@@ -19,9 +19,10 @@ const INVENTORY_SLICE_SIZE = 10;
 
 const executeView = async (interaction) => {
   const user = interaction.user.id;
-  await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
   const userData = await getUser(user);
   await validateUser(userData, interaction);
+  await sortUser(user, interaction.options.getString('sort_by') ?? SortBy.ID);
+  userData = await getUser(user);
   if (userData.collection.length === 0) {
     await interaction.reply('Your collection is empty.');
     return;

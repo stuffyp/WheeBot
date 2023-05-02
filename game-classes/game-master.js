@@ -15,6 +15,7 @@ module.exports = class GameMaster {
   winner;
   gameOver;
   commands;
+  turn;
   constructor(channel) {
     this.users = [];
     this.units = {};
@@ -25,6 +26,7 @@ module.exports = class GameMaster {
     this.winner = null;
     this.gameOver = false;
     this.commands = [];
+    this.turn = 0;
   }
 
   loadUser(id, name, elo) {
@@ -122,7 +124,7 @@ module.exports = class GameMaster {
   }
 
   queueCommand(command) {
-    this.commands = this.commands.filter((c) => c.agent.fullID !== command.agent.fullID);
+    this.commands = this.commands.filter((c) => !(c.agent.fullID === command.agent.fullID && c.agent.user === command.agent.user));
     this.commands.push(command);
   }
 
@@ -237,5 +239,7 @@ module.exports = class GameMaster {
       u.unit.endTurn({ self: u.unit });
       if (this.#checkWin()) return;
     }
+
+    this.turn++;
   }
 }
