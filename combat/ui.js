@@ -85,6 +85,7 @@ const moveSelect = async (interaction) => {
     content: 'Select a creature you control.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
   let confirmation = null;
   let success = false;
@@ -142,6 +143,7 @@ const moveSelect = async (interaction) => {
     content: 'Select a move.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   success = await waitSelect('abilitySelect');
@@ -230,6 +232,7 @@ const moveSelect = async (interaction) => {
     content: 'Select a target.',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   success = await waitSelect('targetSelect');
