@@ -31,6 +31,7 @@ const teamSelect = async (interaction) => {
     content: 'Select your starting team!',
     components: [row],
     ephemeral: true,
+    fetchReply: true,
   });
 
   const filter = i => i.customId === 'select' && i.user.id === interaction.user.id;
@@ -44,6 +45,10 @@ const teamSelect = async (interaction) => {
   }
 
   if (!getCombatID(user)) {
+    await interaction.editReply({ content: 'Oops! You are out of sync. Aborting command.', components: [], ephemeral: true });
+    return false;
+  }
+  if (gm.activeUnits[user].length) {
     await interaction.editReply({ content: 'Oops! You are out of sync. Aborting command.', components: [], ephemeral: true });
     return false;
   }
