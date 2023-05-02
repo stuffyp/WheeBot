@@ -8,7 +8,7 @@ const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Common;
 const HEALTH = 80;
 const ATTACK = 60;
-const DEFENSE = 40;
+const DEFENSE = 35;
 const SPEED = 60;
 const MAGIC = 40;
 const TYPES = [Types.Fire, Types.Wind];
@@ -18,7 +18,7 @@ const FIREBALL_TYPE = Types.Fire;
 const FIREBALL_POWER = 0.6;
 const fireball = {
   name: 'Fireball', 
-  description: 'Deal moderate damage. 60% chance to burn target.',
+  description: 'Deal moderate damage. 50% chance to burn target.',
   level: 1,
   type: FIREBALL_TYPE,
   priority: 0,
@@ -33,7 +33,7 @@ const fireball = {
       FIREBALL_TYPE,
       target.types,
     );
-    if (!target.types.includes(Types.Water) && rollChance(0.6)) {
+    if (!target.types.includes(Types.Water) && rollChance(0.5)) {
       target.status = StatusEffects.Burn;
       self.log(`${target.name} became burned!`);
     }

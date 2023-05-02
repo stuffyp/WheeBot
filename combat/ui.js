@@ -180,7 +180,7 @@ const moveSelect = async (interaction) => {
       });
       selectOptions.push(...activeUnits.map((u) => {
         return new StringSelectMenuOptionBuilder()
-          .setLabel(`${u.unit.name} (friendly)`)
+          .setLabel(u.unit.name)
           .setValue('u'+String(u.fullID))
       }));
     }

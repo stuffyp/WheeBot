@@ -51,6 +51,7 @@ module.exports = class GameMaster {
 
   loadUnit(cardFromDb, userId) {
     const {id, level, exp, fullID, item} = cardFromDb;
+    const username = this.users.find(u => u.id === userId).name;
     this.units[userId].push({
       user: userId,
       fullID: fullID,
@@ -59,7 +60,8 @@ module.exports = class GameMaster {
       unit: new Unit(getCard(id))
         .setItem(item ? getItem(item).item : null)
         .setLog((text) => this.log.push(text))
-        .setLevel(level),
+        .setLevel(level)
+        .setName(username),
     });
     return this;
   }
@@ -89,12 +91,13 @@ module.exports = class GameMaster {
   }
 
   #cleanUpKO(userId) {
+    // be aware that in JS, const subs = this.units[userId] apparently doesn't update when units is modified???
     const field = this.activeUnits[userId];
     const subs = this.units[userId];
     while(subs.length && field.some((u) => u.unit.knockedOut())) {
       // console.error(subs, field);
       this.substitute(userId, field.find(u => u.unit.knockedOut()).fullID, subs[randInt(subs.length)].fullID);
-      this.graveyard[userId].push(subs.pop()); // relies on assumption that substitute pushes to end
+      this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
     }
     const leftover = field.filter(u => u.unit.knockedOut());
     this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
@@ -103,11 +106,13 @@ module.exports = class GameMaster {
 
   display() {
     const embeds = this.users.map(({id, name}) => {
+      const availableUnits = this.activeUnits[id].length + this.units[id].length;
+      const totalUnits = availableUnits + this.graveyard[id].length;
       return new EmbedBuilder()
-        .setTitle(name)
+        .setTitle(`${name} (${availableUnits}/${totalUnits})`)
         .addFields(this.activeUnits[id].map((u) => {
           return ({
-            name: u.unit.name,
+            name: u.unit.simpleName,
             value: `❤️: ${u.unit.health}/${u.unit.maxHealth}`,
             inline: true,
           });

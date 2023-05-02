@@ -37,6 +37,7 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 */
 
 module.exports = class Unit {
+  simpleName;
   name;
   maxHealth;
   health;
@@ -53,7 +54,7 @@ module.exports = class Unit {
   log; // string output of what this unit does in a turn
   onField; // whether unit is on field
   constructor(card) {
-    this.name = card.name;
+    this.simpleName = card.name;
     this.health = card.health;
     this.maxHealth = card.health;
     this.attack = card.attack;
@@ -74,6 +75,10 @@ module.exports = class Unit {
   setLog(log) { this.log = log; return this; }
   setLevel(level) {
     this.abilities = this.abilities.filter((ability) => ability.level <= level);
+    return this;
+  }
+  setName(username) {
+    this.name = `${username}'s ${this.simpleName}`;
     return this;
   }
 
