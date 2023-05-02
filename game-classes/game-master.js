@@ -161,7 +161,13 @@ module.exports = class GameMaster {
       target: command.target ? command.target.unit : null,
       allies: this.activeUnits[user].map(u => u.unit),
       enemies: this.activeUnits[otherUser].map(u => u.unit),
-      sub: () => { this.substitute(user, command.agent.fullID, command.target.fullID) },
+      sub: () => { 
+        if (command.agent.unit.status === StatusEffects.Trapped) {
+          this.log.push(`${command.agent.unit.name} tried to swap out but was trapped!`);
+          return;
+        }
+        this.substitute(user, command.agent.fullID, command.target.fullID);
+      },
     });
     this.#cleanUpKO(user);
     this.#cleanUpKO(otherUser);

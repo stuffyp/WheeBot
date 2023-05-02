@@ -16,7 +16,7 @@ module.exports = {
   StatusEffects: {
     Poison: 'Poison',
     Burn: 'Burn',
-    Freeze: 'Freeze',
+    Trapped: 'Trapped',
     Stun: 'Stun',
   },
   

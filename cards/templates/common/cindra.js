@@ -1,5 +1,6 @@
 const { Card, Rarities, StatusEffects, Types, Targets, 
-       Events, Stats, damageCalc, typeAdvantage, rollChance, Listener } = require('../../imports.js');
+       Events, Stats, damageCalc, typeAdvantage, rollChance, 
+       Modifier, Listener } = require('../../imports.js');
 
 const NAME = 'Cindra';
 const DESCRIPTION = 'They say that these creatures create small bursts of flame to intimidate predators.';

@@ -4,11 +4,12 @@ const db = new Database();
 const { startBattle } = require('./combat/combat-setup.js');
 const { dump } = require('./combat/battle-storage.js');
 
-db.get('_u_'+process.env.DEVELOPER).then((dev) => {
-  console.log(dev.items);
-  // dev.items['cactus armor'] = 10;
-  // dev.items['quick boots'] = 10;
-  // db.set('_u_'+process.env.DEVELOPER, dev).then(() => {
-  //   console.log('done');
-  // });
+db.list().then(async (keys) => {
+  for (const key of keys) {
+    if (key.startsWith('_u_')) {
+      const userData = await db.get(key);
+      userData.party = [];
+      await db.set(key, userData);
+    }
+  }
 });
