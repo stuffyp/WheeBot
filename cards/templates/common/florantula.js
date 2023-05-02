@@ -25,7 +25,7 @@ const cleanse = {
     target.listeners = [];
     target.modifiers = [];
     target.status = null;
-    target.log(`${target.name} was cleansed of all effects and conditions!'`);
+    target.log(`${target.name} was cleansed of all effects and conditions!`);
   },
 };
 

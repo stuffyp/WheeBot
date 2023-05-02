@@ -57,7 +57,7 @@ const encouragement = {
         duration: 2,
         modify: (atk, params) => atk * 1.3,
       }));
-      target.log(`${target.name}'s attack and defense rose!'`);
+      target.log(`${target.name}'s attack and defense rose!`);
     }
   },
 };

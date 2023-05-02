@@ -63,7 +63,7 @@ const pit = {
       target.types,
     );
     target.status = StatusEffects.Trapped;
-    target.log(`${target.name} became trapped and cannot swap out!'`);
+    target.log(`${target.name} became trapped and cannot swap out!`);
     target.doDamage(damage, typeAdvantage(PIT_TYPE, target.types));
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
@@ -90,7 +90,7 @@ const burrow = {
       duration: 1,
       modify: (atk, params) => atk * 1.5,
     }));
-    self.log(`${self.name}'s attack and defense rose!'`);
+    self.log(`${self.name}'s attack and defense rose!`);
   },
 };
 

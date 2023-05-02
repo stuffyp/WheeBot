@@ -67,7 +67,7 @@ const gust = {
       duration: 1,
       modify: (spd, params) => spd * 0.6,
     }));
-    target.log(`${target.name}'s speed fell!'`);
+    target.log(`${target.name}'s speed fell!`);
     target.doDamage(damage, typeAdvantage(GUST_TYPE, target.types));
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
