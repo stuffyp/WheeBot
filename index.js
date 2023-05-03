@@ -1,7 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { init } = require('./manage-user.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { TOKEN } = require('./config.json');
+const { init } = require('./database.js');
 
 // CLIENT CODE
 
@@ -48,5 +49,5 @@ for (const file of eventsFiles) {
 
 
 init().then(() => {
-  client.login(process.env.TOKEN);
-})
+  client.login(TOKEN);
+});

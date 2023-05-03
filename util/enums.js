@@ -5,14 +5,14 @@ module.exports = {
     ID_r: 'ID_r',
     Level_r: 'Level_r',
   },
-  
+
   Rarities: {
     Common: 'Common',
     Rare: 'Rare',
     Epic: 'Epic',
     Legendary: 'Legendary',
   },
-  
+
   StatusEffects: {
     Poison: '💚',
     Burn: '❤️‍🔥',
@@ -20,7 +20,7 @@ module.exports = {
     Stun: '💛',
     Curse: '💜',
   },
-  
+
   Types: {
     Fire: 'Fire',
     Water: 'Water',
@@ -57,4 +57,4 @@ module.exports = {
     Sub: 'Sub',
     Field: 'Field',
   },
-}
+};

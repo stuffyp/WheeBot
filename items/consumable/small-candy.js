@@ -7,11 +7,11 @@ const consume = (params) => {
   const target = params.target;
   target.doHeal(0.2 * target.maxHealth);
   self.consumeItem();
-}
+};
 
 module.exports = {
   name: NAME,
-  description: "Heals 20% of a target's health",
+  description: 'Heals 20% of a target\'s health',
   cost: 100,
   item: new ItemBuilder().setName(NAME).setConsume(consume),
-}
+};

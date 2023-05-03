@@ -7,4 +7,4 @@ module.exports = {
   Types: Types,
   Stats: Stats,
   Events: Events,
-}
+};

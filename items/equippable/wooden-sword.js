@@ -1,10 +1,10 @@
 const { Stats, ItemBuilder } = require('../imports.js');
 
-const NAME = "Wooden Sword";
+const NAME = 'Wooden Sword';
 
 module.exports = {
   name: NAME,
-  description: "Increases attack by 20%",
+  description: 'Increases attack by 20%',
   cost: 500,
   item: new ItemBuilder()
     .setName(NAME)
@@ -13,4 +13,4 @@ module.exports = {
       duration: Infinity,
       modify: (atk, params) => atk * 1.2,
     }),
-}
+};

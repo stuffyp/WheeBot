@@ -1,10 +1,10 @@
 const { Stats, ItemBuilder } = require('../imports.js');
 
-const NAME = "Chainmail";
+const NAME = 'Chainmail';
 
 module.exports = {
   name: NAME,
-  description: "Increases defense by 60% and reduces speed by 20%",
+  description: 'Increases defense by 60% and reduces speed by 20%',
   cost: 5000,
   item: new ItemBuilder()
     .setName(NAME)
@@ -18,4 +18,4 @@ module.exports = {
       duration: Infinity,
       modify: (spd, params) => spd * 0.8,
     }),
-}
+};

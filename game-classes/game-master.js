@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
-const { Stats, StatusEffects, Targets } = require('../util/enums.js');
+const { StatusEffects, Targets } = require('../util/enums.js');
 const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
 
@@ -56,7 +56,7 @@ module.exports = class GameMaster {
   }
 
   loadUnit(cardFromDb, userId) {
-    const {id, level, exp, fullID, item} = cardFromDb;
+    const { id, level, exp, fullID, item } = cardFromDb;
     const username = this.users.find(u => u.id === userId).name;
     this.units[userId].push({
       user: userId,
@@ -104,7 +104,7 @@ module.exports = class GameMaster {
     // be aware that in JS, const subs = this.units[userId] apparently doesn't update when units is modified???
     const field = this.activeUnits[userId];
     const subs = this.units[userId];
-    while(subs.length && field.some((u) => u.unit.knockedOut())) {
+    while (subs.length && field.some((u) => u.unit.knockedOut())) {
       // console.error(subs, field);
       this.substitute(userId, field.find(u => u.unit.knockedOut()).fullID, subs[randInt(subs.length)].fullID);
       this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
@@ -115,7 +115,7 @@ module.exports = class GameMaster {
   }
 
   display() {
-    const embeds = this.users.map(({id, name}) => {
+    const embeds = this.users.map(({ id, name }) => {
       const availableUnits = this.activeUnits[id].length + this.units[id].length;
       const totalUnits = availableUnits + this.graveyard[id].length;
       return new EmbedBuilder()
@@ -126,7 +126,7 @@ module.exports = class GameMaster {
             value: `${u.unit.status ?? '❤️'}: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100`,
             inline: true,
           });
-        }))
+        }));
     });
     return embeds;
   }
@@ -151,7 +151,7 @@ module.exports = class GameMaster {
       return;
     }
 
-    switch(command.targetType) {
+    switch (command.targetType) {
       case Targets.None:
         this.log.push(`**${command.agent.unit.name}** used **${command.name}**!`);
         break;
@@ -172,7 +172,7 @@ module.exports = class GameMaster {
       default:
         break;
     }
-    
+
     const user = command.agent.user;
     const otherUser = this.#flipUser(user);
     command.agent.unit.magic -= command.cost;
@@ -180,7 +180,7 @@ module.exports = class GameMaster {
     command.execute({
       self: command.agent.unit,
       target: command.target ? command.target.unit : null,
-      sub: () => { 
+      sub: () => {
         if (command.agent.unit.status === StatusEffects.Trapped) {
           this.log.push(`${command.agent.unit.name} tried to swap out but was trapped!`);
           return;
@@ -226,7 +226,7 @@ module.exports = class GameMaster {
       u.unit.startTurn({ self: u.unit });
       if (this.#checkWin()) return;
     }
-    
+
     this.commands.sort((a, b) => {
       return b.priority - a.priority || b.speed - a.speed || Math.random() - 0.5;
     });
@@ -248,4 +248,4 @@ module.exports = class GameMaster {
 
     this.turn++;
   }
-}
+};

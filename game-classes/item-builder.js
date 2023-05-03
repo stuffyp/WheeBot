@@ -17,4 +17,4 @@ module.exports = class ItemBuilder {
   addModifier(params) { this.modifiers.push(new Modifier(params)); return this; }
   setConsume(consume) { this.consume = consume; return this; }
   setName(name) { this.name = name; return this; }
-}
+};

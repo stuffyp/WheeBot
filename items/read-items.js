@@ -16,9 +16,9 @@ for (const folder of folders) {
     const filePath = path.join(folder, file);
     const item = require(filePath);
     if (!(
-        'name'        in item &&
-        'description' in item && 
-        'cost'        in item
+        'name' in item &&
+        'description' in item &&
+        'cost' in item
     )) {
       console.log(`[WARNING] The item at ${filePath} is missing properties.`);
       continue;
@@ -36,6 +36,6 @@ module.exports = {
   },
   formatItemID: formatItemID,
   getItem: (id) => ITEMS[formatItemID(id)],
-}
+};
 
 // console.error(NAME_TO_ID);

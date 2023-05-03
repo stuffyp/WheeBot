@@ -16,17 +16,17 @@ const teamSelect = async (interaction) => {
   const selectOptions = party.map((u) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(`${u.unit.name} (Level ${u.level})`)
-      .setValue(String(u.fullID))
+      .setValue(String(u.fullID));
   });
 
   const select = new StringSelectMenuBuilder()
-  	.setCustomId('select')
-  	.addOptions(selectOptions)
+    .setCustomId('select')
+    .addOptions(selectOptions)
     .setMinValues(1)
 		.setMaxValues(Math.min(3, selectOptions.length));
 
   const row = new ActionRowBuilder()
-		.addComponents(select)
+		.addComponents(select);
   const message = await interaction.reply({
     content: 'Select your starting team!',
     components: [row],
@@ -65,7 +65,7 @@ const teamSelect = async (interaction) => {
     ephemeral: true,
   });
   return true;
-}
+};
 
 
 const moveSelect = async (interaction, turn) => {
@@ -79,13 +79,13 @@ const moveSelect = async (interaction, turn) => {
   let selectOptions = activeUnits.map((u) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(`${u.unit.name}`)
-      .setValue(String(u.fullID))
+      .setValue(String(u.fullID));
   });
   let select = new StringSelectMenuBuilder()
     .setCustomId('agentSelect')
-    .addOptions(selectOptions)
+    .addOptions(selectOptions);
   let row = new ActionRowBuilder()
-    .addComponents(select)
+    .addComponents(select);
   let message = await interaction.reply({
     content: 'Select a creature you control.',
     components: [row],
@@ -94,7 +94,7 @@ const moveSelect = async (interaction, turn) => {
   });
   let confirmation = null;
   let success = false;
-  
+
   const waitSelect = async (customId) => {
     const filter = i => i.customId === customId && i.user.id === interaction.user.id;
     try {
@@ -105,16 +105,16 @@ const moveSelect = async (interaction, turn) => {
       return false;
     }
     if (!getCombatID(user) || turn !== gm.turn) {
-      await interaction.editReply({ 
-        content: 'Oops! You are out of sync. Aborting command.', 
-        components: [], 
-        ephemeral: true 
+      await interaction.editReply({
+        content: 'Oops! You are out of sync. Aborting command.',
+        components: [],
+        ephemeral: true,
       });
       return false;
     }
     confirmation.deferUpdate();
     return true;
-  }
+  };
 
   success = await waitSelect('agentSelect');
   if (!success) return;
@@ -125,25 +125,25 @@ const moveSelect = async (interaction, turn) => {
   }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(a.name)
-      .setValue(a.name)
+      .setValue(a.name);
   });
   select = new StringSelectMenuBuilder()
     .setCustomId('abilitySelect')
-    .addOptions(selectOptions)
+    .addOptions(selectOptions);
   if (subs.length) {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel('Substitute')
-      .setValue('Substitute')
+      .setValue('Substitute'),
     );
   }
   if (agent.unit.item && agent.unit.item.consume) {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel(agent.unit.item.name)
-      .setValue('Item')
+      .setValue('Item'),
     );
   }
   row = new ActionRowBuilder()
-    .addComponents(select)
+    .addComponents(select);
   message = await interaction.editReply({
     content: 'Select a move.',
     components: [row],
@@ -153,39 +153,39 @@ const moveSelect = async (interaction, turn) => {
 
   success = await waitSelect('abilitySelect');
   if (!success) return;
-  
-  let ability;  
+
+  let ability;
   let targetType;
-  if (confirmation.values[0] === 'Substitute') { 
-    targetType = Targets.Sub; 
+  if (confirmation.values[0] === 'Substitute') {
+    targetType = Targets.Sub;
     ability = {
       name: 'Substitute',
       priority: 0,
-      execute: (params) => { params.sub() },
-    }
+      execute: (params) => { params.sub(); },
+    };
     selectOptions = subs.map((u) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(u.unit.name)
-        .setValue('u'+String(u.fullID))
+        .setValue('u' + String(u.fullID));
     });
-  } else if (confirmation.values[0] === 'Item') { 
-    targetType = Targets.Field; 
+  } else if (confirmation.values[0] === 'Item') {
+    targetType = Targets.Field;
     ability = {
       name: agent.unit.item.name,
       priority: Infinity,
       execute: (params) => {
         agent.unit.item.consume(params);
       },
-    }
+    };
     selectOptions = gm.activeUnits[otherUser].map((u) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(u.unit.name)
-        .setValue('o'+String(u.fullID))
+        .setValue('o' + String(u.fullID));
     });
     selectOptions.push(...activeUnits.map((u) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(u.unit.name)
-        .setValue('u'+String(u.fullID))
+        .setValue('u' + String(u.fullID));
     }));
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
@@ -203,7 +203,7 @@ const moveSelect = async (interaction, turn) => {
         .setPriority(ability.priority)
         .setName(ability.name)
         .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
-        .setCost(ability.cost ?? 0)
+        .setCost(ability.cost ?? 0),
       );
       return;
     } else if (ability.target === Targets.Sub) {
@@ -211,28 +211,28 @@ const moveSelect = async (interaction, turn) => {
       selectOptions = subs.map((u) => {
         return new StringSelectMenuOptionBuilder()
           .setLabel(u.unit.name)
-          .setValue('u'+String(u.fullID))
+          .setValue('u' + String(u.fullID));
       });
     } else {
       targetType = Targets.Field;
       selectOptions = gm.activeUnits[otherUser].map((u) => {
         return new StringSelectMenuOptionBuilder()
           .setLabel(u.unit.name)
-          .setValue('o'+String(u.fullID))
+          .setValue('o' + String(u.fullID));
       });
       selectOptions.push(...activeUnits.map((u) => {
         return new StringSelectMenuOptionBuilder()
           .setLabel(u.unit.name)
-          .setValue('u'+String(u.fullID))
+          .setValue('u' + String(u.fullID));
       }));
     }
   }
 
   select = new StringSelectMenuBuilder()
     .setCustomId('targetSelect')
-    .addOptions(selectOptions)
+    .addOptions(selectOptions);
   row = new ActionRowBuilder()
-    .addComponents(select)
+    .addComponents(select);
   message = await interaction.editReply({
     content: 'Select a target.',
     components: [row],
@@ -252,7 +252,7 @@ const moveSelect = async (interaction, turn) => {
   const target = formation.find((u) => u.fullID === parseInt(confirmation.values[0].slice(1, Infinity)));
   if (battle.readyUsers.includes(user)) {
     await interaction.editReply({
-      content: `Oops! You have ended your turn. Aborting command.`,
+      content: 'Oops! You have ended your turn. Aborting command.',
       components: [],
       ephemeral: true,
     });
@@ -271,29 +271,31 @@ const moveSelect = async (interaction, turn) => {
     .setPriority(ability.priority)
     .setName(ability.name)
     .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
-    .setCost(ability.cost ?? 0)
+    .setCost(ability.cost ?? 0),
   );
-}
+};
 
 const handleTurn = async (interaction, turn, doForfeit) => {
   switch (interaction.customId) {
     case 'action':
       await moveSelect(interaction, turn);
       break;
-    case 'endTurn':
+    case 'endTurn': {
       const endConfirmation = await askConfirmation(interaction);
       if (endConfirmation) readyUser(interaction.user.id);
       break;
-    case 'forfeit':
+    }
+    case 'forfeit': {
       const forfeitConfirmation = await askConfirmation(interaction);
       if (forfeitConfirmation) doForfeit(interaction.user.id);
       break;
+    }
     default:
       break;
   }
-}
+};
 
 module.exports = {
   teamSelect: teamSelect,
   handleTurn: handleTurn,
-}
+};

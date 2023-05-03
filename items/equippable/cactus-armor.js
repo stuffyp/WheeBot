@@ -1,10 +1,10 @@
-const { Stats, ItemBuilder, Events } = require('../imports.js');
+const { ItemBuilder, Events } = require('../imports.js');
 
-const NAME = "Cactus Armor";
+const NAME = 'Cactus Armor';
 
 module.exports = {
   name: NAME,
-  description: "Reflects 40% of damage back to attacker",
+  description: 'Reflects 40% of damage back to attacker',
   cost: 4000,
   item: new ItemBuilder()
     .setName(NAME)
@@ -19,4 +19,4 @@ module.exports = {
         }
       },
     }),
-}
+};

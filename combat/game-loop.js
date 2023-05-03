@@ -3,7 +3,7 @@ const { endBattle, getBattle, updateBattle, waitReady } = require('./battle-stor
 const { MS_MINUTE } = require('../util/constants.js');
 const { updateGlicko } = require('../util/glicko.js');
 const { handleTurn } = require('./ui.js');
-const { syncUpdate } = require('../manage-user.js');
+const { syncUpdate } = require('../database.js');
 
 const TIME_LIMIT = 5 * MS_MINUTE;
 
@@ -30,16 +30,17 @@ const gameLoop = async (combatID, channel) => {
 
   let buttonCollector;
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // get display from GM and write to channel
     const embeds = GM.display();
-    const message = await channel.send({ 
+    const message = await channel.send({
       embeds: embeds,
       components: [actionRow],
     });
-    
+
     // wait for commands from users -> queue to GM
-    const messageFilter = (i) =>  ['action', 'endTurn', 'forfeit'].includes(i.customId) && users.includes(i.user.id);
+    const messageFilter = (i) => ['action', 'endTurn', 'forfeit'].includes(i.customId) && users.includes(i.user.id);
     buttonCollector = message.createMessageComponentCollector({
       filter: messageFilter,
       time: TIME_LIMIT,
@@ -58,10 +59,10 @@ const gameLoop = async (combatID, channel) => {
     buttonCollector.on('end', () => {
       message.edit({ embeds: embeds, components: [] });
     });
-  
+
     try {
       await waitReady(combatID);
-    } catch (e) { 
+    } catch (e) {
       // TIMEOUT
       const winner = (battle.readyUsers.length > 0) ? battle.readyUsers[0] : null;
       finishBattle(winner, combatID, channel, true);
@@ -69,18 +70,18 @@ const gameLoop = async (combatID, channel) => {
     }
     buttonCollector.stop();
     updateBattle(combatID);
-    
+
     // when both users end turn, execute GM
     GM.executeCommands();
-    
+
     // write log to channel
     const log = GM.getLog();
-    if (!log.length) await channel.send("Nothing happened...");
+    if (!log.length) await channel.send('Nothing happened...');
     while (log.length) {
       const chunk = log.splice(0, 5);
       await channel.send(chunk.join('\n'));
     }
-    
+
     // check win
     if (GM.gameOver) {
       buttonCollector.stop();
@@ -88,13 +89,13 @@ const gameLoop = async (combatID, channel) => {
       return;
     }
   }
-}
+};
 
-const finishBattle = async (winner, combatID, channel, timeout=false) => {
+const finishBattle = async (winner, combatID, channel, timeout = false) => {
   const battle = getBattle(combatID);
   if (!battle) return;
   const { users, GM } = battle;
-  
+
   if (winner) {
     const loser = users.find((u) => u !== winner);
     const winnerName = GM.users.find(u => u.id === winner).name;
@@ -112,7 +113,7 @@ const finishBattle = async (winner, combatID, channel, timeout=false) => {
       .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
       .addFields({ name: '🏆 ' + winnerName, value: `${winnerNewElo} (+${winnerNewElo - winnerOldElo})`, inline: true })
       .addFields({ name: '\u200B', value: '\u200B', inline: true })
-      .addFields({ name: loserName, value: `${loserNewElo} (-${loserOldElo - loserNewElo})`, inline: true })
+      .addFields({ name: loserName, value: `${loserNewElo} (-${loserOldElo - loserNewElo})`, inline: true });
     if (timeout) embed.setDescription('Combat timed out.');
 
     channel.send({ embeds: [embed] });
@@ -122,16 +123,16 @@ const finishBattle = async (winner, combatID, channel, timeout=false) => {
       .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
       .addFields({ name: fullUsers[0].name, value: String(Math.round(fullUsers[0].elo)), inline: true })
       .addFields({ name: '\u200B', value: '\u200B', inline: true })
-      .addFields({ name: fullUsers[1].name, value: String(Math.round(fullUsers[1].elo)), inline: true })
+      .addFields({ name: fullUsers[1].name, value: String(Math.round(fullUsers[1].elo)), inline: true });
     if (timeout) embed.setDescription('Combat timed out.');
 
     channel.send({ embeds: [embed] });
-  };
-  
+  }
+
   endBattle(combatID);
   // TODO
-}
+};
 
 module.exports = {
   gameLoop,
-}
+};

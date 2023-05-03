@@ -20,7 +20,7 @@ const RARITY_TO_INT = {
   [`${Rarities.Rare}`]: 1,
   [`${Rarities.Epic}`]: 2,
   [`${Rarities.Legendary}`]: 3,
-}
+};
 
 const templateFolder = path.join(__dirname, 'templates');
 const commonFolder = path.join(templateFolder, 'common');
@@ -46,13 +46,13 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
     // console.error(card.abilities);
     if (!card.abilities.every((ability) => {
       return (
-        'name'        in ability &&
-        'description' in ability && 
-        'level'       in ability && 
-        'type'        in ability &&
-        'priority'    in ability &&
-        'execute'     in ability &&
-        'target'      in ability
+        'name' in ability &&
+        'description' in ability &&
+        'level' in ability &&
+        'type' in ability &&
+        'priority' in ability &&
+        'execute' in ability &&
+        'target' in ability
       );
     })) {
       console.log(`[WARNING] The card at ${filePath} is missing ability properties.`);
@@ -77,7 +77,7 @@ module.exports = {
   formatCardID: formatCardID,
   getRarity: (name) => {
     return RARITY_TO_INT[ALL_CARDS[formatCardID(name)].rarity];
-  }
-}
+  },
+};
 
 // console.error(NAME_TO_ID);

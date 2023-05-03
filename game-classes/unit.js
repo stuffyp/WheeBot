@@ -39,7 +39,7 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 module.exports = class Unit {
   simpleName;
   name;
-  
+
   maxHealth;
   health;
   attack;
@@ -47,12 +47,12 @@ module.exports = class Unit {
   speed;
   magicRegen;
   magic;
-  
+
   types;
   abilities;
   modifiers;
   listeners;
-  
+
   status; // status effect - unique
   item; // item - unique
   log; // string output of what this unit does in a turn
@@ -74,7 +74,7 @@ module.exports = class Unit {
     this.listeners = [];
     this.status = null;
     this.item = null;
-    this.log = (text) => { console.error(`${this.name} logging into the void!`) };
+    this.log = (t) => { console.error(`${this.name} logging into the void!`); };
     this.onField = false;
     this.mostRecentCost = 0;
   }
@@ -95,7 +95,7 @@ module.exports = class Unit {
   }
 
   knockedOut() { return this.health <= 0; }
-  knockOut() { 
+  knockOut() {
     this.log(`${this.name} was knocked out!`);
     this.modifiers = [];
     this.listeners = [];
@@ -127,28 +127,28 @@ module.exports = class Unit {
     return Math.ceil(
       modifiers
       .filter((modifier) => modifier.stat === stat)
-      .reduce((curStat, mod) => mod.modify(curStat, params), this.getBaseStat(stat))
+      .reduce((curStat, mod) => mod.modify(curStat, params), this.getBaseStat(stat)),
     );
   }
 
   emitEvent(event, params) {
     if (this.knockedOut()) return;
     const listeners = this.item ? [...this.listeners, ...this.item.listeners] : this.listeners;
-    listeners.forEach(listener => { 
+    listeners.forEach(listener => {
       listener.doEffect(event, params);
-      if (this.knockedOut()) { 
-        this.knockOut(); 
-        return; 
+      if (this.knockedOut()) {
+        this.knockOut();
+        return;
       }
     });
   }
 
   startTurn(params) {
-    this.listeners.forEach(listener => { listener.timer.tick() }); // cleanup is done in endTurn()
-    this.modifiers.forEach(modifier => { modifier.timer.tick() });
+    this.listeners.forEach(listener => { listener.timer.tick(); }); // cleanup is done in endTurn()
+    this.modifiers.forEach(modifier => { modifier.timer.tick(); });
     if (this.item) {
-      this.item.listeners.forEach(listener => { listener.timer.tick() });
-      this.item.modifiers.forEach(modifier => { modifier.timer.tick() });
+      this.item.listeners.forEach(listener => { listener.timer.tick(); });
+      this.item.modifiers.forEach(modifier => { modifier.timer.tick(); });
     }
     if (this.status === StatusEffects.Poison) {
       this.doDamage(Math.ceil(this.maxHealth / 6), 1, 'poison');
@@ -161,14 +161,14 @@ module.exports = class Unit {
       if (effect.timer.done()) {
         const out = effect.timer.onFinish(params);
         if (out) this.log(out);
-        if (this.knockedOut()) { 
-          this.knockOut(); 
+        if (this.knockedOut()) {
+          this.knockOut();
           return;
         }
       }
     });
 
-    //scuffed hack to modify original array without redefining the reference
+    // scuffed hack to modify original array without redefining the reference
     arr.splice(0, arr.length, ...arr.filter((element) => !element.timer.done()));
   }
 
@@ -182,7 +182,7 @@ module.exports = class Unit {
     }
     if (!this.knockedOut() && !this.mostRecentCost) {
       if (this.status === StatusEffects.Curse && this.magic < 100) {
-        this.log(`${this.name} was cursed and could not regenerate mana!`)
+        this.log(`${this.name} was cursed and could not regenerate mana!`);
       } else {
         this.magic = Math.min(100, this.magic + this.magicRegen);
       }
@@ -190,12 +190,12 @@ module.exports = class Unit {
     this.mostRecentCost = 0;
   }
 
-  doDamage(damage, effective=1, reason='') {
+  doDamage(damage, effective = 1, reason = '') {
     if (this.knockedOut()) return;
     this.health = Math.max(0, this.health - damage);
     let effectiveText = '';
     if (effective < 1) effectiveText = ' It was not very effective...';
-    if (effective > 1) effectiveText = ' It was super effective!'
+    if (effective > 1) effectiveText = ' It was super effective!';
     const reasonText = (reason.length) ? ` due to ${reason}` : '';
     this.log(`${this.name} took ${damage} damage${reasonText}!${effectiveText}`);
     if (this.knockedOut()) this.knockOut();
@@ -206,10 +206,10 @@ module.exports = class Unit {
     }
   }
 
-  doHeal(heal, reason='') {
+  doHeal(heal, reason = '') {
     if (this.knockedOut()) return;
     this.health = Math.min(this.maxHealth, this.health + heal);
     const reasonText = (reason.length) ? ` due to ${reason}` : '';
     this.log(`${this.name} recovered ${heal} health${reasonText}!`);
   }
-}
+};
