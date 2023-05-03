@@ -176,16 +176,16 @@ const moveSelect = async (interaction, turn) => {
       execute: (params) => {
         agent.unit.item.consume(params);
       },
-    }
+    };
     selectOptions = gm.activeUnits[otherUser].map((u) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(u.unit.name)
-        .setValue('o'+String(u.fullID))
+        .setValue('o' + String(u.fullID));
     });
     selectOptions.push(...activeUnits.map((u) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(u.unit.name)
-        .setValue('u'+String(u.fullID))
+        .setValue('u' + String(u.fullID));
     }));
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
@@ -203,7 +203,7 @@ const moveSelect = async (interaction, turn) => {
         .setPriority(ability.priority)
         .setName(ability.name)
         .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
-        .setCost(ability.cost ?? 0)
+        .setCost(ability.cost ?? 0),
       );
       return;
     } else if (ability.target === Targets.Sub) {
@@ -211,7 +211,7 @@ const moveSelect = async (interaction, turn) => {
       selectOptions = subs.map((u) => {
         return new StringSelectMenuOptionBuilder()
           .setLabel(u.unit.name)
-          .setValue('u'+String(u.fullID))
+          .setValue('u' + String(u.fullID));
       });
     } else {
       targetType = Targets.Field;
@@ -223,7 +223,7 @@ const moveSelect = async (interaction, turn) => {
       selectOptions.push(...activeUnits.map((u) => {
         return new StringSelectMenuOptionBuilder()
           .setLabel(u.unit.name)
-          .setValue('u'+String(u.fullID))
+          .setValue('u' + String(u.fullID));
       }));
     }
   }

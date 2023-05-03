@@ -39,7 +39,7 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 module.exports = class Unit {
   simpleName;
   name;
-  
+
   maxHealth;
   health;
   attack;
@@ -47,12 +47,12 @@ module.exports = class Unit {
   speed;
   magicRegen;
   magic;
-  
+
   types;
   abilities;
   modifiers;
   listeners;
-  
+
   status; // status effect - unique
   item; // item - unique
   log; // string output of what this unit does in a turn
@@ -182,7 +182,7 @@ module.exports = class Unit {
     }
     if (!this.knockedOut() && !this.mostRecentCost) {
       if (this.status === StatusEffects.Curse && this.magic < 100) {
-        this.log(`${this.name} was cursed and could not regenerate mana!`)
+        this.log(`${this.name} was cursed and could not regenerate mana!`);
       } else {
         this.magic = Math.min(100, this.magic + this.magicRegen);
       }
