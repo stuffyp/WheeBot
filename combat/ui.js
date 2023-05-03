@@ -121,7 +121,7 @@ const moveSelect = async (interaction, turn) => {
   const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
 
   selectOptions = agent.unit.abilities.filter((a) => {
-    return a.target !== Targets.Sub || subs;
+    return a.target !== Targets.Sub || subs.length;
   }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(a.name)
