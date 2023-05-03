@@ -51,6 +51,10 @@ module.exports = class GameMaster {
     return out;
   }
 
+  #flipUser(userId) {
+    return this.users.find((u) => u.id !== userId).id;
+  }
+
   loadUnit(cardFromDb, userId) {
     const { id, level, exp, fullID, item } = cardFromDb;
     const username = this.users.find(u => u.id === userId).name;
@@ -63,7 +67,11 @@ module.exports = class GameMaster {
         .setItem(item ? getItem(item).item : null)
         .setLog((text) => this.log.push(text))
         .setLevel(level)
-        .setName(username),
+        .setName(username)
+        .setUtilFuncs({
+          enemies: () => this.activeUnits[this.#flipUser(userId)].map(u => u.unit),
+          allies: () => this.activeUnits[userId].map(u => u.unit),
+        }),
     });
     return this;
   }
@@ -115,7 +123,7 @@ module.exports = class GameMaster {
         .addFields(this.activeUnits[id].map((u) => {
           return ({
             name: u.unit.simpleName,
-            value: `❤️: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100`,
+            value: `${u.unit.status ?? '❤️'}: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100`,
             inline: true,
           });
         }));
@@ -166,14 +174,12 @@ module.exports = class GameMaster {
     }
 
     const user = command.agent.user;
-    const otherUser = this.users.find((u) => u.id !== user).id;
+    const otherUser = this.#flipUser(user);
     command.agent.unit.magic -= command.cost;
     command.agent.unit.mostRecentCost = command.cost;
     command.execute({
       self: command.agent.unit,
       target: command.target ? command.target.unit : null,
-      allies: this.activeUnits[user].map(u => u.unit),
-      enemies: this.activeUnits[otherUser].map(u => u.unit),
       sub: () => {
         if (command.agent.unit.status === StatusEffects.Trapped) {
           this.log.push(`${command.agent.unit.name} tried to swap out but was trapped!`);

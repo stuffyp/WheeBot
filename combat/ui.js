@@ -68,7 +68,7 @@ const teamSelect = async (interaction) => {
 };
 
 
-const moveSelect = async (interaction) => {
+const moveSelect = async (interaction, turn) => {
   const user = interaction.user.id;
   const battle = getBattle(getCombatID(user));
   const gm = battle.GM;
@@ -104,7 +104,7 @@ const moveSelect = async (interaction) => {
       await interaction.editReply({ content: 'Command timed out.', components: [], ephemeral: true });
       return false;
     }
-    if (!getCombatID(user)) {
+    if (!getCombatID(user) || turn !== gm.turn) {
       await interaction.editReply({
         content: 'Oops! You are out of sync. Aborting command.',
         components: [],
@@ -121,7 +121,7 @@ const moveSelect = async (interaction) => {
   const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
 
   selectOptions = agent.unit.abilities.filter((a) => {
-    return a.target !== Targets.Sub || subs;
+    return a.target !== Targets.Sub || subs.length;
   }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(a.name)
@@ -139,7 +139,7 @@ const moveSelect = async (interaction) => {
   if (agent.unit.item && agent.unit.item.consume) {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel(agent.unit.item.name)
-      .setValue('Item')
+      .setValue('Item'),
     );
   }
   row = new ActionRowBuilder()
@@ -168,8 +168,8 @@ const moveSelect = async (interaction) => {
         .setLabel(u.unit.name)
         .setValue('u' + String(u.fullID));
     });
-  } else if (confirmation.values[0] === 'Item') { 
-    targetType = Targets.Field; 
+  } else if (confirmation.values[0] === 'Item') {
+    targetType = Targets.Field;
     ability = {
       name: agent.unit.item.name,
       priority: 0,
@@ -275,10 +275,10 @@ const moveSelect = async (interaction) => {
   );
 };
 
-const handleTurn = async (interaction, doForfeit) => {
+const handleTurn = async (interaction, turn, doForfeit) => {
   switch (interaction.customId) {
     case 'action':
-      await moveSelect(interaction);
+      await moveSelect(interaction, turn);
       break;
     case 'endTurn': {
       const endConfirmation = await askConfirmation(interaction);

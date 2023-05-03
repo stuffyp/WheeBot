@@ -14,10 +14,11 @@ module.exports = {
   },
 
   StatusEffects: {
-    Poison: 'Poison',
-    Burn: 'Burn',
-    Trapped: 'Trapped',
-    Stun: 'Stun',
+    Poison: '💚',
+    Burn: '❤️‍🔥',
+    Trapped: '🤎',
+    Stun: '💛',
+    Curse: '💜',
   },
 
   Types: {

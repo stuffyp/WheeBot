@@ -50,7 +50,7 @@ const gameLoop = async (combatID, channel) => {
         i.deferUpdate();
         return;
       }
-      handleTurn(i, (loser) => {
+      handleTurn(i, GM.turn, (loser) => {
         const winner = users.find((u) => u !== loser);
         buttonCollector.stop();
         finishBattle(winner, combatID, channel);
