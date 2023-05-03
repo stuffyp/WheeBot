@@ -10,7 +10,7 @@ module.exports = class ItemBuilder {
     this.listeners = [];
     this.modifiers = [];
     this.name = '0xDEADBEEF'; // should be modified
-    this.consume = (params) => { return; };
+    this.consume = null;
   }
 
   addListener(params) { this.listeners.push(new Listener(params)); return this; }
