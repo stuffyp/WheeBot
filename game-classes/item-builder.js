@@ -9,9 +9,8 @@ module.exports = class ItemBuilder {
   constructor() {
     this.listeners = [];
     this.modifiers = [];
-    // should be modified
-    this.name = '0xDEADBEEF';
-    this.consume = (params) => { return; };
+    this.name = '0xDEADBEEF'; // should be modified
+    this.consume = null;
   }
 
   addListener(params) { this.listeners.push(new Listener(params)); return this; }
