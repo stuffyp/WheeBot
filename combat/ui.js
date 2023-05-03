@@ -68,7 +68,7 @@ const teamSelect = async (interaction) => {
 }
 
 
-const moveSelect = async (interaction) => {
+const moveSelect = async (interaction, turn) => {
   const user = interaction.user.id;
   const battle = getBattle(getCombatID(user));
   const gm = battle.GM;
@@ -104,7 +104,7 @@ const moveSelect = async (interaction) => {
       await interaction.editReply({ content: 'Command timed out.', components: [], ephemeral: true });
       return false;
     }
-    if (!getCombatID(user)) {
+    if (!getCombatID(user) || turn !== gm.turn) {
       await interaction.editReply({ 
         content: 'Oops! You are out of sync. Aborting command.', 
         components: [], 
@@ -275,10 +275,10 @@ const moveSelect = async (interaction) => {
   );
 }
 
-const handleTurn = async (interaction, doForfeit) => {
+const handleTurn = async (interaction, turn, doForfeit) => {
   switch (interaction.customId) {
     case 'action':
-      await moveSelect(interaction);
+      await moveSelect(interaction, turn);
       break;
     case 'endTurn':
       const endConfirmation = await askConfirmation(interaction);

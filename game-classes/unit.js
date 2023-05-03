@@ -39,6 +39,7 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 module.exports = class Unit {
   simpleName;
   name;
+  
   maxHealth;
   health;
   attack;
@@ -46,15 +47,18 @@ module.exports = class Unit {
   speed;
   magicRegen;
   magic;
+  
   types;
   abilities;
   modifiers;
   listeners;
+  
   status; // status effect - unique
   item; // item - unique
   log; // string output of what this unit does in a turn
   onField; // whether unit is on field
   mostRecentCost; // whether the last move used cost mana
+  utilFuncs; // passed down from game master
   constructor(card) {
     this.simpleName = card.name;
     this.health = card.health;
@@ -83,6 +87,10 @@ module.exports = class Unit {
   }
   setName(username) {
     this.name = `${username}'s ${this.simpleName}`;
+    return this;
+  }
+  setUtilFuncs(utilFuncs) {
+    this.utilFuncs = utilFuncs;
     return this;
   }
 
@@ -173,7 +181,11 @@ module.exports = class Unit {
       this.#cleanUpTimers(this.item.modifiers, params);
     }
     if (!this.knockedOut() && !this.mostRecentCost) {
-      this.magic = Math.min(100, this.magic + this.magicRegen);
+      if (this.status === StatusEffects.Curse && this.magic < 100) {
+        this.log(`${this.name} was cursed and could not regenerate mana!`)
+      } else {
+        this.magic = Math.min(100, this.magic + this.magicRegen);
+      }
     }
     this.mostRecentCost = 0;
   }

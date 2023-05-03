@@ -26,7 +26,7 @@ const flood = {
   cost: 100,
   execute: (params) => {
     const self = params.self;
-    for (const target of params.enemies) {
+    for (const target of self.utilFuncs.enemies()) {
       const damage = damageCalc(
         FLOOD_POWER * self.getBaseStat(Stats.Attack), 
         self.getStat(Stats.Attack, { self: self }), 
@@ -52,7 +52,7 @@ const earthquake = {
   target: Targets.None,
   execute: (params) => {
     const self = params.self;
-    for (const target of params.enemies) {
+    for (const target of self.utilFuncs.enemies()) {
       const damage = damageCalc(
         EARTHQUAKE_POWER * self.getBaseStat(Stats.Attack), 
         self.getStat(Stats.Attack, { self: self }), 
