@@ -172,7 +172,7 @@ const moveSelect = async (interaction, turn) => {
     targetType = Targets.Field; 
     ability = {
       name: agent.unit.item.name,
-      priority: 0,
+      priority: Infinity,
       execute: (params) => {
         agent.unit.item.consume(params);
       },
