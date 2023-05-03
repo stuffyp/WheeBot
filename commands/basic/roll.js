@@ -28,7 +28,7 @@ const execute = async (interaction) => {
     let text = null;
     if (useFreeRoll) {
       if (u.stats.freeRolls === 0) {
-        await interaction.reply('You are out of rolls. Next roll in ${hoursUntil} hours, ${minutesUntil} minutes.');
+        await interaction.reply(`You are out of rolls. Next roll in ${hoursUntil} hours, ${minutesUntil} minutes.`);
         return null;
       }
       u.stats.freeRolls--;
