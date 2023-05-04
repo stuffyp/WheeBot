@@ -9,7 +9,7 @@ const HEALTH = 120;
 const ATTACK = 40;
 const DEFENSE = 60;
 const SPEED = 40;
-const MAGIC = 66;
+const MAGIC = 60;
 const TYPES = [Types.Water];
 
 const SPLASH_POWER = 0.6;
@@ -44,7 +44,7 @@ const encouragement = {
   type: Types.None,
   priority: 1,
   target: Targets.Field,
-  cost: 33,
+  cost: 30,
   execute: (params) => {
     const target = params.target;
     if (!target.knockedOut()) {
@@ -63,7 +63,33 @@ const encouragement = {
   },
 };
 
-const ABILITIES = [splash, encouragement];
+const SLAM_POWER = 0.8;
+const SLAM_TYPE = Types.Water;
+const slam = {
+  name: 'Body Slam', 
+  description: 'Deal heavy damage to a target. This move\'s damage scales with the defense of this creature instead of attack.',
+  level: 1,
+  type: SLAM_TYPE,
+  priority: 0,
+  target: Targets.Field,
+  cost: 40,
+  execute: (params) => {
+    const self = params.self;
+    const target = params.target;
+    const damage = damageCalc(
+      SLAM_POWER * self.getBaseStat(Stats.Attack), 
+      self.getStat(Stats.Defense, { self: self }), 
+      target.getStat(Stats.Defense, { self: target }),
+      SLAM_TYPE,
+      target.types,
+    );
+    target.doDamage(damage, typeAdvantage(SLAM_TYPE, target.types));
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
+  },
+};
+
+const ABILITIES = [splash, encouragement, slam];
 
 const HEADER = [NAME, DESCRIPTION, IMAGE_SRC, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
 

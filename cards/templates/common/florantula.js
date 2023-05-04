@@ -87,9 +87,7 @@ const toxin = {
       triggers: [Events.GotAttacked],
       duration: 0,
       doEffect: (params) => {
-        if (!params.agent.knockedOut()) {
-          params.agent.doPoison(TOXIN_NAME);
-        }
+        params.agent.doPoison(TOXIN_NAME);
       },
     }));
   },

@@ -150,7 +150,7 @@ module.exports = class Unit {
     if (this.status === StatusEffects.Poison) {
       this.doDamage(Math.ceil(this.maxHealth / 5), 1, 'poison');
     }
-    if (this.status === StatusEffects.Freeze && rollChance(0.4)) {
+    if (this.status === StatusEffects.Freeze && rollChance(this.magic / 150)) {
       this.status = null;
       this.log(`${this.name} unfroze!`);
     }

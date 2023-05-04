@@ -3,7 +3,7 @@ const { Card, Rarities, StatusEffects, Types, Targets,
        Modifier, Listener } = require('../../imports.js');
 
 const NAME = 'Echidron';
-const DESCRIPTION = 'Echidron has the ability to sense vibrations in the earth, allowing it to detect the presence of other creatures and navigate through underground tunnels.';
+const DESCRIPTION = 'Possessing the ability to sense vibrations in the earth, they prefer to build their lairs underground.';
 const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Common;
 const HEALTH = 140;
@@ -18,7 +18,7 @@ const SLASH_TYPE = Types.Beast;
 const SLASH_POWER = 0.4;
 const slash = {
   name: 'Slash', 
-  description: 'Deal light damage. 50% chance to hit twice.',
+  description: 'Deal light damage. Hits twice.',
   level: 1,
   type: SLASH_TYPE,
   priority: 0,
@@ -36,7 +36,7 @@ const slash = {
     target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage})
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
-    if (!target.knockedOut() && rollChance(0.5)) {
+    if (!target.knockedOut() && !self.knockedOut()) {
       target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
       self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
       target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});

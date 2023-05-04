@@ -91,7 +91,7 @@ const firework = {
       const enemies = self.utilFuncs.enemies();
       const target = enemies[randInt(enemies.length)];
       if (target.knockedOut()) {
-        self.log(`${target.name} was hit by ${FIREWORK_NAME} but ${target.name} had already been knocked out!`);
+        self.log(`${target.name} was hit by ${FIREWORK_NAME} but had already been knocked out!`);
       }
       const damage = damageCalc(
         FIREWORK_POWER * self.getBaseStat(Stats.Attack), 

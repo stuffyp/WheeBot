@@ -9,7 +9,7 @@ const HEALTH = 90;
 const ATTACK = 50;
 const DEFENSE = 40;
 const SPEED = 60;
-const MAGIC = 66;
+const MAGIC = 60;
 const TYPES = [Types.Shock];
 
 const FLASH_POWER = 0.4;
@@ -46,7 +46,7 @@ const shootingStar = {
   type: SHOOTING_TYPE,
   priority: 0,
   target: Targets.Field,
-  cost: 33,
+  cost: 30,
   execute: (params) => {
     const self = params.self;
     const target = params.target;
