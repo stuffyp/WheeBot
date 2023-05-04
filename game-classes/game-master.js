@@ -65,6 +65,7 @@ module.exports = class GameMaster {
   loadUnit(cardFromDb, userId) {
     const { id, level, exp, fullID, item } = cardFromDb;
     const username = this.users.find(u => u.id === userId).name;
+    const otherUser = this.#flipUser(userId);
     this.units[userId].push({
       user: userId,
       fullID: fullID,
@@ -79,7 +80,7 @@ module.exports = class GameMaster {
         .setLevel(level)
         .setName(username)
         .setUtilFuncs({
-          enemies: () => this.activeUnits[this.#flipUser(userId)].map(u => u.unit),
+          enemies: () => this.activeUnits[otherUser].map(u => u.unit),
           allies: () => this.activeUnits[userId].map(u => u.unit),
         }),
     });
