@@ -21,6 +21,6 @@ const consume = (params) => {
 module.exports = {
   name: NAME,
   description: '(*Consumable*) Target recovers 20% of their health at the end of each turn',
-  cost: 100,
+  cost: 300,
   item: new ItemBuilder().setName(NAME).setConsume(consume),
 };

@@ -17,7 +17,7 @@ module.exports = {
   MS_HOUR: MS_HOUR,
   MS_DAY: MS_DAY,
 
-  // 12 * MS_HOUR
+  // 2 * MS_HOUR
   ROLL_COOLDOWN: 0,
   COLLECTION_SIZE: 200,
   PARTY_SIZE: 7,
