@@ -151,7 +151,7 @@ module.exports = class Unit {
       this.doDamage(Math.ceil(this.maxHealth / 5), 1, 'poison');
     }
     if (this.status === StatusEffects.Freeze && rollChance(0.3)) {
-      this.status === null;
+      this.status = null;
       this.log(`${this.name} unfroze!`);
     }
     if (!this.knockedOut()) this.emitEvent(Events.TurnStart, params);
