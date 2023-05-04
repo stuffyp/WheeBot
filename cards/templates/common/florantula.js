@@ -88,7 +88,7 @@ const toxin = {
       duration: 0,
       doEffect: (params) => {
         if (!params.agent.knockedOut()) {
-          params.agent.doPoison();
+          params.agent.doPoison(TOXIN_NAME);
         }
       },
     }));

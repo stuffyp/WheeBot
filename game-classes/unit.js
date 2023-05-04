@@ -211,51 +211,57 @@ module.exports = class Unit {
     this.log(`${this.name} recovered ${heal} health${reasonText}!`);
   }
 
-  doStun() {
+  doStun(reason='') {
     if (this.knockedOut()) return;
     this.status = StatusEffects.Stun;
-    this.log(`${this.name} became stunned!`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became stunned${reasonText}!`);
   }
 
-  doBurn() {
+  doBurn(reason='') {
     if (this.knockedOut()) return;
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
     if (this.status === StatusEffects.Freeze) {
       this.status = null;
-      this.log(`${this.name} unfroze!`);
+      this.log(`${this.name} unfroze${reasonText}!`);
     } else {
       if (this.types.includes(Types.Water)) return;
       this.status = StatusEffects.Burn;
-      this.log(`${this.name} became burned!`);
+      this.log(`${this.name} became burned${reasonText}!`);
     }
   }
 
-  doPoison() {
+  doPoison(reason='') {
     if (this.knockedOut()) return;
     this.status = StatusEffects.Poison;
-    this.log(`${this.name} became poisoned!`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became poisoned${reasonText}!`);
   }
 
-  doTrap() {
+  doTrap(reason='') {
     if (this.knockedOut()) return;
     this.status = StatusEffects.Trapped;
-    this.log(`${this.name} became trapped!`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became trapped${reasonText}!`);
   }
 
-  doCurse() {
+  doCurse(reason='') {
     if (this.knockedOut()) return;
     this.status = StatusEffects.Curse;
-    this.log(`${this.name} became cursed!`);
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became cursed${reasonText}!`);
   }
 
-  doFreeze() {
+  doFreeze(reason='') {
     if (this.knockedOut()) return;
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
     if (this.status === StatusEffects.Burn) {
       this.status = null;
-      this.log(`${this.name} is no longer burned!`);
+      this.log(`${this.name} is no longer burned${reasonText}!`);
     } else {
       if (this.types.includes(Types.Fire)) return;
       this.status = StatusEffects.Freeze;
-      this.log(`${this.name} became frozen!`);
+      this.log(`${this.name} became frozen${reasonText}!`);
     }
   }
 };

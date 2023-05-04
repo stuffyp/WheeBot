@@ -44,5 +44,5 @@ module.exports = {
   ROLL_CHANCES: [0.5, 0.3, 0.15, 0.05],
 
   SHOP_REFRESH: 12 * MS_HOUR,
-  SHOP_SIZE: 3,
+  SHOP_SIZE: 5,
 };
