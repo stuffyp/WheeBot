@@ -225,7 +225,11 @@ module.exports = class Unit {
       this.status = null;
       this.log(`${this.name} unfroze${reasonText}!`);
     } else {
-      if (this.types.includes(Types.Water)) return;
+      if (this.types.includes(Types.Water)) { 
+        const byText = (reason.length) ? ` by ${reason}` : '';
+        this.log(`${this.name} resisted being burned${byText}!`);
+        return; 
+      }
       this.status = StatusEffects.Burn;
       this.log(`${this.name} became burned${reasonText}!`);
     }
@@ -259,7 +263,11 @@ module.exports = class Unit {
       this.status = null;
       this.log(`${this.name} is no longer burned${reasonText}!`);
     } else {
-      if (this.types.includes(Types.Fire)) return;
+      if (this.types.includes(Types.Fire)) {
+        const byText = (reason.length) ? ` by ${reason}` : '';
+        this.log(`${this.name} resisted being frozen${byText}!`);
+        return; 
+      }
       this.status = StatusEffects.Freeze;
       this.log(`${this.name} became frozen${reasonText}!`);
     }
