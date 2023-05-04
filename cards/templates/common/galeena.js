@@ -47,7 +47,7 @@ const GUARDIANS_MANA_COST = 10;
 const GUARDIANS_NAME = 'Spirit Guardians';
 const guardians = {
     name: GUARDIANS_NAME, 
-    description: `Add an effect to target creature. When target creature is attacked, it spends ${GUARDIANS_MANA_COST} mana if possible and deals moderate mystic damage to a random enemy. Acts early.`,
+    description: `Add an effect to target creature. For three turns, when target creature is attacked, it spends ${GUARDIANS_MANA_COST} mana if possible and deals moderate mystic damage to a random enemy. Acts early.`,
     level: 1,
     type: GUARDIANS_TYPE,
     priority: 1,
@@ -61,7 +61,7 @@ const guardians = {
         target.listeners.push(new Listener({
             name: GUARDIANS_NAME,
             triggers: [Events.GotAttacked],
-            duration: 0,
+            duration: 2,
             doEffect: (params) => {
                 if (!params.self.knockedOut() && params.self.magic >= GUARDIANS_MANA_COST) {
                     const enemies = params.self.utilFuncs.enemies();
