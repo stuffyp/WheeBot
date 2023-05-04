@@ -37,7 +37,7 @@ const PARASITE_NAME = 'Parasitic Touch';
 const parasite = {
   name: PARASITE_NAME, 
   description: "Deal light damage. Add an effect that drains 10% health from the target at the start of their turn.",
-  shortDescription: "Deal light damage. Add Effect: Drain 10% health from target each turn.",
+  shortDescription: "Deal light damage. ADD EFFECT: Drain 10% health from target each turn.",
   level: 1,
   type: PARASITE_TYPE,
   priority: 0,
