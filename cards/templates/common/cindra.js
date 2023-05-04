@@ -19,6 +19,7 @@ const FIREBALL_POWER = 0.6;
 const fireball = {
   name: 'Fireball', 
   description: 'Deal moderate damage. 50% chance to burn target.',
+  shortDescription: 'Deal moderate damage. 50% chance to burn target.',
   level: 1,
   type: FIREBALL_TYPE,
   priority: 0,
@@ -46,6 +47,7 @@ const GUST_POWER = 0.4;
 const gust = {
   name: 'Gust', 
   description: 'Deal light damage. Reduce the speed of target creature by 40% next turn.',
+  shortDescription: 'Deal light damage. Reduce the speed of target creature by 40% next turn.',
   level: 1,
   type: GUST_TYPE,
   priority: 0,
@@ -78,6 +80,7 @@ const FIREWORK_NAME = 'Fireworks';
 const firework = {
   name: FIREWORK_NAME, 
   description: 'For each modifier on this creature (or at least once), deal light damage to a random enemy.',
+  shortDescription: 'Deal light damage to a random enemy for each modifier on this creature.',
   level: 1,
   type: FIREWORK_TYPE,
   priority: 0,

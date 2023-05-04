@@ -18,6 +18,7 @@ const HEX_TYPE = Types.Mystic;
 const hex = {
   name: 'Hex', 
   description: 'Deal moderate damage. 70% chance to curse the target.',
+  shortDescription: 'Deal moderate damage. 70% chance to curse the target.',
   level: 1,
   type: HEX_TYPE,
   priority: 0,
@@ -48,6 +49,7 @@ const GUARDIANS_NAME = 'Spirit Guardians';
 const guardians = {
     name: GUARDIANS_NAME, 
     description: `Add an effect to target creature. For three turns, when target creature is attacked, it spends ${GUARDIANS_MANA_COST} mana if possible and deals moderate mystic damage to a random enemy. Acts early.`,
+    shortDescription: `ADD EFFECT: When target creature is attacked, deal moderate damage to a random enemy.`,
     level: 1,
     type: GUARDIANS_TYPE,
     priority: 1,

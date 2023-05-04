@@ -17,6 +17,7 @@ const FLASH_TYPE = Types.Shock;
 const flash = {
   name: 'Flash', 
   description: 'Deal light damage. Strikes early.',
+  shortDescription: 'Deal light damage.',
   level: 1,
   type: FLASH_TYPE,
   priority: 1,
@@ -42,6 +43,7 @@ const SHOOTING_TYPE = Types.Shock;
 const shootingStar = {
   name: 'Shooting Star', 
   description: 'Deal moderate damage. 70% chance to stun the target.',
+  shortDescription: 'Deal moderate damage. 70% chance to stun the target.',
   level: 1,
   type: SHOOTING_TYPE,
   priority: 0,

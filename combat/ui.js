@@ -125,7 +125,8 @@ const moveSelect = async (interaction, turn) => {
   }).map((a) => {
     return new StringSelectMenuOptionBuilder()
       .setLabel(`${TYPE_EMOJI[a.type]} ${a.name} (${a.cost ?? 0})`)
-      .setValue(a.name);
+      .setValue(a.name)
+      .setDescription(a.shortDescription);
   });
   select = new StringSelectMenuBuilder()
     .setCustomId('abilitySelect')

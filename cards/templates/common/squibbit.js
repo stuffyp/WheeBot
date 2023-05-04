@@ -17,6 +17,7 @@ const SPLASH_TYPE = Types.Water;
 const splash = {
   name: 'Splash', 
   description: 'Deal moderate damage to a target.',
+  shortDescription: 'Deal moderate damage to a target.',
   level: 1,
   type: SPLASH_TYPE,
   priority: 0,
@@ -40,6 +41,7 @@ const splash = {
 const encouragement = {
   name: 'Encouragement', 
   description: "Raise target's attack and defense by 30% for three turns. Activates early.",
+  shortDescription: "Raise target's attack and defense by 30% for three turns.",
   level: 1,
   type: Types.None,
   priority: 1,
@@ -68,6 +70,7 @@ const SLAM_TYPE = Types.Water;
 const slam = {
   name: 'Body Slam', 
   description: 'Deal heavy damage to a target. This move\'s damage scales with the defense of this creature instead of attack.',
+  shortDescription: 'Deal heavy damage to a target. Scales with defense.',
   level: 1,
   type: SLAM_TYPE,
   priority: 0,

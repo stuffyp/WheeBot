@@ -48,6 +48,8 @@ for (const [rarity, folder] of Object.entries(rarityToFolder)) {
       return (
         'name' in ability &&
         'description' in ability &&
+        'shortDescription' in ability &&
+        ability.shortDescription.length < 100 &&
         'level' in ability &&
         'type' in ability &&
         'priority' in ability &&

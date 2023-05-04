@@ -19,6 +19,7 @@ const FLOOD_POWER = 0.8;
 const flood = {
   name: 'Flash Flood', 
   description: 'Deal heavy damage to all enemies.',
+  shortDescription: 'Deal heavy damage to all enemies.',
   level: 1,
   type: FLOOD_TYPE,
   priority: 0,
@@ -46,6 +47,7 @@ const EARTHQUAKE_POWER = 0.4;
 const earthquake = {
   name: 'Earthquake', 
   description: 'Deal light damage to all enemies.',
+  shortDescription: 'Deal light damage to all enemies.',
   level: 1,
   type: EARTHQUAKE_TYPE,
   priority: 0,
@@ -70,6 +72,7 @@ const earthquake = {
 const shelter = {
   name: 'Shelter', 
   description: 'Substitute with target creature. Target creature enters with 50% increased defense until the end of their next turn. Acts early.',
+  shortDescription: 'Substitute with target creature. Increase its defense by 50% for two turns.',
   level: 1,
   type: Types.None,
   priority: 1,

@@ -19,6 +19,7 @@ const SLASH_POWER = 0.4;
 const slash = {
   name: 'Slash', 
   description: 'Deal light damage. Hits twice.',
+  shortDescription: 'Deal light damage. Hits twice.',
   level: 1,
   type: SLASH_TYPE,
   priority: 0,
@@ -49,6 +50,7 @@ const PIT_POWER = 0.6;
 const pit = {
   name: 'Pit Trap', 
   description: 'Deal moderate damage. Target is trapped.',
+  shortDescription: 'Deal moderate damage. Target is trapped.',
   level: 1,
   type: PIT_TYPE,
   priority: 0,
@@ -75,6 +77,7 @@ const pit = {
 const burrow = {
   name: 'Burrow', 
   description: 'Increase defense by 50% this turn and attack by 50% until the end of your next turn. Acts early.',
+  shortDescription: 'Increase defense and attack by 50% for two turns.',
   level: 1,
   type: Types.Earth,
   priority: 1,
