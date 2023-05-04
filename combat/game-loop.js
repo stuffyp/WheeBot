@@ -78,7 +78,7 @@ const gameLoop = async (combatID, channel) => {
     const log = GM.getLog();
     if (!log.length) await channel.send('Nothing happened...');
     while (log.length) {
-      const chunk = log.splice(0, 5);
+      const chunk = log.splice(0, 10);
       await channel.send(chunk.join('\n'));
     }
 
