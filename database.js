@@ -192,8 +192,8 @@ const syncUpdate = async (userId1, userId2, callback) => {
     const u2 = userId1 < userId2 ? userId2 : userId1;
     await locks[u1].runExclusive(async () => {
         await locks[u2].runExclusive(async () => {
-            const user1 = await getUser(u1);
-            const user2 = await getUser(u2);
+            const user1 = await getUser(userId1);
+            const user2 = await getUser(userId2);
             const update = await callback(user1, user2);
             if (update) {
                 const [new1, new2] = update;

@@ -19,6 +19,7 @@ module.exports = {
     Trapped: '🤎',
     Stun: '💛',
     Curse: '💜',
+    Freeze: '💙',
   },
 
   Types: {

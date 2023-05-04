@@ -35,10 +35,7 @@ const fireball = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(FIREBALL_TYPE, target.types));
-    if (!target.knockedOut && !target.types.includes(Types.Water) && rollChance(0.7)) {
-      target.status = StatusEffects.Burn;
-      self.log(`${target.name} became burned!`);
-    }
+    if (rollChance(0.7)) target.doBurn();
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },

@@ -1,6 +1,6 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
-const { MS_MINUTE } = require('../util/constants.js');
+const { MS_MINUTE, TYPE_EMOJI } = require('../util/constants.js');
 const { Stats, Targets } = require('../util/enums.js');
 const { askConfirmation } = require('../util/ui-logic.js');
 const Command = require('../game-classes/command.js');
@@ -124,7 +124,7 @@ const moveSelect = async (interaction, turn) => {
     return a.target !== Targets.Sub || subs.length;
   }).map((a) => {
     return new StringSelectMenuOptionBuilder()
-      .setLabel(a.name)
+      .setLabel(`${TYPE_EMOJI[a.type]} ${a.name} (${a.cost ?? 0})`)
       .setValue(a.name);
   });
   select = new StringSelectMenuBuilder()

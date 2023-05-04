@@ -57,11 +57,8 @@ const shootingStar = {
       SHOOTING_TYPE,
       target.types,
     );
-    if (rollChance(0.7)) {
-      target.status = StatusEffects.Stun;
-      self.log(`${target.name} became stunned!`);
-    }
     target.doDamage(damage, typeAdvantage(SHOOTING_TYPE, target.types));
+    if (rollChance(0.7)) target.doStun();
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },

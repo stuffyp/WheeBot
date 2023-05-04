@@ -19,7 +19,7 @@ const cleanse = {
   type: Types.None,
   priority: -1,
   target: Targets.Field,
-  cost: 60,
+  cost: 50,
   execute: (params) => {
     const self = params.self;
     const target = params.target;
@@ -40,6 +40,7 @@ const parasite = {
   type: PARASITE_TYPE,
   priority: 0,
   target: Targets.Field,
+  cost: 30,
   execute: (params) => {
     const self = params.self;
     const target = params.target;
@@ -51,15 +52,15 @@ const parasite = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(PARASITE_TYPE, target.types));
-    self.emitEvent(Events.DidAttack);
-    target.emitEvent(Events.GotAttacked);
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage });
     if (!target.knockedOut()) {
       target.listeners.push(new Listener({
         name: 'Parasitic Touch',
         triggers: [Events.TurnStart],
         duration: Infinity,
         doEffect: (params) => {
-          if (!self.knockedOut()) {
+          if (!self.knockedOut() && self.onField) {
             const damage = Math.min(target.health, Math.ceil(target.maxHealth * 0.1));
             target.doDamage(damage, 1, PARASITE_NAME);
             self.doHeal(damage, PARASITE_NAME);
@@ -87,8 +88,7 @@ const toxin = {
       duration: 0,
       doEffect: (params) => {
         if (!params.agent.knockedOut()) {
-          params.agent.status = StatusEffects.Poison;
-          params.agent.log(`${params.agent.name} became poisoned due to ${TOXIN_NAME}!`);
+          params.agent.doPoison();
         }
       },
     }));

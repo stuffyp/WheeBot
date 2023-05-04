@@ -2,8 +2,11 @@ const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
 const { StatusEffects, Targets } = require('../util/enums.js');
+const { TYPE_EMOJI } = require('../util/constants.js');
 const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
+
+const H_BAR = '──────────';
 
 module.exports = class GameMaster {
   users;
@@ -47,6 +50,10 @@ module.exports = class GameMaster {
 
   getLog() {
     const out = this.log;
+    for (let i = out.length - 1; i > 0; i--) {
+      if (out[i] === H_BAR && out[i-1] === H_BAR) out.splice(i, 1);
+    }
+    if (out.length === 1) out.splice(0);
     this.log = [];
     return out;
   }
@@ -65,7 +72,10 @@ module.exports = class GameMaster {
       exp: exp,
       unit: new Unit(getCard(id))
         .setItem(item ? getItem(item).item : null)
-        .setLog((text) => this.log.push(text))
+        .setLog((text) => { 
+          this.log.push(text); 
+          // console.error(text); 
+        } )
         .setLevel(level)
         .setName(username)
         .setUtilFuncs({
@@ -121,9 +131,10 @@ module.exports = class GameMaster {
       return new EmbedBuilder()
         .setTitle(`${name} (${availableUnits}/${totalUnits})`)
         .addFields(this.activeUnits[id].map((u) => {
+          const cardTypes = u.unit.types.map((type) => TYPE_EMOJI[type]).join(' ');
           return ({
             name: u.unit.simpleName,
-            value: `${u.unit.status ?? '❤️'}: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100`,
+            value: `${u.unit.status ?? '❤️'}: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100\n\nTypes: ${cardTypes}`,
             inline: true,
           });
         }));
@@ -139,15 +150,18 @@ module.exports = class GameMaster {
   #executeCommand() {
     const command = this.commands.shift();
     if (command.agent.unit.knockedOut()) {
-      this.log.push(`${command.agent.unit.name} was knocked out and passes their turn!`);
-      return;
+      throw new Error(`${command.agent.unit.name} is knocked out but trying to execute ${command.name}!`);
     }
     if (command.agent.unit.status === StatusEffects.Stun && rollChance(0.5)) {
-      this.log.push(`${command.agent.unit.name} was stunned and passes their turn!`);
+      this.log.push(`**${command.agent.unit.name}** was stunned and passes their turn!`);
+      return;
+    }
+    if (command.agent.unit.status === StatusEffects.Freeze) {
+      this.log.push(`**${command.agent.unit.name}** was frozen and passes their turn!`);
       return;
     }
     if (command.agent.unit.magic < command.cost) {
-      this.log.push(`${command.agent.unit.name} tried to use ${command.name} but didn't have enough mana!`);
+      this.log.push(`**${command.agent.unit.name}** tried to use **${command.name}** but didn't have enough mana!`);
       return;
     }
 
@@ -176,7 +190,7 @@ module.exports = class GameMaster {
     const user = command.agent.user;
     const otherUser = this.#flipUser(user);
     command.agent.unit.magic -= command.cost;
-    command.agent.unit.mostRecentCost = command.cost;
+    command.agent.unit.manaSpent += command.cost;
     command.execute({
       self: command.agent.unit,
       target: command.target ? command.target.unit : null,
@@ -214,6 +228,7 @@ module.exports = class GameMaster {
   }
 
   executeCommands() {
+    this.log.push(H_BAR);
     const user = this.users[0].id;
     const otherUser = this.users[1].id;
     let activeUnits = [...this.activeUnits[user], ...this.activeUnits[otherUser]];
@@ -222,16 +237,20 @@ module.exports = class GameMaster {
     });
     while (activeUnits.length) {
       const u = activeUnits.shift();
-      if (u.unit.knockedOut()) continue;
+      if (!u.unit.onField) continue;
       u.unit.startTurn({ self: u.unit });
-      if (this.#checkWin()) return;
+      this.#cleanUpKO(user);
+      this.#cleanUpKO(otherUser);
+      if (this.#checkWin()) { this.log.push(H_BAR); return; }
     }
 
+    this.log.push(H_BAR);
     this.commands.sort((a, b) => {
       return b.priority - a.priority || b.speed - a.speed || Math.random() - 0.5;
     });
     while (this.commands.length) {
       this.#executeCommand();
+      this.log.push(H_BAR);
       if (this.#checkWin()) return;
     }
 
@@ -241,10 +260,13 @@ module.exports = class GameMaster {
     });
     while (activeUnits.length) {
       const u = activeUnits.shift();
-      if (u.unit.knockedOut()) continue;
+      if (!u.unit.onField) continue;
       u.unit.endTurn({ self: u.unit });
-      if (this.#checkWin()) return;
+      this.#cleanUpKO(user);
+      this.#cleanUpKO(otherUser);
+      if (this.#checkWin()) { this.log.push(H_BAR); return; }
     }
+    this.log.push(H_BAR);
 
     this.turn++;
   }

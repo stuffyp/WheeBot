@@ -34,12 +34,13 @@ const slash = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage})
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
     if (!target.knockedOut() && rollChance(0.5)) {
       target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
+      self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
       target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
     }
-    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
   },
 };
 
@@ -63,8 +64,7 @@ const pit = {
       PIT_TYPE,
       target.types,
     );
-    target.status = StatusEffects.Trapped;
-    target.log(`${target.name} became trapped and cannot swap out!`);
+    target.doTrap();
     target.doDamage(damage, typeAdvantage(PIT_TYPE, target.types));
     self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
     target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
