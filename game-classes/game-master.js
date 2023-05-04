@@ -150,9 +150,7 @@ module.exports = class GameMaster {
 
   #executeCommand() {
     const command = this.commands.shift();
-    if (command.agent.unit.knockedOut()) {
-      throw new Error(`${command.agent.unit.name} is knocked out but trying to execute ${command.name}!`);
-    }
+    if (command.agent.unit.knockedOut()) return; // unit ko before taking turn
     if (command.agent.unit.status === StatusEffects.Stun && rollChance(0.5)) {
       this.log.push(`**${command.agent.unit.name}** was stunned and passes their turn!`);
       return;
