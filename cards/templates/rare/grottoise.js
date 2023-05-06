@@ -24,7 +24,7 @@ const flood = {
   type: FLOOD_TYPE,
   priority: 0,
   target: Targets.None,
-  cost: 100,
+  cost: 80,
   execute: (params) => {
     const self = params.self;
     for (const target of self.utilFuncs.enemies()) {
@@ -77,7 +77,7 @@ const shelter = {
   type: Types.None,
   priority: 1,
   target: Targets.Sub,
-  cost: 50,
+  cost: 30,
   execute: (params) => {
     params.sub();
     const target = params.target;

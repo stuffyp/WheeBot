@@ -133,7 +133,7 @@ const moveSelect = async (interaction, turn) => {
     .addOptions(selectOptions);
   if (subs.length) {
     select.addOptions(new StringSelectMenuOptionBuilder()
-      .setLabel('Substitute')
+      .setLabel('Substitute (10)')
       .setValue('Substitute'),
     );
   }
@@ -161,7 +161,8 @@ const moveSelect = async (interaction, turn) => {
     targetType = Targets.Sub;
     ability = {
       name: 'Substitute',
-      priority: 0,
+      priority: 1,
+      cost: 10,
       execute: (params) => { params.sub(); },
     };
     selectOptions = subs.map((u) => {

@@ -14,13 +14,13 @@ const TYPES = [Types.Plant];
 
 const cleanse = {
   name: 'Cleanse', 
-  description: 'Remove all effects and conditions from a target. Acts late.',
+  description: 'Remove all effects and conditions from a target. Acts early.',
   shortDescription: 'Remove all effects and conditions from a target.',
   level: 1,
   type: Types.None,
-  priority: -1,
+  priority: 1,
   target: Targets.Field,
-  cost: 50,
+  cost: 20,
   execute: (params) => {
     const self = params.self;
     const target = params.target;
