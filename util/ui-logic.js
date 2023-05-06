@@ -49,6 +49,7 @@ const askConfirmation = async (interaction, deleteReply = true, timeout = TIMEOU
       content: 'Are you sure you want to perform this action?',
       components: [row],
       ephemeral: true,
+      fetchReply: true,
   });
 
   try {
