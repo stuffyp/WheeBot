@@ -1,5 +1,6 @@
 const { Types, Rarities } = require('./enums.js');
 const { randRange } = require('./random.js');
+const { MAX_CARD_LEVEL } = require('./constants.js');
 
 const TYPE_ADVANTAGE = {
   [`${Types.Fire}`]: {
@@ -122,8 +123,16 @@ const damageCalc = (power, attack, defense, attackType, defenseTypes) => {
   return Math.ceil(power * attack * typeAdvantage(attackType, defenseTypes) / defense);
 };
 
+const expToNextLevel = (level) => level === MAX_CARD_LEVEL ? 0 : 10 * Math.round((9 + level)**3 / 100);
+
+const giveExp = (totalCommands, totalLevel) => {
+  return Math.round((15 + totalLevel) * (10 + totalCommands) * (1.5 + Math.random()) / 20);
+}
+
 module.exports = {
   retireCoins,
   typeAdvantage,
   damageCalc,
+  expToNextLevel,
+  giveExp,
 };

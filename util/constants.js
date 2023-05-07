@@ -45,4 +45,6 @@ module.exports = {
 
   SHOP_REFRESH: 12 * MS_HOUR,
   SHOP_SIZE: 5,
+
+  MAX_CARD_LEVEL: 30,
 };

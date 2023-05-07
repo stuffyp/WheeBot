@@ -1,4 +1,4 @@
-const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
+const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js');
 const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE, TYPE_EMOJI } = require('../util/constants.js');
 const { Stats, Targets } = require('../util/enums.js');
@@ -297,7 +297,24 @@ const handleTurn = async (interaction, turn, doForfeit) => {
   }
 };
 
+const displayExpUpdates = (fullUsers, unitUpdates) => {
+  return fullUsers.map((user) => {
+    return new EmbedBuilder()
+      .setTitle(user.name)
+      .addFields(unitUpdates[user.id].map((u) => {
+        const [name, level, levelUp, expGain] = u;
+        const levelUpEmoji = levelUp ? ' ⬆️ ': '';
+        return { 
+          name: `${name} (Level ${level}${levelUpEmoji})`, 
+          value: `(+${expGain} EXP)`, 
+          inline: true 
+        };
+      }))
+  });
+}
+
 module.exports = {
   teamSelect: teamSelect,
   handleTurn: handleTurn,
+  displayExpUpdates,
 };

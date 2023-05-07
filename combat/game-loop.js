@@ -1,9 +1,10 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { endBattle, getBattle, updateBattle, waitReady } = require('./battle-storage.js');
-const { MS_MINUTE } = require('../util/constants.js');
+const { MS_MINUTE, MAX_CARD_LEVEL } = require('../util/constants.js');
 const { updateGlicko } = require('../util/glicko.js');
-const { handleTurn } = require('./ui.js');
+const { handleTurn, displayExpUpdates } = require('./ui.js');
 const { syncUpdate } = require('../database.js');
+const { expToNextLevel, giveExp } = require('../util/math-func.js');
 
 const TIME_LIMIT = 5 * MS_MINUTE;
 
@@ -95,6 +96,7 @@ const finishBattle = async (winner, combatID, channel, timeout = false) => {
   const battle = getBattle(combatID);
   if (!battle) return;
   const { users, GM } = battle;
+  const fullUsers = GM.users;
 
   if (winner) {
     const loser = users.find((u) => u !== winner);
@@ -118,7 +120,6 @@ const finishBattle = async (winner, combatID, channel, timeout = false) => {
 
     channel.send({ embeds: [embed] });
   } else {
-    const fullUsers = GM.users;
     const embed = new EmbedBuilder()
       .setTitle('⭐⭐⭐\tGAME OVER\t⭐⭐⭐')
       .addFields({ name: fullUsers[0].name, value: String(Math.round(fullUsers[0].elo)), inline: true })
@@ -128,6 +129,30 @@ const finishBattle = async (winner, combatID, channel, timeout = false) => {
 
     channel.send({ embeds: [embed] });
   }
+
+  //give exp
+  const allUnits = GM.allUnits();
+  const totalLevel = allUnits.reduce((cur, u) => cur + u.level, 0);
+  const [user1, user2] = users;
+  const unitUpdates = { [`${user1}`]: [], [`${user2}`]: [] };
+  await syncUpdate(user1, user2, (userData1, userData2) => {
+    allUnits.forEach(u => {
+      const {user, unit, fullID} = u;
+      const collection = (user === user1) ? userData1.cardCollection : userData2.cardCollection;
+      const cardData = collection.find((c) => c.fullID === fullID);
+      const expGain = giveExp(GM.totalCommands, totalLevel);
+      cardData.exp += expGain;
+      let levelUp = false;
+      while (cardData.exp >= expToNextLevel(cardData.level) && cardData.level < MAX_CARD_LEVEL) {
+        cardData.exp -= expToNextLevel(cardData.level);
+        cardData.level++;
+        levelUp = true;
+      }
+      unitUpdates[user].push([unit.simpleName, cardData.level, levelUp, expGain]);
+    });
+    return [userData1, userData2];
+  });
+  channel.send({embeds: displayExpUpdates(fullUsers, unitUpdates)});
 
   endBattle(combatID);
   // TODO

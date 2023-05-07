@@ -18,6 +18,7 @@ module.exports = class GameMaster {
   winner;
   gameOver;
   commands;
+  totalCommands; // checking for effort before awarding exp
   turn;
   constructor(channel) {
     this.users = [];
@@ -29,6 +30,7 @@ module.exports = class GameMaster {
     this.winner = null;
     this.gameOver = false;
     this.commands = [];
+    this.totalCommands = 0;
     this.turn = 0;
   }
 
@@ -92,6 +94,16 @@ module.exports = class GameMaster {
     this.activeUnits[userId].push(unit);
     unit.unit.onField = true;
     this.units[userId] = this.units[userId].filter((u) => u.fullID !== fullID);
+  }
+
+  allUnits() {
+    const user = this.users[0].id;
+    const otherUser = this.users[1].id;
+    return [
+      ...this.activeUnits[user], ...this.activeUnits[otherUser],
+      ...this.units[user], ...this.units[otherUser],
+      ...this.graveyard[user], ...this.graveyard[otherUser],
+    ];
   }
 
   substitute(userId, fullID1, fullID2) {
@@ -227,6 +239,7 @@ module.exports = class GameMaster {
   }
 
   executeCommands() {
+    this.totalCommands += this.commands.length;
     this.log.push(H_BAR);
     const user = this.users[0].id;
     const otherUser = this.users[1].id;

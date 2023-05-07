@@ -3,6 +3,7 @@ const { RARITY_COLOR, TYPE_EMOJI } = require('../util/constants.js');
 const { Rarities } = require('../util/enums.js');
 const { getCard } = require('./read-cards.js');
 const { getItem } = require('../items/read-items.js');
+const { expToNextLevel } = require('../util/math-func.js');
 
 const path = require('node:path');
 
@@ -13,21 +14,37 @@ const RARITY_TO_EMOJI = {
   [`${Rarities.Legendary}`]: '🟨',
 };
 
+const displayExp = (level, exp) => {
+  const expToNext = expToNextLevel(level);
+  const numSquares = (expToNext === 0) ? 5 : Math.min(5, Math.round(5 * exp / expToNext));
+  return {
+    name: `EXP (${exp}/${expToNext})`,
+    value: '🟦'.repeat(numSquares) + '⬜'.repeat(5 - numSquares),
+    inline: true,
+  };
+}
+
 const imageFolder = path.join(path.dirname(__dirname), 'images');
 // console.error(imageFolder);
 const getImagePath = (imageSrc) => path.join(imageFolder, imageSrc);
 
-const display = (card, level = null) => {
+const display = (card, level = null, exp = null) => {
   const abilities = card.abilities.map((ability) => {
     return { name: `${TYPE_EMOJI[ability.type]} ${ability.name} (${ability.cost ?? 0})`, value: ability.description };
   });
   const cardTypes = card.types.map((type) => TYPE_EMOJI[type]).join(' ');
   const title = card.name + (level === null ? '' : ` (Level ${level})`);
+  const expField = exp !== null ? displayExp(level, exp) : 
+                                  { name: '\u200b', value: '\u200b', inline: true };
   return new EmbedBuilder()
     .setColor(RARITY_COLOR[card.rarity])
     .setTitle(title)
     .setDescription(card.description)
-    .addFields({ name: 'Types', value: cardTypes })
+    .addFields(
+      { name: 'Types', value: cardTypes, inline: true },
+      { name: '\u200b', value: '\u200b', inline: true },
+      expField,
+    )
     .addFields(
       { name: 'Health', value: `${card.health}`, inline: true },
       { name: 'Attack', value: `${card.attack}`, inline: true },
@@ -44,14 +61,14 @@ module.exports = {
   display: display,
   fullDisplay: ({ id, level, exp, item }, index, collectionSize) => {
     const card = getCard(id);
-    return display(card, level)
+    return display(card, level, exp)
       .addFields({ name: 'Item', value: item ? getItem(item).name : 'No Item' })
       .setFooter({ text: `Page ${index + 1}/${collectionSize}` });
   },
   imageDisplay: ({ id, level, exp, item }, index, collectionSize) => {
     const card = getCard(id);
     return [
-      display(card, level)
+      display(card, level, exp)
         .addFields({ name: 'Item', value: item ? getItem(item).name : 'No Item' })
         .setImage(`attachment://${card.imageSrc}`)
         .setFooter({ text: `Page ${index + 1}/${collectionSize}` }),
