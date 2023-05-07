@@ -4,7 +4,7 @@ const { MAX_CARD_LEVEL } = require('./constants.js');
 
 const TYPE_ADVANTAGE = {
   [`${Types.Fire}`]: {
-    [`${Types.Fire}`]: 1,
+    [`${Types.Fire}`]: 0.75,
     [`${Types.Water}`]: 0.5,
     [`${Types.Plant}`]: 2,
     [`${Types.Earth}`]: 1,
@@ -16,7 +16,7 @@ const TYPE_ADVANTAGE = {
   },
   [`${Types.Water}`]: {
     [`${Types.Fire}`]: 2,
-    [`${Types.Water}`]: 1,
+    [`${Types.Water}`]: 0.75,
     [`${Types.Plant}`]: 0.5,
     [`${Types.Earth}`]: 2,
     [`${Types.Wind}`]: 1,
@@ -28,7 +28,7 @@ const TYPE_ADVANTAGE = {
   [`${Types.Plant}`]: {
     [`${Types.Fire}`]: 0.5,
     [`${Types.Water}`]: 2,
-    [`${Types.Plant}`]: 1,
+    [`${Types.Plant}`]: 0.75,
     [`${Types.Earth}`]: 2,
     [`${Types.Wind}`]: 1,
     [`${Types.Shock}`]: 1,
@@ -40,7 +40,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Fire}`]: 1,
     [`${Types.Water}`]: 0.5,
     [`${Types.Plant}`]: 0.5,
-    [`${Types.Earth}`]: 1,
+    [`${Types.Earth}`]: 0.75,
     [`${Types.Wind}`]: 1,
     [`${Types.Shock}`]: 2,
     [`${Types.Beast}`]: 2,
@@ -52,7 +52,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Water}`]: 1,
     [`${Types.Plant}`]: 1,
     [`${Types.Earth}`]: 1,
-    [`${Types.Wind}`]: 1,
+    [`${Types.Wind}`]: 0.75,
     [`${Types.Shock}`]: 1,
     [`${Types.Beast}`]: 1,
     [`${Types.Mystic}`]: 0.5,
@@ -64,7 +64,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Plant}`]: 1,
     [`${Types.Earth}`]: 0.5,
     [`${Types.Wind}`]: 1,
-    [`${Types.Shock}`]: 1,
+    [`${Types.Shock}`]: 0.75,
     [`${Types.Beast}`]: 1,
     [`${Types.Mystic}`]: 1,
     [`${Types.None}`]: 1,
@@ -76,7 +76,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Earth}`]: 0.5,
     [`${Types.Wind}`]: 1,
     [`${Types.Shock}`]: 1,
-    [`${Types.Beast}`]: 1,
+    [`${Types.Beast}`]: 0.75,
     [`${Types.Mystic}`]: 2,
     [`${Types.None}`]: 1,
   },
@@ -88,7 +88,7 @@ const TYPE_ADVANTAGE = {
     [`${Types.Wind}`]: 2,
     [`${Types.Shock}`]: 1,
     [`${Types.Beast}`]: 0.5,
-    [`${Types.Mystic}`]: 1,
+    [`${Types.Mystic}`]: 0.75,
     [`${Types.None}`]: 1,
   },
   [`${Types.None}`]: {
