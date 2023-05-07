@@ -13,7 +13,7 @@ const SPEED = 50;
 const MAGIC = 50;
 const TYPES = [Types.Fire];
 
-RAGE_NAME = 'Rage';
+RAGE_NAME = 'Furnace';
 const rage = {
     name: RAGE_NAME, 
     description: 'Add an effect to this creature. When entering combat enraged, increase attack by 100%.',
