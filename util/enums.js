@@ -40,8 +40,7 @@ module.exports = {
     GotAttacked: 'GotAttacked',
     DidHeal: 'DidHeal',
     GotHealed: 'GotHealed',
-    StatusInflict: 'StatusInflict',
-    StatusWearOff: 'StatusWearOff',
+    OnSub: 'OnSub',
     TurnEnd: 'TurnEnd',
   },
 

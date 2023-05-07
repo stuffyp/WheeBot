@@ -1,5 +1,6 @@
 const { Card, Rarities, StatusEffects, Types, Targets, 
        Events, Stats, damageCalc, typeAdvantage, Listener } = require('../../imports.js');
+const { cleanseBuilder } = require('../../common-abilities.js');
 
 const NAME = 'Florantula';
 const DESCRIPTION = 'Neither flower nor bug, but something in between.';
@@ -12,24 +13,7 @@ const SPEED = 50;
 const MAGIC = 40;
 const TYPES = [Types.Plant];
 
-const cleanse = {
-  name: 'Cleanse', 
-  description: 'Remove all effects and conditions from a target. Acts early.',
-  shortDescription: 'Remove all effects and conditions from a target.',
-  level: 1,
-  type: Types.None,
-  priority: 1,
-  target: Targets.Field,
-  cost: 20,
-  execute: (params) => {
-    const self = params.self;
-    const target = params.target;
-    target.listeners = [];
-    target.modifiers = [];
-    target.status = null;
-    target.log(`${target.name} was cleansed of all effects and conditions!`);
-  },
-};
+const cleanse = cleanseBuilder(1);
 
 const PARASITE_TYPE = Types.Plant;
 const PARASITE_POWER = 0.3;
@@ -63,9 +47,10 @@ const parasite = {
         duration: Infinity,
         doEffect: (params) => {
           if (!self.knockedOut() && self.onField) {
-            const damage = Math.min(target.health, Math.ceil(target.maxHealth * 0.1));
-            target.doDamage(damage, 1, PARASITE_NAME);
+            const damage = Math.min(params.self.health, Math.ceil(params.self.maxHealth * 0.1));
+            params.self.doDamage(damage, 1, PARASITE_NAME);
             self.doHeal(damage, PARASITE_NAME);
+            self.emitEvent(Events.GotHealed);
           }
         },
       }));

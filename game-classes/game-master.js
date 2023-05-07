@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getCard } = require('../cards/read-cards.js');
 const { getItem } = require('../items/read-items.js');
-const { StatusEffects, Targets } = require('../util/enums.js');
+const { StatusEffects, Targets, Events } = require('../util/enums.js');
 const { TYPE_EMOJI } = require('../util/constants.js');
 const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
@@ -145,9 +145,10 @@ module.exports = class GameMaster {
         .setTitle(`${name} (${availableUnits}/${totalUnits})`)
         .addFields(this.activeUnits[id].map((u) => {
           const cardTypes = u.unit.types.map((type) => TYPE_EMOJI[type]).join(' ');
+          const healthDisplay = u.unit.rage() ? `**${u.unit.health}/${u.unit.maxHealth}**` : `${u.unit.health}/${u.unit.maxHealth}`;
           return ({
             name: u.unit.simpleName,
-            value: `${u.unit.status ?? '❤️'}: ${u.unit.health}/${u.unit.maxHealth}\n✨: ${u.unit.magic}/100\n\nTypes: ${cardTypes}`,
+            value: `${u.unit.status ?? '❤️'}: ${healthDisplay}\n✨: ${u.unit.magic}/100\n\nTypes: ${cardTypes}`,
             inline: true,
           });
         }));
@@ -211,6 +212,7 @@ module.exports = class GameMaster {
           return;
         }
         this.substitute(user, command.agent.fullID, command.target.fullID);
+        command.target.unit.emitEvent(Events.OnSub, { self: command.target.unit });
       },
     });
     this.#cleanUpKO(user);

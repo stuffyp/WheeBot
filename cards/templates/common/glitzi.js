@@ -42,8 +42,8 @@ const SHOOTING_POWER = 0.6;
 const SHOOTING_TYPE = Types.Shock;
 const shootingStar = {
   name: 'Shooting Star', 
-  description: 'Deal moderate damage. 70% chance to stun the target.',
-  shortDescription: 'Deal moderate damage. 70% chance to stun the target.',
+  description: 'Deal moderate damage. 70% chance to stun target.',
+  shortDescription: 'Deal moderate damage. 70% chance to stun target.',
   level: 1,
   type: SHOOTING_TYPE,
   priority: 0,

@@ -95,6 +95,7 @@ module.exports = class Unit {
     return this;
   }
 
+  rage() { return this.health <= 0.4 * this.maxHealth; }
   knockedOut() { return this.health <= 0; }
   knockOut() {
     this.log(`${this.name} was knocked out!`);

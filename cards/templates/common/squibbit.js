@@ -7,7 +7,7 @@ const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Common;
 const HEALTH = 120;
 const ATTACK = 40;
-const DEFENSE = 60;
+const DEFENSE = 50;
 const SPEED = 40;
 const MAGIC = 60;
 const TYPES = [Types.Water];
@@ -40,8 +40,8 @@ const splash = {
 
 const encouragement = {
   name: 'Encouragement', 
-  description: "Raise target's attack and defense by 30% for three turns. Activates early.",
-  shortDescription: "Raise target's attack and defense by 30% for three turns.",
+  description: "Raise target's attack and defense by 30%. Activates early.",
+  shortDescription: "Raise target's attack and defense by 30%.",
   level: 1,
   type: Types.None,
   priority: 1,
@@ -52,12 +52,12 @@ const encouragement = {
     if (!target.knockedOut()) {
       target.modifiers.push(new Modifier({
         stat: Stats.Defense,
-        duration: 2,
+        duration: Infinity,
         modify: (def, params) => def * 1.3,
       }));
       target.modifiers.push(new Modifier({
         stat: Stats.Attack,
-        duration: 2,
+        duration: Infinity,
         modify: (atk, params) => atk * 1.3,
       }));
       target.log(`${target.name}'s attack and defense rose!`);

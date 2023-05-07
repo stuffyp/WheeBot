@@ -3,6 +3,7 @@ const { getCombatID, getBattle, readyUser } = require('./battle-storage.js');
 const { MS_MINUTE, TYPE_EMOJI } = require('../util/constants.js');
 const { Stats, Targets } = require('../util/enums.js');
 const { askConfirmation } = require('../util/ui-logic.js');
+const { tackle } = require('../cards/common-abilities.js');
 const Command = require('../game-classes/command.js');
 
 const TIMEOUT = 5 * MS_MINUTE;
@@ -130,7 +131,11 @@ const moveSelect = async (interaction, turn) => {
   });
   select = new StringSelectMenuBuilder()
     .setCustomId('abilitySelect')
-    .addOptions(selectOptions);
+    .addOptions(selectOptions)
+    .addOptions(new StringSelectMenuOptionBuilder()
+      .setLabel('Tackle')
+      .setValue('Tackle')
+    );
   if (subs.length) {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel('Substitute (10)')
@@ -170,6 +175,9 @@ const moveSelect = async (interaction, turn) => {
         .setLabel(u.unit.name)
         .setValue('u' + String(u.fullID));
     });
+  } else if (confirmation.values[0] === 'Tackle') {
+    targetType = Targets.Field;
+    ability = tackle;
   } else if (confirmation.values[0] === 'Item') {
     targetType = Targets.Field;
     ability = {
@@ -179,16 +187,6 @@ const moveSelect = async (interaction, turn) => {
         agent.unit.item.consume(params);
       },
     };
-    selectOptions = gm.activeUnits[otherUser].map((u) => {
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(u.unit.name)
-        .setValue('o' + String(u.fullID));
-    });
-    selectOptions.push(...activeUnits.map((u) => {
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(u.unit.name)
-        .setValue('u' + String(u.fullID));
-    }));
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
     if (ability.target === Targets.None) {
@@ -217,17 +215,20 @@ const moveSelect = async (interaction, turn) => {
       });
     } else {
       targetType = Targets.Field;
-      selectOptions = gm.activeUnits[otherUser].map((u) => {
-        return new StringSelectMenuOptionBuilder()
-          .setLabel(u.unit.name)
-          .setValue('o' + String(u.fullID));
-      });
-      selectOptions.push(...activeUnits.map((u) => {
-        return new StringSelectMenuOptionBuilder()
-          .setLabel(u.unit.name)
-          .setValue('u' + String(u.fullID));
-      }));
     }
+  }
+
+  if (targetType === Targets.Field) {
+    selectOptions = gm.activeUnits[otherUser].map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('o' + String(u.fullID));
+    });
+    selectOptions.push(...activeUnits.map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('u' + String(u.fullID));
+    }));
   }
 
   select = new StringSelectMenuBuilder()
