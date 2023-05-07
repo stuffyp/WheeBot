@@ -33,8 +33,8 @@ const flash = {
       target.types,
     );
     target.doDamage(damage, typeAdvantage(FLASH_TYPE, target.types));
-    self.emitEvent(Events.DidAttack);
-    target.emitEvent(Events.GotAttacked);
+    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
+    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
   },
 };
 

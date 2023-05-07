@@ -73,8 +73,8 @@ const WARNING_POWER = 1.2;
 const WARNING_NAME = 'Hurricane Warning';
 const warning = {
     name: WARNING_NAME, 
-    description: `Add an effect to target creature. At the end of their third end turn phase, deal colossal damage to all enemies. Acts early.`,
-    shortDescription: `ADD EFFECT: Deal colossal damage to all enemies in three turns.`,
+    description: `Add an effect to target creature. At the end of their third end turn phase, deal colossal damage to all allies of the affected creature. Acts early.`,
+    shortDescription: `ADD EFFECT: Deal colossal damage to all allies in three turns.`,
     level: 1,
     type: WARNING_TYPE,
     priority: 1,
