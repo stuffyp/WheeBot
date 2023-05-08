@@ -155,14 +155,14 @@ module.exports = class GameMaster {
   #cleanUpKO(userId) {
     // be aware that in JS, const subs = this.units[userId] apparently doesn't update when units is modified???
     const field = this.activeUnits[userId].filter(u => !(u.summoned && u.unit.knockedOut()));
-    let subs = this.units[userId];
+    const subs = this.units[userId];
     while (subs.length && field.some((u) => u.unit.knockedOut())) {
+      // console.error(subs, field);
       const outUnit = field.find(u => u.unit.knockedOut());
       this.substitute(userId, outUnit.fullID, subs[randInt(subs.length)].fullID);
       this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
-      subs = this.units[userId];
     }
-    const leftover = field.filter(u => u.unit.knockedOut());
+    const leftover = this.activeUnits[userId].filter(u => (!u.summoned) && u.unit.knockedOut());
     this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
     this.graveyard[userId].push(...leftover);
   }
