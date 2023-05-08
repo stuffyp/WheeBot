@@ -157,10 +157,10 @@ module.exports = class GameMaster {
     const field = this.activeUnits[userId].filter(u => !(u.summoned && u.unit.knockedOut()));
     let subs = this.units[userId];
     while (subs.length && field.some((u) => u.unit.knockedOut())) {
-      subs = this.units[userId];
       const outUnit = field.find(u => u.unit.knockedOut());
       this.substitute(userId, outUnit.fullID, subs[randInt(subs.length)].fullID);
       this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
+      subs = this.units[userId];
     }
     const leftover = field.filter(u => u.unit.knockedOut());
     this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
