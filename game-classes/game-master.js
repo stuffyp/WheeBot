@@ -163,7 +163,7 @@ module.exports = class GameMaster {
       this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
     }
     const leftover = this.activeUnits[userId].filter(u => (!u.summoned) && u.unit.knockedOut());
-    this.activeUnits[userId] = field.filter(u => !u.unit.knockedOut());
+    this.activeUnits[userId] = this.activeUnits[userId].filter(u => !u.unit.knockedOut());
     this.graveyard[userId].push(...leftover);
   }
 
