@@ -121,6 +121,7 @@ module.exports = class GameMaster {
     unit.unit.onField = false;
     this.units[userId].push(unit);
     this.log.push(`${sub.unit.name} swapped in for ${unit.unit.name}!`);
+    sub.unit.emitEvent(Events.OnSub, { self: sub.unit });
   }
 
   #cleanUpKO(userId) {
@@ -212,7 +213,6 @@ module.exports = class GameMaster {
           return;
         }
         this.substitute(user, command.agent.fullID, command.target.fullID);
-        command.target.unit.emitEvent(Events.OnSub, { self: command.target.unit });
       },
     });
     this.#cleanUpKO(user);

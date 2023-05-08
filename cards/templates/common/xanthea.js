@@ -1,5 +1,5 @@
-const { Card, Rarities, StatusEffects, Types, Targets, 
-    Events, Stats, damageCalc, typeAdvantage, Listener, 
+const { Card, Rarities, StatusEffects, Types, Targets,
+    Events, Stats, damageCalc, typeAdvantage, Listener,
     rollChance, randInt, Modifier } = require('../../imports.js');
 
 const NAME = 'Xanthea';
@@ -15,7 +15,7 @@ const TYPES = [Types.Wind];
 
 
 const theft = {
-  name: 'Theft', 
+  name: 'Theft',
   description: 'Steal all effects and conditions from a target, replacing this creature\'s current effects and conditions.',
   shortDescription: 'Steal all effects and conditions from a target.',
   level: 1,
@@ -39,7 +39,7 @@ const theft = {
 const GUST_TYPE = Types.Wind;
 const GUST_POWER = 0.4;
 const gust = {
-  name: 'Gust', 
+  name: 'Gust',
   description: 'Deal light damage. Reduce the speed of target creature by 40% next turn.',
   shortDescription: 'Deal light damage. Reduce the speed of target creature by 40% next turn.',
   level: 1,
@@ -72,9 +72,9 @@ const WARNING_TYPE = Types.Wind;
 const WARNING_POWER = 1.2;
 const WARNING_NAME = 'Hurricane Warning';
 const warning = {
-    name: WARNING_NAME, 
-    description: `Add an effect to target creature. At the end of their third end turn phase, deal colossal damage to all allies of the affected creature. Acts early.`,
-    shortDescription: `ADD EFFECT: Deal colossal damage to all allies in three turns.`,
+    name: WARNING_NAME,
+    description: 'Add an effect to target creature. At the end of their third end turn phase, deal colossal damage to all allies of the affected creature. Acts early.',
+    shortDescription: 'ADD EFFECT: Deal colossal damage to all allies in three turns.',
     level: 1,
     type: WARNING_TYPE,
     priority: 1,
@@ -93,8 +93,8 @@ const warning = {
                 params.self.log(`${WARNING_NAME} activated!`);
                 for (const ally of allies) {
                     const damage = damageCalc(
-                        power, 
-                        attack, 
+                        power,
+                        attack,
                         ally.getStat(Stats.Defense, { self: ally }),
                         WARNING_TYPE,
                         ally.types,
@@ -106,7 +106,6 @@ const warning = {
         target.log(`${target.name} is affected by ${WARNING_NAME}!`);
     },
 };
-
 
 
 const ABILITIES = [theft, gust, warning];

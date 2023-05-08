@@ -37,6 +37,8 @@ endTurn(params): ends the turn and performs cleanup (automatically emits the end
 
 */
 
+const MODIFIER_CAP = 3;
+
 module.exports = class Unit {
   simpleName;
   name;
@@ -126,11 +128,12 @@ module.exports = class Unit {
   // with modifiers
   getStat(stat, params) {
     const modifiers = this.item ? [...this.modifiers, ...this.item.modifiers] : this.modifiers;
-    return Math.ceil(
+    const modifiedStat = Math.ceil(
       modifiers
       .filter((modifier) => modifier.stat === stat)
       .reduce((curStat, mod) => mod.modify(curStat, params), this.getBaseStat(stat)),
     );
+    return Math.min(modifiedStat, MODIFIER_CAP * this.getBaseStat(stat));
   }
 
   emitEvent(event, params) {

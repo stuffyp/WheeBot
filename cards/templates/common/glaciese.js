@@ -46,8 +46,8 @@ const wind = {
 const BULWARK_NAME = 'Bulwark';
 const bulwark = {
     name: BULWARK_NAME, 
-    description: "Add an effect to this creature. At the start of the turn, increase the defense of all allies by 10%.",
-    shortDescription: "ADD EFFECT: Increase defense of all allies by 10% each turn.",
+    description: "Add an effect to this creature. At the start of the next three turns, increase the defense of all allies by 10%.",
+    shortDescription: "ADD EFFECT: Increase defense of all allies by 10% at the start of the next three turns.",
     level: 1,
     type: Types.Water,
     priority: 0,
@@ -55,6 +55,10 @@ const bulwark = {
     cost: 40,
     execute: (params) => {
         const self = params.self;
+        if (self.listeners.some(l => l.name === BULWARK_NAME)) {
+            self.log(`${self.name} tried to use ${BULWARK_NAME} but it was already active!`);
+            return;
+        }
         self.listeners.push(new Listener({
             name: BULWARK_NAME,
             triggers: [Events.TurnStart],
@@ -77,11 +81,11 @@ const bulwark = {
 
 
 const ICEBREAKER_POWER = 0.8;
-const ICEBREAKER_FULL_POWER = 1.2;
+const ICEBREAKER_FULL_POWER = 1.8;
 const ICEBREAKER_TYPE = Types.Water;
 const ICEBREAKER_NAME = 'Icebreaker';
 const icebreaker = {
-    name: ICEBREAKER_NAME, 
+    name: ICEBREAKER_NAME,
     description: 'Deal heavy damage. If the target is frozen, unfreeze them and do colossal damage.',
     shortDescription: 'Deal heavy damage. Unfreeze and do colossal damage instead if target frozen.',
     level: 1,
@@ -106,7 +110,7 @@ const icebreaker = {
         );
         target.doDamage(damage, typeAdvantage(ICEBREAKER_TYPE, target.types));
         self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
-        target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
+        target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage });
     },
 };
 

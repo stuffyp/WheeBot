@@ -20,8 +20,8 @@ const cleanse = cleanseBuilder(1);
 const HEAL_NAME = 'Healing Circle';
 const heal = {
 name: HEAL_NAME, 
-description: "Add an effect to this creature. At the start of the turn, restore 10% health to all allies.",
-shortDescription: "ADD EFFECT: Restore 10% health to all allies each turn.",
+description: "Add an effect to this creature. At the start of the next three turns, restore 10% health to all allies. Does not stack.",
+shortDescription: "ADD EFFECT: Restore 10% health to all allies at the start of the next three turns.",
 level: 1,
 type: Types.Plant,
 priority: 0,
@@ -29,6 +29,10 @@ target: Targets.None,
 cost: 40,
 execute: (params) => {
     const self = params.self;
+    if (self.listeners.some(l => l.name === HEAL_NAME)) {
+      self.log(`${self.name} tried to use ${HEAL_NAME} but it was already active!`);
+      return;
+    }
     self.listeners.push(new Listener({
         name: HEAL_NAME,
         triggers: [Events.TurnStart],
