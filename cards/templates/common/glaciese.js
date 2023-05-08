@@ -7,8 +7,8 @@ const DESCRIPTION = 'Violation of thermodynamics.';
 const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Common;
 const HEALTH = 100;
-const ATTACK = 40;
-const DEFENSE = 50;
+const ATTACK = 50;
+const DEFENSE = 40;
 const SPEED = 40;
 const MAGIC = 60;
 const TYPES = [Types.Water];
@@ -81,7 +81,7 @@ const bulwark = {
 
 
 const ICEBREAKER_POWER = 0.8;
-const ICEBREAKER_FULL_POWER = 1.8;
+const ICEBREAKER_FULL_POWER = 1.2;
 const ICEBREAKER_TYPE = Types.Water;
 const ICEBREAKER_NAME = 'Icebreaker';
 const icebreaker = {

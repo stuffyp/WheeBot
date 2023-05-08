@@ -1,6 +1,7 @@
-const { Card, Rarities, StatusEffects, Types, Targets, 
-       Events, Stats, damageCalc, typeAdvantage, rollChance, 
+const { Card, Rarities, StatusEffects, Types, Targets,
+       Events, Stats, damageCalc, typeAdvantage, rollChance,
        Modifier, Listener } = require('../../imports.js');
+const { slashBuilder } = require('../../common-abilities.js');
 
 const NAME = 'Echidron';
 const DESCRIPTION = 'Possessing the ability to sense vibrations in the earth, they prefer to build their lairs underground.';
@@ -14,36 +15,7 @@ const MAGIC = 50;
 const TYPES = [Types.Earth, Types.Beast];
 
 
-const SLASH_TYPE = Types.Beast;
-const SLASH_POWER = 0.4;
-const slash = {
-  name: 'Slash', 
-  description: 'Deal light damage. Hits twice.',
-  shortDescription: 'Deal light damage. Hits twice.',
-  level: 1,
-  type: SLASH_TYPE,
-  priority: 0,
-  target: Targets.Field,
-  execute: (params) => {
-    const self = params.self;
-    const target = params.target;
-    const damage = damageCalc(
-      SLASH_POWER * self.getBaseStat(Stats.Attack), 
-      self.getStat(Stats.Attack, { self: self }), 
-      target.getStat(Stats.Defense, { self: target }),
-      SLASH_TYPE,
-      target.types,
-    );
-    target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
-    self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage})
-    target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
-    if (!target.knockedOut() && !self.knockedOut()) {
-      target.doDamage(damage, typeAdvantage(SLASH_TYPE, target.types));
-      self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
-      target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage});
-    }
-  },
-};
+const slash = slashBuilder(1);
 
 const PIT_TYPE = Types.Earth;
 const PIT_POWER = 0.6;

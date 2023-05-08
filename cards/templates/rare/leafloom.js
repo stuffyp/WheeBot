@@ -64,8 +64,8 @@ const dart = {
     const self = params.self;
     const target = params.target;
     const damage = damageCalc(
-      DART_POWER * self.getBaseStat(Stats.Attack), 
-      self.getStat(Stats.Attack, { self: self }), 
+      DART_POWER * self.getBaseStat(Stats.Attack),
+      self.getStat(Stats.Attack, { self: self }),
       target.getStat(Stats.Defense, { self: target }),
       DART_TYPE,
       target.types,

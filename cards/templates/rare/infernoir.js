@@ -3,7 +3,7 @@ const { Card, Rarities, StatusEffects, Types, Targets,
     typeAdvantage, Listener, Modifier, rollChance, randInt } = require('../../imports.js');
 
 const NAME = 'Infernoir';
-const DESCRIPTION = 'Despite their reputation, Infernoir are fond of small trinkets and shiny things.';
+const DESCRIPTION = 'Despite their appearance, Infernoir are fond of small trinkets and shiny things.';
 const IMAGE_SRC = 'pikachu.png';
 const RARITY = Rarities.Rare;
 const HEALTH = 120;

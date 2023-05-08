@@ -137,7 +137,7 @@ module.exports = class Unit {
   }
 
   emitEvent(event, params) {
-    if (this.knockedOut()) return;
+    if (this.knockedOut() || this.status === StatusEffects.Unaware) return;
     const listeners = this.item ? [...this.listeners, ...this.item.listeners] : this.listeners;
     listeners.forEach(listener => {
       listener.doEffect(event, params);
@@ -275,5 +275,19 @@ module.exports = class Unit {
       this.status = StatusEffects.Freeze;
       this.log(`${this.name} became frozen${reasonText}!`);
     }
+  }
+
+  doFrighten(reason='') {
+    if (this.knockedOut()) return;
+    this.status = StatusEffects.Frighten;
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became frightened${reasonText}!`);
+  }
+
+  doUnaware(reason='') {
+    if (this.knockedOut()) return;
+    this.status = StatusEffects.Unaware;
+    const reasonText = (reason.length) ? ` due to ${reason}` : '';
+    this.log(`${this.name} became unaware${reasonText}!`);
   }
 };

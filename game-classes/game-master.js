@@ -121,6 +121,7 @@ module.exports = class GameMaster {
     unit.unit.onField = false;
     this.units[userId].push(unit);
     this.log.push(`${sub.unit.name} swapped in for ${unit.unit.name}!`);
+    if (sub.unit.status === StatusEffects.Frighten) sub.unit.status = null;
     sub.unit.emitEvent(Events.OnSub, { self: sub.unit });
   }
 
@@ -167,6 +168,10 @@ module.exports = class GameMaster {
     if (command.agent.unit.knockedOut()) return; // unit ko before taking turn
     if (command.agent.unit.status === StatusEffects.Stun && rollChance(0.5)) {
       this.log.push(`**${command.agent.unit.name}** was stunned and passes their turn!`);
+      return;
+    }
+    if (command.targetType !== Targets.Sub && command.agent.unit.status === StatusEffects.Frighten && rollChance(0.7)) {
+      this.log.push(`**${command.agent.unit.name}** was frightened and passes their turn!`);
       return;
     }
     if (command.agent.unit.status === StatusEffects.Freeze) {

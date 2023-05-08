@@ -20,6 +20,8 @@ module.exports = {
     Stun: '💛',
     Curse: '💜',
     Freeze: '💙',
+    Frighten: '💓',
+    Unaware: '🤍',
   },
 
   Types: {
