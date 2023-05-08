@@ -1,6 +1,6 @@
 const { Card, Rarities, StatusEffects, Types, Targets, 
     Events, Stats, damageCalc, typeAdvantage, Listener, 
-    rollChance, randInt } = require('../../imports.js');
+    rollChance, randInt, Modifier } = require('../../imports.js');
 
 const NAME = 'Xanthea';
 const DESCRIPTION = 'Noisome harbinger of storms.';
