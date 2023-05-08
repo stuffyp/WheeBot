@@ -42,6 +42,8 @@ const MODIFIER_CAP = 3;
 module.exports = class Unit {
   simpleName;
   name;
+  username;
+  level;
 
   maxHealth;
   health;
@@ -86,10 +88,12 @@ module.exports = class Unit {
   setLog(log) { this.log = log; return this; }
   setLevel(level) {
     this.abilities = this.abilities.filter((ability) => ability.level <= level);
+    this.level = level;
     return this;
   }
   setName(username) {
     this.name = `${username}'s ${this.simpleName}`;
+    this.username = username;
     return this;
   }
   setUtilFuncs(utilFuncs) {

@@ -81,7 +81,7 @@ const bulwark = {
 
 
 const ICEBREAKER_POWER = 0.8;
-const ICEBREAKER_FULL_POWER = 1.2;
+const ICEBREAKER_FULL_POWER = 1.5;
 const ICEBREAKER_TYPE = Types.Water;
 const ICEBREAKER_NAME = 'Icebreaker';
 const icebreaker = {

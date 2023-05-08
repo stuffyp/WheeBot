@@ -130,14 +130,14 @@ const finishBattle = async (winner, combatID, channel, timeout = false) => {
     channel.send({ embeds: [embed] });
   }
 
-  //give exp
+  // give exp
   const allUnits = GM.allUnits();
   const totalLevel = allUnits.reduce((cur, u) => cur + u.level, 0);
   const [user1, user2] = users;
   const unitUpdates = { [`${user1}`]: [], [`${user2}`]: [] };
   await syncUpdate(user1, user2, (userData1, userData2) => {
     allUnits.forEach(u => {
-      const {user, unit, fullID} = u;
+      const { user, unit, fullID } = u;
       const collection = (user === user1) ? userData1.cardCollection : userData2.cardCollection;
       const cardData = collection.find((c) => c.fullID === fullID);
       const expGain = giveExp(GM.totalCommands, totalLevel);
@@ -152,7 +152,7 @@ const finishBattle = async (winner, combatID, channel, timeout = false) => {
     });
     return [userData1, userData2];
   });
-  channel.send({embeds: displayExpUpdates(fullUsers, unitUpdates)});
+  channel.send({ embeds: displayExpUpdates(fullUsers, unitUpdates) });
 
   endBattle(combatID);
   // TODO

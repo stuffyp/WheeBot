@@ -1,7 +1,7 @@
 const { Card, Rarities, StatusEffects, Types, Targets,
     Events, Stats, damageCalc,
     typeAdvantage, Listener, Modifier, rollChance, randInt } = require('../../imports.js');
-const { slashBuilder, fireballBuilder } = require('../../common-abilities.js');
+const { fireballBuilder } = require('../../common-abilities.js');
 
 const NAME = 'Azirosa';
 const DESCRIPTION = 'Bad omen when seen at dawn.';
@@ -14,7 +14,6 @@ const SPEED = 50;
 const MAGIC = 60;
 const TYPES = [Types.Fire, Types.Beast];
 
-const slash = slashBuilder(1);
 const fireball = fireballBuilder(1);
 
 const ROAR_TYPE = Types.Beast;
@@ -48,11 +47,11 @@ const roar = {
 const KNIVES_TYPE = Types.Beast;
 const KNIVES_POWER = 0.4;
 const KNIVES_DPOWER = 0.1;
-const KNIVES_NAME = 'Fan of Knives';
+const KNIVES_NAME = 'Stampede';
 const knives = {
   name: KNIVES_NAME,
-  description: `Deal light damage to a random target until an enemy is knocked out. Does not stop if ${NAME} is knocked out by ${KNIVES_NAME}. Each knife is stronger than the last.`,
-  shortDescription: 'Deal light damage to a random target until an enemy is knocked out.',
+  description: `Deal damage to a random target until an enemy is knocked out. Does not stop if ${NAME} is knocked out by ${KNIVES_NAME}. Each hit is stronger than the last, starting at light damage.`,
+  shortDescription: 'Deal damage to a random target until an enemy is knocked out.',
   level: 1,
   type: KNIVES_TYPE,
   priority: 0,
@@ -84,8 +83,27 @@ const knives = {
   },
 };
 
+const mimicry = {
+  name: 'Mimicry',
+  description: 'Copy all effects and conditions from a target, replacing this creature\'s current effects and conditions.',
+  shortDescription: 'Copy all effects and conditions from a target.',
+  level: 1,
+  type: Types.None,
+  priority: 0,
+  target: Targets.Field,
+  cost: 30,
+  execute: (params) => {
+    const self = params.self;
+    const target = params.target;
+    self.listeners = target.listeners;
+    self.modifiers = target.modifiers;
+    self.status = target.status;
+    self.log(`${self.name} copied all effects and conditions from ${target.name}!`);
+  },
+};
 
-const ABILITIES = [slash, fireball, roar, knives];
+
+const ABILITIES = [fireball, roar, knives, mimicry];
 
 const HEADER = [NAME, DESCRIPTION, IMAGE_SRC, RARITY, HEALTH, ATTACK, DEFENSE, SPEED, MAGIC, TYPES, ABILITIES];
 

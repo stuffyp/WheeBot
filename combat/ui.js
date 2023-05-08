@@ -117,6 +117,18 @@ const moveSelect = async (interaction, turn) => {
     return true;
   };
 
+  const checkAbort = async () => {
+    if (battle.readyUsers.includes(user)) {
+      await interaction.editReply({
+        content: 'Oops! You have ended your turn. Aborting command.',
+        components: [],
+        ephemeral: true,
+      });
+      return true;
+    }
+    return false;
+  };
+
   success = await waitSelect('agentSelect');
   if (!success) return;
   const agent = activeUnits.find((u) => u.fullID === parseInt(confirmation.values[0]));
@@ -134,9 +146,9 @@ const moveSelect = async (interaction, turn) => {
     .addOptions(selectOptions)
     .addOptions(new StringSelectMenuOptionBuilder()
       .setLabel('Tackle')
-      .setValue('Tackle')
+      .setValue('Tackle'),
     );
-  if (subs.length) {
+  if (subs.length && !agent.summoned) {
     select.addOptions(new StringSelectMenuOptionBuilder()
       .setLabel('Substitute (10)')
       .setValue('Substitute'),
@@ -170,11 +182,6 @@ const moveSelect = async (interaction, turn) => {
       cost: 10,
       execute: (params) => { params.sub(); },
     };
-    selectOptions = subs.map((u) => {
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(u.unit.name)
-        .setValue('u' + String(u.fullID));
-    });
   } else if (confirmation.values[0] === 'Tackle') {
     targetType = Targets.Field;
     ability = tackle;
@@ -189,33 +196,7 @@ const moveSelect = async (interaction, turn) => {
     };
   } else {
     ability = agent.unit.abilities.find((a) => a.name === confirmation.values[0]);
-    if (ability.target === Targets.None) {
-      targetType = Targets.None;
-      await interaction.editReply({
-        content: `**${agent.unit.name}** will use **${ability.name}**.`,
-        components: [],
-        ephemeral: true,
-      });
-      gm.queueCommand(new Command()
-        .setAgent(agent)
-        .setTargetType(targetType)
-        .setExecute(ability.execute)
-        .setPriority(ability.priority)
-        .setName(ability.name)
-        .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
-        .setCost(ability.cost ?? 0),
-      );
-      return;
-    } else if (ability.target === Targets.Sub) {
-      targetType = Targets.Sub;
-      selectOptions = subs.map((u) => {
-        return new StringSelectMenuOptionBuilder()
-          .setLabel(u.unit.name)
-          .setValue('u' + String(u.fullID));
-      });
-    } else {
-      targetType = Targets.Field;
-    }
+    targetType = ability.target;
   }
 
   if (targetType === Targets.Field) {
@@ -229,6 +210,30 @@ const moveSelect = async (interaction, turn) => {
         .setLabel(u.unit.name)
         .setValue('u' + String(u.fullID));
     }));
+  } else if (targetType === Targets.Sub) {
+    selectOptions = subs.map((u) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(u.unit.name)
+        .setValue('u' + String(u.fullID));
+    });
+  } else { // None
+    const abort = await checkAbort();
+    if (abort) return;
+    await interaction.editReply({
+      content: `**${agent.unit.name}** will use **${ability.name}**.`,
+      components: [],
+      ephemeral: true,
+    });
+    gm.queueCommand(new Command()
+      .setAgent(agent)
+      .setTargetType(targetType)
+      .setExecute(ability.execute)
+      .setPriority(ability.priority)
+      .setName(ability.name)
+      .setSpeed(agent.unit.getStat(Stats.Speed, { self: agent }))
+      .setCost(ability.cost ?? 0),
+    );
+    return;
   }
 
   select = new StringSelectMenuBuilder()
@@ -245,6 +250,8 @@ const moveSelect = async (interaction, turn) => {
 
   success = await waitSelect('targetSelect');
   if (!success) return;
+  const abort = await checkAbort();
+  if (abort) return;
 
   let formation;
   if (targetType === Targets.Sub) {
@@ -253,14 +260,6 @@ const moveSelect = async (interaction, turn) => {
     formation = confirmation.values[0][0] === 'u' ? activeUnits : gm.activeUnits[otherUser];
   }
   const target = formation.find((u) => u.fullID === parseInt(confirmation.values[0].slice(1, Infinity)));
-  if (battle.readyUsers.includes(user)) {
-    await interaction.editReply({
-      content: 'Oops! You have ended your turn. Aborting command.',
-      components: [],
-      ephemeral: true,
-    });
-    return;
-  }
   await interaction.editReply({
     content: `**${agent.unit.name}** will target **${target.unit.name}** with **${ability.name}**.`,
     components: [],
@@ -304,15 +303,15 @@ const displayExpUpdates = (fullUsers, unitUpdates) => {
       .setTitle(user.name)
       .addFields(unitUpdates[user.id].map((u) => {
         const [name, level, levelUp, expGain] = u;
-        const levelUpEmoji = levelUp ? ' ⬆️ ': '';
-        return { 
-          name: `${name} (Level ${level}${levelUpEmoji})`, 
-          value: `(+${expGain} EXP)`, 
-          inline: true 
+        const levelUpEmoji = levelUp ? ' ⬆️ ' : '';
+        return {
+          name: `${name} (Level ${level}${levelUpEmoji})`,
+          value: `(+${expGain} EXP)`,
+          inline: true,
         };
-      }))
+      }));
   });
-}
+};
 
 module.exports = {
   teamSelect: teamSelect,

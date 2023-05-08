@@ -16,8 +16,8 @@ const SPLASH_POWER = 0.6;
 const SPLASH_TYPE = Types.Water;
 const splash = {
   name: 'Splash', 
-  description: 'Deal moderate damage to a target.',
-  shortDescription: 'Deal moderate damage to a target.',
+  description: 'Deal moderate damage.',
+  shortDescription: 'Deal moderate damage.',
   level: 1,
   type: SPLASH_TYPE,
   priority: 0,

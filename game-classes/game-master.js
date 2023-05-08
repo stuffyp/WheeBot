@@ -7,6 +7,7 @@ const { rollChance, randInt } = require('../util/random.js');
 const Unit = require('./unit.js');
 
 const H_BAR = '──────────';
+const MAX_ACTIVE_UNITS = 6;
 
 module.exports = class GameMaster {
   users;
@@ -20,6 +21,7 @@ module.exports = class GameMaster {
   commands;
   totalCommands; // checking for effort before awarding exp
   turn;
+  idSeed;
   constructor(channel) {
     this.users = [];
     this.units = {};
@@ -32,6 +34,7 @@ module.exports = class GameMaster {
     this.commands = [];
     this.totalCommands = 0;
     this.turn = 0;
+    this.idSeed = -1;
   }
 
   loadUser(id, name, elo) {
@@ -53,7 +56,7 @@ module.exports = class GameMaster {
   getLog() {
     const out = this.log;
     for (let i = out.length - 1; i > 0; i--) {
-      if (out[i] === H_BAR && out[i-1] === H_BAR) out.splice(i, 1);
+      if (out[i] === H_BAR && out[i - 1] === H_BAR) out.splice(i, 1);
     }
     if (out.length === 1) out.splice(0);
     this.log = [];
@@ -73,21 +76,45 @@ module.exports = class GameMaster {
       fullID: fullID,
       level: level,
       exp: exp,
+      summoned: false,
       unit: new Unit(getCard(id))
         .setItem(item ? getItem(item).item : null)
-        .setLog((text) => { 
-          this.log.push(text); 
-          // console.error(text); 
-        } )
+        .setLog((text) => {
+          this.log.push(text);
+          // console.error(text);
+        })
         .setLevel(level)
         .setName(username)
         .setUtilFuncs({
           enemies: () => this.activeUnits[otherUser].map(u => u.unit),
           allies: () => this.activeUnits[userId].map(u => u.unit),
+          summonUnit: (card, summonLevel) => {
+            if (this.activeUnits[userId].length >= MAX_ACTIVE_UNITS) return false;
+            const summonedUnit = {
+              user: userId,
+              fullID: this.idSeed,
+              level: summonLevel,
+              exp: 0,
+              summoned: true,
+              unit: new Unit(card)
+                .setLog((text) => { this.log.push(text); })
+                .setLevel(summonLevel)
+                .setName(username)
+                .setUtilFuncs({
+                    enemies: () => this.activeUnits[otherUser].map(u => u.unit),
+                    allies: () => this.activeUnits[userId].map(u => u.unit),
+                }),
+            };
+            summonedUnit.unit.onField = true;
+            this.activeUnits[userId].push(summonedUnit);
+            this.idSeed--;
+            return true;
+          },
         }),
     });
     return this;
   }
+
 
   setActiveUnit(userId, fullID) {
     const unit = this.units[userId].find(u => u.fullID === fullID);
@@ -103,7 +130,7 @@ module.exports = class GameMaster {
       ...this.activeUnits[user], ...this.activeUnits[otherUser],
       ...this.units[user], ...this.units[otherUser],
       ...this.graveyard[user], ...this.graveyard[otherUser],
-    ];
+    ].filter(u => !u.summoned);
   }
 
   substitute(userId, fullID1, fullID2) {
@@ -127,11 +154,12 @@ module.exports = class GameMaster {
 
   #cleanUpKO(userId) {
     // be aware that in JS, const subs = this.units[userId] apparently doesn't update when units is modified???
-    const field = this.activeUnits[userId];
+    const field = this.activeUnits[userId].filter(u => !(u.summoned && u.unit.knockedOut()));
     const subs = this.units[userId];
     while (subs.length && field.some((u) => u.unit.knockedOut())) {
       // console.error(subs, field);
-      this.substitute(userId, field.find(u => u.unit.knockedOut()).fullID, subs[randInt(subs.length)].fullID);
+      const outUnit = field.find(u => u.unit.knockedOut());
+      this.substitute(userId, outUnit.fullID, subs[randInt(subs.length)].fullID);
       this.graveyard[userId].push(this.units[userId].pop()); // relies on assumption that substitute pushes to end
     }
     const leftover = field.filter(u => u.unit.knockedOut());
@@ -141,7 +169,7 @@ module.exports = class GameMaster {
 
   display() {
     const embeds = this.users.map(({ id, name }) => {
-      const availableUnits = this.activeUnits[id].length + this.units[id].length;
+      const availableUnits = this.activeUnits[id].filter(u => !u.summoned).length + this.units[id].length;
       const totalUnits = availableUnits + this.graveyard[id].length;
       return new EmbedBuilder()
         .setTitle(`${name} (${availableUnits}/${totalUnits})`)
@@ -260,7 +288,10 @@ module.exports = class GameMaster {
       u.unit.startTurn({ self: u.unit });
       this.#cleanUpKO(user);
       this.#cleanUpKO(otherUser);
-      if (this.#checkWin()) { this.log.push(H_BAR); return; }
+      if (this.#checkWin()) {
+        this.log.push(H_BAR);
+        return;
+      }
     }
 
     this.log.push(H_BAR);
@@ -283,7 +314,10 @@ module.exports = class GameMaster {
       u.unit.endTurn({ self: u.unit });
       this.#cleanUpKO(user);
       this.#cleanUpKO(otherUser);
-      if (this.#checkWin()) { this.log.push(H_BAR); return; }
+      if (this.#checkWin()) {
+        this.log.push(H_BAR);
+        return;
+      }
     }
     this.log.push(H_BAR);
 
