@@ -50,11 +50,11 @@ const KNIVES_DPOWER = 0.1;
 const KNIVES_NAME = 'Stampede';
 const knives = {
   name: KNIVES_NAME,
-  description: `Deal damage to a random target until an enemy is knocked out. Does not stop if ${NAME} is knocked out by ${KNIVES_NAME}. Each hit is stronger than the last, starting at light damage.`,
+  description: 'Deal damage to a random target until an ally is knocked out. Each hit is stronger than the last, starting at light damage. Acts late.',
   shortDescription: 'Deal damage to a random target until an enemy is knocked out.',
   level: 1,
   type: KNIVES_TYPE,
-  priority: 0,
+  priority: -1,
   target: Targets.None,
   cost: 80,
   execute: (params) => {
@@ -65,8 +65,9 @@ const knives = {
     let count = 0;
     while (true) {
         const enemies = self.utilFuncs.enemies();
-        if (enemies.some((e) => e.knockedOut())) return;
-        const targets = [...self.utilFuncs.allies().filter(u => !u.knockedOut()), ...enemies];
+        const allies = self.utilFuncs.allies();
+        if (allies.some((e) => e.knockedOut())) return;
+        const targets = [...allies, ...enemies.filter(u => !u.knockedOut())];
         const target = targets[randInt(targets.length)];
         const damage = damageCalc(
             basePower + count * dPower,
