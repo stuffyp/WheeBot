@@ -50,11 +50,11 @@ const KNIVES_DPOWER = 0.1;
 const KNIVES_NAME = 'Stampede';
 const knives = {
   name: KNIVES_NAME,
-  description: 'Deal damage to a random target until an ally is knocked out. Each hit is stronger than the last, starting at light damage. Acts late.',
-  shortDescription: 'Deal damage to a random target until an enemy is knocked out.',
+  description: 'Sacrifice this creature. Deal damage to a random target until an enemy is knocked out. Each hit is stronger than the last, starting at light damage.',
+  shortDescription: 'Sacrifice this creature. Deal damage to a random target until an enemy is knocked out.',
   level: 1,
   type: KNIVES_TYPE,
-  priority: -1,
+  priority: 0,
   target: Targets.None,
   cost: 80,
   execute: (params) => {
@@ -62,11 +62,12 @@ const knives = {
     const basePower = KNIVES_POWER * self.getBaseStat(Stats.Attack);
     const dPower = KNIVES_DPOWER * self.getBaseStat(Stats.Attack);
     const attack = self.getStat(Stats.Attack, { self: self });
+    self.doDamage(Infinity);
     let count = 0;
     while (true) {
         const enemies = self.utilFuncs.enemies();
-        const allies = self.utilFuncs.allies();
-        if (allies.some((e) => e.knockedOut())) return;
+        const allies = self.utilFuncs.allies().filter(a => !a.knockedOut());
+        if (enemies.some((e) => e.knockedOut())) return;
         const targets = [...allies, ...enemies.filter(u => !u.knockedOut())];
         const target = targets[randInt(targets.length)];
         const damage = damageCalc(
@@ -77,7 +78,6 @@ const knives = {
             target.types,
         );
         target.doDamage(damage, typeAdvantage(KNIVES_TYPE, target.types), KNIVES_NAME);
-        self.emitEvent(Events.DidAttack, { self: self, target: target, damage: damage });
         target.emitEvent(Events.GotAttacked, { self: target, agent: self, damage: damage });
         count++;
     }
